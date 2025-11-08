@@ -1,0 +1,85 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+// import CountdownTimer from '@/components/ui/CountDownTimer';
+
+const heroSlides = [
+  {
+    id: 1,
+    image: 'https://images.unsplash.com/photo-1528720208104-3d9bd03cc9d4?q=80&w=1920&auto=format&fit=crop',
+    alt: 'Runners at sunrise'
+  },
+  {
+    id: 2,
+    image: 'https://images.unsplash.com/photo-1727094141271-9bea5bc8c757?q=80&w=1920&auto=format&fit=crop',
+    alt: 'Group of runners'
+  },
+  {
+    id: 3,
+    image: 'https://images.unsplash.com/photo-1574288763758-a17ce17c4088?q=80&w=1920&auto=format&fit=crop',
+    alt: 'Finish line celebration'
+  }
+];
+
+export default function HeroSection() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
+      {/* Background Slides */}
+      <div className="absolute inset-0">
+        {heroSlides.map((slide, index) => (
+          <div
+            key={slide.id}
+            className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100' : 'opacity-0'
+              }`}
+          >
+            <div
+              className="w-full h-full bg-cover bg-center bg-no-repeat"
+              style={{ backgroundImage: `url(${slide.image})` }}
+            />
+            <div className="absolute inset-0 bg-black/50" />
+          </div>
+        ))}
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-6">
+        <h1 className="text-5xl md:text-8xl font-bold mb-6 animate-fade-in tracking-[-10px] ">
+          Share&nbsp;&nbsp;Your&nbsp;&nbsp;Distance
+        </h1>
+        <p className="text-xl md:text-3xl mb-6 opacity-90 animate-slide-up italic">
+          End Your Year with Meaningful Steps
+        </p>
+
+        <div className="mb-8 animate-slide-up">
+          <p className="text-sm md:text-base mb-2">December 27, 2025 at Gedung Sate, Bandung</p>
+        </div>
+
+        {/* Countdown Timer */}
+        {/* <div className="mb-8 animate-slide-up">
+          <CountdownTimer targetDate="2025-12-27T06:00:00" />
+        </div> */}
+
+
+
+      </div>
+      {/* Scroll Indicator */}
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <div className="flex flex-col items-center cursor-pointer">
+          <span className="text-sm mb-2 opacity-80">Scroll for explorer</span>
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+        </div>
+      </div>
+    </section>
+  );
+}
