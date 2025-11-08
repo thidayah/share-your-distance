@@ -1,6 +1,232 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
 @import "tailwindcss";
 
+/* @theme {
+  --color-primary-50: #fff7ed;
+  --color-primary-500: #f97316;
+  --color-primary-600: #ea580c;
+  --color-primary-900: #7c2d12;
+  
+  --color-secondary-500: #3b82f6;
+  --color-secondary-600: #2563eb;
+  
+  --color-neutral-50: #fafafa;
+  --color-neutral-100: #f4f4f5;
+  --color-neutral-800: #27272a;
+  --color-neutral-900: #18181b;
+} */
+
 :root {
+  --background: #000000;
+  --foreground: #ffffff;
+}
+
+/* @theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+} */
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+} */
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  /* font-family: Arial, Helvetica, sans-serif; */
+}
+
+@theme {
+  /* Font Family */
+  --font-ubuntu: 'Ubuntu', 'system-ui', 'sans-serif';
+  --font-family-heading: 'Ubuntu', 'system-ui', 'sans-serif';
+  --font-family-body: 'Ubuntu', 'system-ui', 'sans-serif';
+
+  /* Primary Colors - Sporty Orange & Energy */
+  --color-primary-50: #fff7ed;
+  --color-primary-100: #ffedd5;
+  --color-primary-500: #f97316;
+  /* Vibrant orange - energy */
+  --color-primary-600: #ea580c;
+  /* Deep orange - action */
+  --color-primary-700: #c2410c;
+  /* Dark orange - intensity */
+
+  /* Secondary Colors - Cool Contrast */
+  --color-secondary-400: #60a5fa;
+  /* Electric blue */
+  --color-secondary-500: #3b82f6;
+  /* Sport blue */
+  --color-secondary-600: #2563eb;
+  /* Deep blue */
+
+  /* Dark Neutrals - Lowlight Foundation */
+  --color-neutral-800: #1f2937;
+  /* Dark gray - main dark */
+  --color-neutral-900: #111827;
+  /* Deeper dark - backgrounds */
+  --color-neutral-950: #030712;
+  /* Almost black - accents */
+
+  /* Light Neutrals - Contrast & Text */
+  --color-neutral-100: #f3f4f6;
+  /* Off-white - text */
+  --color-neutral-200: #e5e7eb;
+  /* Light gray - secondary text */
+  --color-neutral-400: #9ca3af;
+  /* Medium gray - muted text */
+
+  /* Success & Energy Colors */
+  --color-success-400: #34d399;
+  /* Sporty green */
+  --color-warning-400: #fbbf24;
+  /* Energetic yellow */
+
+  /* Typography */
+  --font-family-heading: 'Inter', 'sans-serif';
+  --font-family-body: 'Inter', 'sans-serif';
+
+  /* Spacing Scale */
+  --spacing-section: 5rem;
+  --spacing-section-sm: 3rem;
+
+  /* Animations */
+  --animate-fade-in: fade-in 0.5s ease-out;
+  --animate-slide-up: slide-up 0.6s ease-out;
+}
+
+
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* Glass morphism effect untuk countdown boxes */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Tambahkan di globals.css */
+@keyframes confetti {
+  0% {
+    transform: translateY(-100px) rotate(0deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse-slow {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes bounce-gentle {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-confetti {
+  animation: confetti linear forwards;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s ease-in-out infinite;
+}
+
+.animate-bounce {
+  animation: bounce-gentle 0.5s ease-in-out infinite;
+}
+
+@keyframes scroll-wheel {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(4px);
+    opacity: 0.8;
+  }
+}
+
+.animate-scroll-wheel {
+  animation: scroll-wheel 1.5s ease-in-out infinite;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.6s ease-out forwards;
+}
+
+.bg-sport-dark {
+  background: linear-gradient(135deg, var(--color-neutral-900) 0%, var(--color-neutral-800) 100%);
+}
+
+.bg-sport-darker {
+  background: linear-gradient(135deg, var(--color-neutral-950) 0%, var(--color-neutral-900) 100%);
+}
+
+/* Sporty cards dengan glass effect */
+.sport-card {
+  background: rgba(31, 41, 55, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+
+/* Container dengan subtle glow */
+.sport-container {
+  background: var(--color-neutral-800);
+  border: 1px solid rgba(249, 115, 22, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* :root {
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -23,4 +249,4 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-}
+} */
