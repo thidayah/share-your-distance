@@ -89,7 +89,7 @@ export default function PartnersSection() {
           <h3 className="text-2xl font-bold text-white text-center mb-12">
             Partners
           </h3>
-          <div className="grid grid-cols-6 gap-16 justify-center items-center">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-16 justify-center items-center">
             {partners.ourPartners.map((partner, index) => (
               <div
                 key={partner.name}

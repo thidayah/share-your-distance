@@ -16,7 +16,7 @@ export default function Footer() {
             {/* <Logo withText={true} size="md" className="mb-4" /> */}
             <div className=" text-3xl text-white font-bold mb-4 tracking-[-3px]">Share&nbsp;&nbsp;&nbsp;Your&nbsp;&nbsp;Distance</div>
             <p className="text-zinc-300 mb-4 max-w-md">
-              Join us on December 27, 2025 for an unforgettable running experience.
+              Join us on December 20, 2025 for an unforgettable running experience.
               Share your distance, create memories, and celebrate achievements together.
             </p>
             <div className="flex items-center space-x-4">
