@@ -16,22 +16,25 @@ export default function Footer() {
             {/* <Logo withText={true} size="md" className="mb-4" /> */}
             <div className=" text-3xl text-white font-bold mb-4 tracking-[-3px]">Share&nbsp;&nbsp;&nbsp;Your&nbsp;&nbsp;Distance</div>
             <p className="text-zinc-300 mb-4 max-w-md">
-              Join us on December 27, 2025 for an unforgettable running experience.
+              Join us on December 20, 2025 for an unforgettable running experience.
               Share your distance, create memories, and celebrate achievements together.
             </p>
             <div className="flex items-center space-x-4">
               <a href="#" className="text-zinc-300 hover:text-white transition-colors">
-                <Icon icon="mdi:instagram" className="w-6 h-6" />
+                <Icon icon="mdi:whatsapp" className="w-6 h-6" />
               </a>
               <a href="#" className="text-zinc-300 hover:text-white transition-colors">
-                <Icon icon="mdi:facebook" className="w-6 h-6" />
+                <Icon icon="mdi:instagram" className="w-6 h-6" />
               </a>
+              {/* <a href="#" className="text-zinc-300 hover:text-white transition-colors">
+                <Icon icon="mdi:facebook" className="w-6 h-6" />
+              </a> */}
               <a href="#" className="text-zinc-300 hover:text-white transition-colors">
                 <Icon icon="mdi:twitter" className="w-6 h-6" />
               </a>
-              <a href="#" className="text-zinc-300 hover:text-white transition-colors">
+              {/* <a href="#" className="text-zinc-300 hover:text-white transition-colors">
                 <Icon icon="mdi:youtube" className="w-6 h-6" />
-              </a>
+              </a> */}
             </div>
           </div>
 
@@ -40,12 +43,12 @@ export default function Footer() {
             <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="#about" className="text-zinc-300 hover:text-white transition-colors">
+                <Link href="/about" className="text-zinc-300 hover:text-white transition-colors">
                   About Event
                 </Link>
               </li>
               <li>
-                <Link href="#category" className="text-zinc-300 hover:text-white transition-colors">
+                <Link href="/category" className="text-zinc-300 hover:text-white transition-colors">
                   Race Categories
                 </Link>
               </li>
@@ -55,7 +58,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-zinc-300 hover:text-white transition-colors">
+                <Link href="/faq" className="text-zinc-300 hover:text-white transition-colors">
                   FAQ
                 </Link>
               </li>
@@ -91,10 +94,10 @@ export default function Footer() {
               © {currentYear} Share Your Distance. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link href="#" className="text-zinc-300 hover:text-white text-sm transition-colors">
+              <Link href="/privacy-policy" className="text-zinc-300 hover:text-white text-sm transition-colors">
                 Privacy Policy
               </Link>
-              <Link href="#" className="text-zinc-300 hover:text-white text-sm transition-colors">
+              <Link href="/terms-of-service" className="text-zinc-300 hover:text-white text-sm transition-colors">
                 Terms of Service
               </Link>
             </div>

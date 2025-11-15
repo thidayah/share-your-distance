@@ -31,6 +31,21 @@ export default function HeroSection() {
     return () => clearInterval(interval);
   }, []);
 
+  const handleSmoothScroll = (href: string) => {
+    const targetId = href.substring(1)
+    const targetElement = document.getElementById(targetId)
+
+    if (targetElement) {
+      const headerHeight = 30
+      const targetPosition = targetElement.offsetTop - headerHeight
+
+      window.scrollTo({
+        top: targetPosition,
+        behavior: 'smooth'
+      })
+    }
+  }
+
   return (
     <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
       {/* Background Slides */}
@@ -52,33 +67,34 @@ export default function HeroSection() {
 
       {/* Content */}
       <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-6">
-        <h1 className="text-5xl md:text-8xl font-bold mb-6 animate-fade-in tracking-[-10px] ">
+        <h1 className="text-5xl md:text-8xl font-bold mb-6 animate-slide-up tracking-[-5px] md:tracking-[-10px] ">
           Share&nbsp;&nbsp;Your&nbsp;&nbsp;Distance
         </h1>
-        <p className="text-xl md:text-3xl mb-6 opacity-90 animate-slide-up italic">
+        <p className="text-xl md:text-3xl mb-6 opacity-90 animate-fade-in italic">
           End Your Year with Meaningful Steps
         </p>
 
-        <div className="mb-8 animate-slide-up">
-          <p className="text-sm md:text-base mb-2">December 27, 2025 at Gedung Sate, Bandung</p>
+        <div className="mb-8 animate-fade-in">
+          <p className="text-sm md:text-base mb-2">December 20, 2025 at Gedung Sate, Bandung</p>
         </div>
 
         {/* Countdown Timer */}
         {/* <div className="mb-8 animate-slide-up">
           <CountdownTimer targetDate="2025-12-27T06:00:00" />
         </div> */}
-
-
-
+        
       </div>
       {/* Scroll Indicator */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <div className="flex flex-col items-center cursor-pointer">
+        <button
+          onClick={() => handleSmoothScroll('#category')}
+          className="flex flex-col items-center cursor-pointer"
+        >
           <span className="text-sm mb-2 opacity-80">Scroll for explorer</span>
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
           </svg>
-        </div>
+        </button>
       </div>
     </section>
   );
