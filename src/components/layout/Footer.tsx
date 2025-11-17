@@ -13,7 +13,6 @@ export default function Footer() {
         <div className="grid md:grid-cols-4 gap-8">
           {/* Brand Column */}
           <div className="md:col-span-2">
-            {/* <Logo withText={true} size="md" className="mb-4" /> */}
             <div className=" text-3xl text-white font-bold mb-4 tracking-[-3px]">Share&nbsp;&nbsp;&nbsp;Your&nbsp;&nbsp;Distance</div>
             <p className="text-zinc-300 mb-4 max-w-md">
               Join us on December 20, 2025 for an unforgettable running experience.
