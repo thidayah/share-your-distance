@@ -20,7 +20,7 @@ export default function CategoryCard({ item, index }: CategoryCardProps) {
         }
                     animate-slide-up
                   `}
-      // style={{ animationDelay: `${index * 200}ms` }}
+    // style={{ animationDelay: `${index * 200}ms` }}
     >
       {/* Recommended Badge */}
       {item.recommended && (
@@ -68,21 +68,31 @@ export default function CategoryCard({ item, index }: CategoryCardProps) {
 
       {/* CTA Button */}
       <div className="text-center">
-        <Link href={`/register/${item.id}`}>
+        {(item.max_participants && item.current_participants >= item.max_participants) ?
           <Button
-            variant={item.recommended ? 'primary' : 'outline'}
+            variant={'outline'}
             size="md"
             fullWidth
-            className={`
-                          ${item.recommended
-                ? 'bg-zinc-700 hover:bg-zinc-600'
-                : 'border-zinc-200 text-zinc-200 hover:bg-zinc-100 hover:text-zinc-900'
-              }
-                        `}
+            disabled
+            className=" bg-red-400 border-red-400"
           >
-            Register Now
+            Closed
           </Button>
-        </Link>
+          :
+          <Link href={`/register/${item.id}`}>
+            <Button
+              variant={item.recommended ? 'primary' : 'outline'}
+              size="md"
+              fullWidth
+              className={`
+                ${item.recommended ? 'bg-zinc-700 hover:bg-zinc-600'
+                  : 'border-zinc-200 text-zinc-200 hover:bg-zinc-100 hover:text-zinc-900'
+                }`}
+            >
+              Register Now
+            </Button>
+          </Link>
+        }
       </div>
     </div>
   )
