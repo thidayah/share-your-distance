@@ -22,7 +22,7 @@ export const faqData: FAQItem[] = [
   {
     id: 3,
     question: "Can I change my race category after registering?",
-    answer: "Category changes are allowed until 2 weeks before the event, subject to availability and price differences. Contact us at hello@shareyourdistance.id for category change requests.",
+    answer: "Category changes are allowed until 2 weeks before the event, subject to availability and price differences. Contact us at hello@shareyourdistance.online for category change requests.",
     category: "Registration & Payment"
   },
 
