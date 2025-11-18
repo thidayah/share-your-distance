@@ -82,7 +82,7 @@ export const RegistrationConfirmation = ({
 
               {/* Footer */}
               <div className="mt-8 py-2 px-8 text-zinc-500" style={{ borderTop: '1px solid #d1d5dd' }}>
-                <Text className="text-sm"><strong>Need help?</strong> Contact us at <Link href="mailto:hello@shareyourdistance.id">hello@shareyourdistance.id</Link></Text>
+                <Text className="text-sm"><strong>Need help?</strong> Contact us at <Link href="mailto:hello@shareyourdistance.online">hello@shareyourdistance.online</Link></Text>
               </div>
               <div className=" px-8 text-zinc-500" >
                 <Text className=" text-sm ">This is an automated message. Please do not reply to this email.</Text>
@@ -138,7 +138,7 @@ export const RegistrationConfirmation = ({
   //             <p>Our team typically responds within <strong>24 hours</strong> during business days (Monday-Friday, 9AM-5PM WIB).</p>
   //           </div>
 
-  //           <p>In the meantime, you might find quick answers in our <a href="https://shareyourdistance.id/faq" style="color: #165dfd; text-decoration: none; font-weight: bold;">FAQ section</a>.</p>
+  //           <p>In the meantime, you might find quick answers in our <a href="https://shareyourdistance.online/faq" style="color: #165dfd; text-decoration: none; font-weight: bold;">FAQ section</a>.</p>
 
   //           <div class="footer">
   //             <p><strong>Best regards,</strong><br>

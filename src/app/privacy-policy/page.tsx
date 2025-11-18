@@ -162,7 +162,7 @@ export default function PrivacyPolicy() {
                     <strong>5.4 Objection:</strong> You may object to certain processing of your personal information.
                   </p>
                   <p>
-                    To exercise these rights, please contact us at hello@shareyourdistance.id.
+                    To exercise these rights, please contact us at hello@shareyourdistance.online.
                   </p>
                 </div>
               </section>
@@ -247,7 +247,7 @@ export default function PrivacyPolicy() {
                     If you have any questions about this Privacy Policy, please contact us:
                   </p>
                   <div className="bg-zinc-800/50 rounded-lg p-4">
-                    <p className="text-zinc-400">Email: hello@shareyourdistance.id</p>
+                    <p className="text-zinc-400">Email: hello@shareyourdistance.online</p>
                     <p className="text-zinc-400 mt-2">Phone: +62 123 4567 890</p>
                     <p className="text-zinc-400 text-sm mt-2">
                       For privacy-specific concerns, please include "Privacy Policy" in the subject line.
