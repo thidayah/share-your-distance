@@ -57,7 +57,7 @@ export default function RacePreferencesForm({ data, onChange }: RacePreferencesF
             <select
               value={data.runningExperience}
               onChange={(e) => onChange({ runningExperience: e.target.value })}
-              className=" focus:outline-none w-full"
+              className=" focus:outline-none w-full bg-zinc-800"
             >
               <option value="">Select your experience level</option>
               {experienceLevels.map(level => (

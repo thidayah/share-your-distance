@@ -132,7 +132,7 @@ export default function PersonalInfoForm({ data, onChange, category }: PersonalI
               required
               value={data.gender}
               onChange={(e) => onChange({ gender: e.target.value })}
-              className=" focus:outline-none w-full"
+              className=" focus:outline-none w-full bg-zinc-800"
             >
               <option value="">Select gender</option>
               <option value="male">Male</option>
@@ -151,7 +151,7 @@ export default function PersonalInfoForm({ data, onChange, category }: PersonalI
             required
             value={data.nationality}
             onChange={(e) => onChange({ nationality: e.target.value })}
-            className=" focus:outline-none w-full"
+            className=" focus:outline-none w-full bg-zinc-800"
           >
             <option value="Indonesian">Indonesian</option>
             <option value="Other">Other</option>

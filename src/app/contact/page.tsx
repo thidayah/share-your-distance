@@ -272,7 +272,8 @@ export default function ContactPage() {
                           required
                           value={formData.category}
                           onChange={handleChange}
-                          className=" focus:outline-none w-full"
+                          // className={`appearance-none`}
+                          className=" focus:outline-none w-full bg-zinc-800"
                         >
                           {inquiryCategories.map(category => (
                             <option key={category.value} value={category.value}>
