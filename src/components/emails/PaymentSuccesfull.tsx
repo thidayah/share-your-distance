@@ -103,7 +103,7 @@ export const PaymentSuccessful = ({
 
               {/* Footer */}
               <div className="mt-8 py-2 px-8 text-zinc-500" style={{ borderTop: '1px solid #d1d5dd' }}>
-                <Text className="text-sm">If you have any questions, please contact our support team <Link href="mailto:hello@shareyourdistance.id">hello@shareyourdistance.id</Link></Text>
+                <Text className="text-sm">If you have any questions, please contact our support team <Link href="mailto:hello@shareyourdistance.online">hello@shareyourdistance.online</Link></Text>
               </div>
               <div className=" px-8 text-zinc-500" >
                 <Text className=" text-sm ">See you at the starting line!</Text>

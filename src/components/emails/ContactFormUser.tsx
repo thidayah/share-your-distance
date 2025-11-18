@@ -82,7 +82,7 @@ export const ContactFormUser = ({
 
               {/* Faq */}
               <div className="mb-4 mx-8">
-                <Text className="text-sm">In the meantime, you might find quick answers in our <Link className="font-semibold" href="https://shareyourdistance.id/faq">FAQ section</Link>.</Text>
+                <Text className="text-sm">In the meantime, you might find quick answers in our <Link className="font-semibold" href="https://shareyourdistance.online/faq">FAQ section</Link>.</Text>
               </div>
 
               {/* Footer */}
@@ -145,7 +145,7 @@ export const ContactFormUser = ({
   //             <p>Our team typically responds within <strong>24 hours</strong> during business days (Monday-Friday, 9AM-5PM WIB).</p>
   //           </div>
 
-  //           <p>In the meantime, you might find quick answers in our <a href="https://shareyourdistance.id/faq" style="color: #165dfd; text-decoration: none; font-weight: bold;">FAQ section</a>.</p>
+  //           <p>In the meantime, you might find quick answers in our <a href="https://shareyourdistance.online/faq" style="color: #165dfd; text-decoration: none; font-weight: bold;">FAQ section</a>.</p>
 
   //           <div class="footer">
   //             <p><strong>Best regards,</strong><br>
