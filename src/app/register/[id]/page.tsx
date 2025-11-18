@@ -183,11 +183,9 @@ export default function RegistrationPage() {
 
         // 4. Redirect to payment page
         setTimeout(() => {
-          // window.location.href = `/payment/${result.data.id}`;
-          // window.location.replace = result.payment_url;
-          window.location.replace(result.payment_url)
-          // window.location.assign(result.payment_url)
-        }, 1500);
+          // window.location.replace(result?.payment?.redirect_url)
+          window.location.assign(result?.payment?.redirect_url)
+        }, 500);
 
       } catch (error) {
         // console.error('Registration submission error:', error);
