@@ -184,7 +184,7 @@ export default function TermsOfService() {
                     If you have any questions about these Terms, please contact us at:
                   </p>
                   <div className="bg-zinc-800/50 rounded-lg p-4">
-                    <p className="text-primary-400">hello@shareyourdistance.id</p>
+                    <p className="text-primary-400">hello@shareyourdistance.online</p>
                     <p className="text-primary-400 mt-2">+62 123 4567 890</p>
                     <p className="text-zinc-400 text-sm mt-2">We typically respond within 24 hours.</p>
                   </div>
