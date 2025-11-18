@@ -1,4 +1,4 @@
-import { raceCategories } from "@/data/raceCategories";
+// import { raceCategories } from "@/data/raceCategories";
 import { categoryService } from "@/lib/supabase/service/categories/services";
 import CategoryCard from "../ui/CategoryCard";
 
