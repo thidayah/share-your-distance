@@ -1,7 +1,6 @@
 // src/components/layout/Footer.tsx
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
-import Logo from '../ui/Logo';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -70,7 +69,7 @@ export default function Footer() {
             <ul className="space-y-3 text-zinc-300">
               <li className="flex items-center">
                 <Icon icon="mdi:email-outline" className="w-5 h-5 mr-3" />
-                <span>hello@shareyourdistance.id</span>
+                <span>hello@shareyourdistance.online</span>
               </li>
               <li className="flex items-center">
                 <Icon icon="mdi:phone-outline" className="w-5 h-5 mr-3" />
