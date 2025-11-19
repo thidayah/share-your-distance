@@ -135,3 +135,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ status: false, message: 'Webhook processing failed', error }, { status: 500 });
   }
 }
+
+export async function GET() {
+  return NextResponse.json({ status: true, message: 'Ok' });
+}
