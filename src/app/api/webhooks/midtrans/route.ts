@@ -6,13 +6,13 @@ import { supabaseServer } from "@/lib/supabase/server-client";
 import { registrationService } from "@/lib/email/registration-service";
 
 // Verify Midtrans signature (optional but recommended)
-// function verifySignature(signature: string, orderId: string, statusCode: string, grossAmount: string, serverKey: string): boolean {
-//   const hash = crypto.createHash('sha512')
-//     .update(orderId + statusCode + grossAmount + serverKey)
-//     .digest('hex');
-//   // return hash === signature;
-//   return true;
-// }
+function verifySignature(signature: string, orderId: string, statusCode: string, grossAmount: string, serverKey: string): boolean {
+  const hash = crypto
+    .createHash('sha512')
+    .update(orderId + statusCode + grossAmount + serverKey)
+    .digest('hex');
+  return hash === signature;
+}
 
 // {
 //   "transaction_time": "2023-11-15 18:45:13", 
@@ -51,21 +51,43 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const {
-      order_id,           // registration_number (REG-SYD25-0001-timestamp)
-      transaction_status, // 'capture', 'settlement', 'pending', 'deny', 'cancel', 'expire'
-      fraud_status,       // 'accept', 'challenge', 'deny'
-      status_code,        // '200' untuk sukses
-      gross_amount,       // total pembayaran
-      payment_type,       // 'bank_transfer', 'credit_card', 'gopay', dll
-      transaction_time,   // timestamp
+      order_id,
+      transaction_status,
+      fraud_status,
+      status_code,
+      gross_amount,
+      payment_type,
+      transaction_time,
+      signature_key
     } = body;
 
     // Verify signature (optional - comment out if causing issues during testing)
-    const signature = request.headers.get('x-signature');
+
+    // const signature = request.headers.get('x-signature');
     // if (signature && !verifySignature(signature, order_id, status_code, gross_amount, process.env.MIDTRANS_SERVER_KEY!)) {
     //   console.error('Invalid webhook signature');
     //   return NextResponse.json({ status: false, message: 'Invalid signature' }, { status: 401 });
     // }
+
+    const isProd = process.env.MIDTRANS_IS_PRODUCTION === "true";
+
+    // Signature check ONLY on Production
+    if (isProd) {
+      const valid = verifySignature(
+        signature_key,
+        order_id,
+        status_code,
+        gross_amount,
+        process.env.MIDTRANS_SERVER_KEY!
+      );
+
+      if (!valid) {
+        console.error("Invalid signature from Midtrans");
+        return NextResponse.json({ status: false, message: 'Invalid signature' }, { status: 401 });
+      }
+    } else {
+      console.log("Signature verification skipped (development mode)");
+    }
 
     // Extract registration ID from order_id (format: REG-{registrationNumber}-{timestamp})
     const registrationNumber = order_id.split('-')[1] + '-' + order_id.split('-')[2];
@@ -127,7 +149,7 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (updateStatusError) {
-      // console.error('Database update error:', updateStatusError);
+      console.error('Database update error:', updateStatusError);
       return NextResponse.json({ status: false, message: 'Failed to update registration status', error: updateStatusError }, { status: 500 });
     }
 
