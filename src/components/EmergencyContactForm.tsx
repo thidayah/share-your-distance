@@ -70,7 +70,7 @@ export default function EmergencyContactForm({ data, onChange }: EmergencyContac
                   required
                   value={data.contactRelationship}
                   onChange={(e) => onChange({ contactRelationship: e.target.value })}
-                  className=" focus:outline-none w-full"
+                  className=" focus:outline-none w-full bg-zinc-800"
                 >
                   <option value="">Select relationship</option>
                   {relationships.map(relationship => (

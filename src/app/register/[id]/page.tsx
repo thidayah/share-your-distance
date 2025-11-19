@@ -98,7 +98,7 @@ export default function RegistrationPage() {
     if (currentIndex === 0) {
       const msgs = validateFormPersonal();
       if (msgs.length > 0) {
-        // return msgs.forEach((msg) => toast.warning(msg));
+        return msgs.forEach((msg) => toast.warning(msg));
       }
     } else if (currentIndex === 1) {
       if (!formData.preferences.tshirtSize) return toast.warning('T-shirt Size required!')
