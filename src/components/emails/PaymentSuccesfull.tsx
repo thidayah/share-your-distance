@@ -51,7 +51,7 @@ export const PaymentSuccessful = ({
               <Heading className="text-4xl font-bold mt-12 ml-10 tracking-[-3px]">
                 Payment&nbsp;&nbsp;Confirmed
               </Heading>
-              <Text className="text-sm opacity-80 mb-12 ml-10">
+              <Text className="text-sm opacity-80 pb-8 pl-10">
                 Your payment has been successfully processed!
               </Text>
             </Section>
