@@ -29,7 +29,7 @@ export const registrationService = {
   async sendRegistrationConfirmation(item: RegistrationConfirmationProps) {
     try {
       const { data, error } = await resend.emails.send({
-        from: 'Share Your Distance <onboarding@resend.dev>',
+        from: `Share Your Distance Contact <${process.env.RESEND_FROM}>`,
         to: [item.email],
         subject: `Registration Confirmation - ${item.registration_number}`,
         react: RegistrationConfirmation(item),
@@ -45,7 +45,7 @@ export const registrationService = {
   async sendPaymentSuccess(item: PaymentSuccessProps) {
     try {
       const { data, error } = await resend.emails.send({
-        from: 'Share Your Distance <onboarding@resend.dev>',
+        from: `Share Your Distance Contact <${process.env.RESEND_FROM}>`,
         to: item.email,
         subject: `Payment Successful - ${item.registration_number}`,
         react: PaymentSuccessful(item),

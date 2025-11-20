@@ -39,7 +39,7 @@ export const RegistrationConfirmation = ({
               <Heading className="text-4xl font-bold mt-12 ml-10 tracking-[-3px]">
                 Share&nbsp;&nbsp;Your&nbsp;&nbsp;Distance
               </Heading>
-              <Text className="text-sm opacity-80 mb-12 ml-10">
+              <Text className="text-sm opacity-80 pb-8 pl-10">
                 Registration Received!
               </Text>
             </Section>

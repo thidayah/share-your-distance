@@ -49,7 +49,7 @@ export const ContactFormAdmin = ({
               <Heading className="text-4xl font-bold mb-1 mt-12 ml-10 tracking-[-3px]">
                 New&nbsp;&nbsp;Contact&nbsp;&nbsp;Message
               </Heading>
-              <Text className="text-sm opacity-80 mb-12 ml-10">
+              <Text className="text-sm opacity-80 pb-8 pl-10">
                 Share Your Distance Contact Form
               </Text>
             </Section>
