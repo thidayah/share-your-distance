@@ -165,7 +165,6 @@ export async function POST(request: NextRequest) {
       {
         status: false,
         message: 'Failed to create registration, Please try again or contact support if the problem persists.',
-        error
       },
       { status: 500 }
     );

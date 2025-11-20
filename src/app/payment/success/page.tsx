@@ -29,8 +29,8 @@ export default function PaymentSuccessPage({ searchParams }: { searchParams: Pro
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          // window.location.href = '/';
-          router.push('/')
+          window.location.href = '/';
+          // router.push('/')
           return 0;
         }
         return prev - 1;
