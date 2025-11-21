@@ -51,13 +51,15 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const {
+      transaction_id,
       order_id,
-      transaction_status,
-      fraud_status,
       status_code,
-      gross_amount,
-      payment_type,
+      transaction_status,
       transaction_time,
+      payment_type,
+      gross_amount,
+      currency,
+      fraud_status,
       signature_key
     } = body;
 
@@ -142,7 +144,6 @@ export async function POST(request: NextRequest) {
         // Generate bib number
         bib_number: payment_status === 'paid' ? bibNumber : null,
         bib_assigned_at: payment_status === 'paid' ? new Date().toISOString() : null,
-        gateway_response: body, // simpan full response untuk debugging
       })
       .eq('registration_number', registrationNumber)
       .select('*')
@@ -151,6 +152,27 @@ export async function POST(request: NextRequest) {
     if (updateStatusError) {
       console.error('Database update error:', updateStatusError);
       return NextResponse.json({ status: false, message: 'Failed to update registration status', error: updateStatusError }, { status: 500 });
+    }
+
+    // Add transaction history
+    const { data: historyData, error: historyError } = await supabaseServer
+      .from('transactions_history')
+      .insert({
+        registration_id: dataRegistration.id,
+        external_transaction_id: transaction_id,
+        status: transaction_status,
+        time: new Date(transaction_time).toISOString(),
+        payment_type: payment_type,
+        amount: parseFloat(gross_amount),
+        currency: currency,
+        gateway_response: body, // save full response for debugging
+      })
+      .select('*')
+      .single();
+
+    if (historyError) {
+      console.error('Database insert error:', historyError);
+      return NextResponse.json({ status: false, message: 'Failed to insert transactions history', error: historyError }, { status: 500 });
     }
 
     // Update current participants
@@ -184,7 +206,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ status: true, message: 'Webhook processed', body, data: updateStatusData }, { status: 200 });
+    return NextResponse.json({ status: true, message: 'Webhook processed', body, data: updateStatusData, history: historyData }, { status: 200 });
   } catch (error) {
     console.error('Webhook processing error:', error);
     return NextResponse.json({ status: false, message: 'Webhook processing failed', error }, { status: 500 });
