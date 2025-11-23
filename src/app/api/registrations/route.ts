@@ -8,6 +8,10 @@ import { createSnapTransaction } from "@/lib/midtrans/client";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const forwardedFor = request.headers.get('x-forwarded-for');
+    const ip_address = forwardedFor
+      ? forwardedFor.split(',')[0].trim()
+      : request.headers.get('x-real-ip') || '0.0.0.0';
 
     // Validate required fields
     const requiredFields = [
@@ -78,6 +82,7 @@ export async function POST(request: NextRequest) {
         ...body,
         registration_number: registrationNumber,
         payment_status: 'pending',
+        ip_address: ip_address,
       }])
       .select(`
         id,
@@ -165,7 +170,6 @@ export async function POST(request: NextRequest) {
       {
         status: false,
         message: 'Failed to create registration, Please try again or contact support if the problem persists.',
-        error
       },
       { status: 500 }
     );
