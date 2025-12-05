@@ -22,7 +22,7 @@ interface ContactMessagesTableProps {
   messages: ContactMessage[]
   pagination: Pagination
   onPageChange: (page: number) => void
-  onEdit: (category: ContactMessage) => void
+  // onEdit: (category: ContactMessage) => void
   onDelete: (id: string) => void
   loading: boolean
 }
@@ -31,7 +31,7 @@ export default function ContactMessagesTable({
   messages,
   pagination,
   onPageChange,
-  onEdit,
+  // onEdit,
   onDelete,
   loading
 }: ContactMessagesTableProps) {
