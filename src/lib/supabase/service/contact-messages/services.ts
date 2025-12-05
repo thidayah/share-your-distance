@@ -1,4 +1,3 @@
-import { supabase } from "../../client";
 import { supabaseServer } from "../../server-client";
 import { contactMessagesQueries } from './queries';
 import { ContactMessagesCreate, ContactMessagesUpdate } from './types';
@@ -10,6 +9,40 @@ export const contactMessagesService = {
     if (error) throw error;
     return data;
   },
+
+  async getAllPagination(filters: {page?: number, limit?: number } = {}) {
+      const { page = 1, limit = 10 } = filters;
+  
+      // Query untuk count
+      let countQuery = supabaseServer
+        .from('contact_messages')
+        .select('*', { count: 'exact', head: true });
+  
+      // Query untuk data dengan join
+      let dataQuery = supabaseServer
+        .from('contact_messages')
+        .select(`*`)
+        .order('created_at', { ascending: false });
+  
+      // Get count
+      const { count, error: countError } = await countQuery;
+      if (countError) throw countError;
+  
+      // Apply pagination untuk data query
+      const from = (page - 1) * limit;
+      const to = from + limit - 1;
+  
+      const { data, error: dataError } = await dataQuery.range(from, to);
+      if (dataError) throw dataError;
+  
+      return {
+        items: data as ContactMessagesCreate[],
+        total: count || 0,
+        page,
+        limit,
+        totalPages: Math.ceil((count || 0) / limit)
+      };
+    },
 
   async getById(id: string) {
     const { data, error } = await contactMessagesQueries.getById(id);

@@ -13,6 +13,7 @@ import Template from "@/components/layout/Template";
 import Loading from "@/components/ui/Loading";
 import { categoryService } from "@/lib/supabase/service/categories/services";
 import { TypesCategory } from "@/types/database";
+import { supabase } from "@/lib/supabase/client";
 
 type FormStep = 'personal' | 'preferences' | 'emergency' | 'summary';
 
@@ -51,8 +52,18 @@ export default function RegistrationPage() {
   useEffect(() => {
     (async () => {
       try {
-        const data = await categoryService.getById(categoryId);
-        // console.log({data});        
+        // const data = await categoryService.getById(categoryId);
+        const { data } = await supabase
+          .from('categories')
+          .select(`
+                *,
+                category_features (
+                  feature,
+                  display_order
+                )
+              `)
+          .eq('id', categoryId)
+          .single();
         setCategory(data)
         setTimeout(() => {
           setLoading(false)
