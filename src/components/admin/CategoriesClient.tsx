@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { CategoryCreate } from '@/lib/supabase/service/categories/types'
 import CategoriesTable from './CategoriesTable'
 import CategoryModal from './CategoryModal'
@@ -28,19 +28,42 @@ interface Category {
   category_features: CategoryFeature[]
 }
 
-interface CategoriesClientProps {
-  initialCategories: Category[]
-}
+// interface CategoriesClientProps {
+//   initialCategories: Category[]
+// }
 
-export default function CategoriesClient({ initialCategories }: CategoriesClientProps) {
-  const [categories, setCategories] = useState<Category[]>(initialCategories)
+// export default function CategoriesClient({ initialCategories }: CategoriesClientProps) {
+  // const [categories, setCategories] = useState<Category[]>(initialCategories)
+export default function CategoriesClient() {
+  const [categories, setCategories] = useState<Category[]>([])  
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
   const [loading, setLoading] = useState(false)
+  const [action, setAction] = useState(false)
+
+  const fetchCategories = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch(`/api/admin/categories`)
+      const result = await response.json()
+      if (response.ok) {
+        setCategories(result.data || [])
+        // setCategories([])
+      }
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchCategories()
+  }, [])  
 
   // Create new category via API
   const handleCreate = async (categoryData: CategoryCreate, features: string[]) => {
-    setLoading(true)
+    setAction(true)
     try {
       const response = await fetch('/api/admin/categories', {
         method: 'POST',
@@ -65,13 +88,13 @@ export default function CategoriesClient({ initialCategories }: CategoriesClient
       console.error('Error creating:', error)
       toast.error(error.message || 'Error creating')
     } finally {
-      setLoading(false)
+      setAction(false)
     }
   }
 
   // Update category via API
   const handleUpdate = async (id: string, updates: Partial<CategoryCreate>, features: string[]) => {
-    setLoading(true)
+    setAction(true)
     try {
       const response = await fetch(`/api/admin/categories/${id}`, {
         method: 'PUT',
@@ -98,14 +121,14 @@ export default function CategoriesClient({ initialCategories }: CategoriesClient
       console.error('Error updating:', error)
       toast.error(error.message || 'Error updating')
     } finally {
-      setLoading(false)
+      setAction(false)
     }
   }
 
   // Delete category via API
   const handleDelete = async (id: string) => {
     if (!confirm('Are you sure you want to delete this item?')) return
-    setLoading(true)
+    setAction(true)
     try {
       const response = await fetch(`/api/admin/categories/${id}`, {
         method: 'DELETE',
@@ -124,7 +147,7 @@ export default function CategoriesClient({ initialCategories }: CategoriesClient
       console.error('Error deleting:', error)
       toast.error(error.message || 'Error deleting')
     } finally {
-      setLoading(false)
+      setAction(false)
     }
   }
 
@@ -200,7 +223,7 @@ export default function CategoriesClient({ initialCategories }: CategoriesClient
             handleCreate
           }
           onClose={closeModal}
-          loading={loading}
+          loading={action}
         />
       )}
     </div>

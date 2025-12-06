@@ -4,25 +4,24 @@ import AdminTemplate from "@/components/admin/AdminTemplate"
 
 export default async function CategoriesPage() {
   // Fetch categories data on server
-  const getCategories = async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/admin/categories`, {
-        cache: 'no-store'
-      })
-      const result = await response.json()      
-      return result.data || []
-    } catch (error) {
-      console.error('Error fetching categories:', error)
-      return []
-    }
-  }  
+  // const getCategories = async () => {
+  //   try {
+  //     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/admin/categories`, {
+  //       next: { revalidate: 60 }, // cache for 1 minute
+  //     })
+  //     const result = await response.json()      
+  //     return result.data || []
+  //   } catch (error) {
+  //     console.error('Error fetching categories:', error)
+  //     return []
+  //   }
+  // }  
 
-  const categories = await getCategories()
-  // const categories = await categoryService.getAll()
-
+  // const categories = await getCategories()
   return (
     <AdminTemplate>
-      <CategoriesClient initialCategories={categories || []} />
+      {/* <CategoriesClient initialCategories={categories || []} /> */}
+      <CategoriesClient/>
     </AdminTemplate>
   )
 }
