@@ -7,7 +7,7 @@ export default async function CategoriesPage() {
   const getCategories = async () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/admin/categories`, {
-        cache: 'no-store'
+        next: { revalidate: 60 }, // cache for 1 minute
       })
       const result = await response.json()      
       return result.data || []
@@ -19,7 +19,6 @@ export default async function CategoriesPage() {
 
   const categories = await getCategories()
   // const categories = await categoryService.getAll()
-
   return (
     <AdminTemplate>
       <CategoriesClient initialCategories={categories || []} />
