@@ -22,7 +22,7 @@ export default function AdminLogin() {
       } finally {
         setTimeout(() => {          
           setLoading(false)
-        }, 250);
+        }, 350);
       }
     })();
   }, []);  
