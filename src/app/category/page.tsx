@@ -3,8 +3,7 @@ import Template from "@/components/layout/Template";
 import CategoryCard from "@/components/ui/CategoryCard";
 
 export default async function CategoryPage() {
-  const categories = await categoryService.getAll()
-  // console.log({ categories });
+  const categories = await categoryService.getActive()
   return (
     <Template>
       <div className="min-h-screen bg-gradient-to-b from-zinc-800 to-zinc-950 py-24">
@@ -20,7 +19,8 @@ export default async function CategoryPage() {
           </div>
 
           {/* Categories Grid - Sama dengan homepage */}
-          <div className="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto mb-16">
+          {/* <div className="grid lg:grid-cols-3 gap-8 max-w-7xl mx-auto mb-16"> */}
+          <div className="flex justify-center gap-8 max-w-7xl mx-auto mb-16">
             {categories.map((category, index) => (
               <CategoryCard key={index} item={category} index={index} />
             ))}
@@ -32,7 +32,7 @@ export default async function CategoryPage() {
               All participants receive exclusive event merchandise and digital memorabilia
             </p>
             <p className="text-sm text-zinc-500">
-              Early bird discounts available until November 30, 2025
+              Early bird discounts available until December 13, 2025
             </p>
           </div>
 

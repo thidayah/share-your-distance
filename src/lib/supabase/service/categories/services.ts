@@ -12,6 +12,12 @@ export const categoryService = {
     return data;
   },
 
+  async getActive() {
+    const { data, error } = await categoryQueries.getActive();
+    if (error) throw error;
+    return data;
+  },
+
   async getById(id: string) {
     const { data, error } = await categoryQueries.getById(id);
     if (error) throw error;

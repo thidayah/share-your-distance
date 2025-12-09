@@ -19,6 +19,7 @@ interface Category {
   distance: string
   image_url?: string
   recommended?: boolean
+  is_active?: boolean
   max_participants?: number
   current_participants?: number
   min_age?: number

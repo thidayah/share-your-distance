@@ -14,6 +14,19 @@ export const categoryQueries = {
       `)
       .order('display_order'),
 
+  getActive: () =>
+    supabase
+      .from('categories')
+      .select(`
+        *,
+        category_features (
+          feature,
+          display_order
+        )
+      `)
+      .eq('is_active', true)
+      .order('display_order'),
+
   getById: (id: string) =>
     supabase
       .from('categories')
