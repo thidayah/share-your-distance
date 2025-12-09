@@ -56,10 +56,10 @@ export default function PartnersSection() {
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-zinc-100 mb-6">
+          <h2 className="text-3xl md:text-5xl font-bold text-zinc-100 mb-6">
             Our Suppports
           </h2>
-          <p className="text-lg text-zinc-100">
+          <p className="text-xs md:text-lg text-zinc-100">
             Brought to you by leading organizations in the running community,
             supported by trusted brands that share our passion for sports and wellness.
           </p>
@@ -76,7 +76,7 @@ export default function PartnersSection() {
                 key={organizer.name}
                 className="group relative"
               >
-                <div className="text-zinc-300 font-semibold transition-colors text-5xl italic group-hover:text-zinc-100 duration-100 tracking-[-4px] underline underline-offset-2">
+                <div className="text-zinc-300 font-semibold transition-colors text-2xl md:text-5xl italic group-hover:text-zinc-100 duration-100 tracking-[-2px] md:tracking-[-4px] underline underline-offset-2">
                   {organizer.name}
                 </div>
               </div>

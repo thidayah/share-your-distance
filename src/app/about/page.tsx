@@ -65,7 +65,7 @@ export default function AboutPage() {
                     </p>
                     <p>
                       We're not just about who finishes first. We're about celebrating <strong>every finish</strong>.
-                      The first-time runner conquering 5K. The relay team supporting each other. The endurance seeker pushing their limits.
+                      The first-time runner conquering kilometers. The relay team supporting each other. The endurance seeker pushing their limits.
                     </p>
                     <p>
                       This isn't just another race. It's your year-end celebration. Your story of perseverance.
@@ -121,11 +121,11 @@ export default function AboutPage() {
             <section className="text-center">
               <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
                 <div>
-                  <div className="text-3xl font-bold text-zinc-100 mb-2">500+</div>
+                  <div className="text-3xl font-bold text-zinc-100 mb-2">100+</div>
                   <div className="text-zinc-400 text-sm">Expected Runners</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-zinc-100 mb-2">3</div>
+                  <div className="text-3xl font-bold text-zinc-100 mb-2">1</div>
                   <div className="text-zinc-400 text-sm">Race Categories</div>
                 </div>
                 <div>
@@ -141,7 +141,7 @@ export default function AboutPage() {
                 Ready to Share Your Distance?
               </h2>
               <p className="text-zinc-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-                Join hundreds of runners on December 20, 2025 at Gedung Sate.
+                Join hundreds of runners on December 20, 2025 at Arei Flagship Store.
                 Whether you're chasing a personal best or simply want to be part of something special,
                 there's a place for you here.
               </p>

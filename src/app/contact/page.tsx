@@ -84,8 +84,8 @@ export default function ContactPage() {
       icon: 'mdi:phone',
       title: 'Call Us',
       description: 'Mon-Fri from 9am to 5pm',
-      details: '+62 123 4567 890',
-      link: 'tel:+621234567890',
+      details: '+62 851 8308 1136',
+      link: 'tel:+6285183081136',
       color: 'text-zinc-400'
     },
     // {
@@ -115,9 +115,9 @@ export default function ContactPage() {
   ];
 
   const socialMedia = [
-    { icon: 'mdi:whatsapp', label: 'Instagram', url: '#' },
-    { icon: 'mdi:instagram', label: 'Instagram', url: '#' },
-    { icon: 'mdi:twitter', label: 'Twitter', url: '#' },
+    { icon: 'mdi:whatsapp', label: 'Instagram', url: 'https://wa.me/6285183081136?text=Halo%20*Share%20Your%20Distance*,%20saya%20mau%20bertanya' },
+    { icon: 'mdi:instagram', label: 'Instagram', url: 'https://www.instagram.com/sobatsabtu' },
+    { icon: 'mdi:twitter', label: 'Twitter', url: 'https://www.x.com/sobatsabtu' },
     // { icon: 'mdi:facebook', label: 'Facebook', url: '#' },
     // { icon: 'mdi:youtube', label: 'YouTube', url: '#' }
   ]

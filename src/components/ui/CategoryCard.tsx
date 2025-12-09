@@ -13,7 +13,8 @@ export default function CategoryCard({ item, index }: CategoryCardProps) {
     <div
       key={item.id}
       className={`
-                    relative p-8 transition-all duration-500 hover:scale-105
+                  max-w-[350px]  
+                  relative p-8 transition-all duration-500 hover:scale-105
                     ${item.recommended
           ? 'border-zinc-500 bg-zinc-800 shadow-xl'
           : 'border-neutral-200 bg-zinc-900 shadow-lg hover:shadow-xl'
@@ -33,10 +34,10 @@ export default function CategoryCard({ item, index }: CategoryCardProps) {
 
       {/* Category Header */}
       <div className="text-center mb-8">
-        <h3 className={`text-2xl font-bold mb-4`}>
+        <h3 className={` text-lg md:text-2xl font-bold mb-4`}>
           {item.name}
         </h3>
-        <div className={`text-3xl font-bold mb-2`}>
+        <div className={`text-2xl md:text-3xl font-bold mb-2`}>
           IDR {item.price.toLocaleString()}
           <span className="text-sm font-normal text-zinc-400 block">
             {item.id === 'estafet-200m' ? 'per team' : 'per person'}
@@ -45,7 +46,7 @@ export default function CategoryCard({ item, index }: CategoryCardProps) {
       </div>
 
       {/* Description */}
-      <p className=" mb-8 text-center">
+      <p className="text-sm md:text-base mb-8 text-center">
         {item.description}
       </p>
 
@@ -61,7 +62,7 @@ export default function CategoryCard({ item, index }: CategoryCardProps) {
             >
               <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
             </svg>
-            <span className="">{feat?.feature}</span>
+            <span className="text-sm md:text-base">{feat?.feature}</span>
           </li>
         ))}
       </ul>

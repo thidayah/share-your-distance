@@ -30,7 +30,7 @@ export const faqData: FAQItem[] = [
   {
     id: 4,
     question: "Where and when is race pack collection?",
-    answer: "Race pack collection will be at Gedung Sate on December 19, 2025 (1 day before the event) from 10:00 AM to 6:00 PM. Please bring your registration confirmation and ID for verification.",
+    answer: "Race pack collection will be at Arei Flagship Store on December 20, 2025 (1 day before the event) from 10:00 AM to 6:00 PM. Please bring your registration confirmation and ID for verification.",
     category: "Event Day Information"
   },
   {
