@@ -16,6 +16,7 @@ interface Category {
   distance: string
   image_url?: string
   recommended?: boolean
+  is_active?: boolean
   max_participants?: number
   min_age?: number
   max_age?: number
@@ -31,11 +32,11 @@ interface CategoryModalProps {
   loading: boolean
 }
 
-export default function CategoryModal({ 
-  category, 
-  onSubmit, 
-  onClose, 
-  loading 
+export default function CategoryModal({
+  category,
+  onSubmit,
+  onClose,
+  loading
 }: CategoryModalProps) {
   const [formData, setFormData] = useState({
     name: '',
@@ -44,6 +45,7 @@ export default function CategoryModal({
     distance: '',
     image_url: '',
     recommended: false,
+    is_active: false,
     max_participants: 0,
     min_age: 0,
     max_age: 0,
@@ -61,13 +63,14 @@ export default function CategoryModal({
         distance: category.distance,
         image_url: category.image_url || '',
         recommended: category.recommended || false,
+        is_active: category.is_active || false,
         max_participants: category.max_participants || 0,
         min_age: category.min_age || 0,
         max_age: category.max_age || 0,
         health_warning: category.health_warning || '',
       })
       setFeatures(
-        category.category_features.length > 0 
+        category.category_features.length > 0
           ? category.category_features.map(f => f.feature)
           : ['']
       )
@@ -76,10 +79,10 @@ export default function CategoryModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     // Filter out empty features
     const nonEmptyFeatures = features.filter(feature => feature.trim() !== '')
-    
+
     onSubmit(formData, nonEmptyFeatures)
   }
 
@@ -225,17 +228,32 @@ export default function CategoryModal({
             />
           </div>
 
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="recommended"
-              checked={formData.recommended}
-              onChange={(e) => setFormData(prev => ({ ...prev, recommended: e.target.checked }))}
-              className="h-4 w-4 text-zinc-600 focus:ring-zinc-500 border-zinc-300 rounded"
-            />
-            <label htmlFor="recommended" className="ml-2 block text-sm text-zinc-700">
-              Mark as recommended
-            </label>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="recommended"
+                checked={formData.recommended}
+                onChange={(e) => setFormData(prev => ({ ...prev, recommended: e.target.checked }))}
+                className="h-4 w-4 text-zinc-600 focus:ring-zinc-500 border-zinc-300 rounded"
+              />
+              <label htmlFor="recommended" className="ml-2 block text-sm text-zinc-700">
+                Mark as recommended
+              </label>
+            </div>
+
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="is_active"
+                checked={formData.is_active}
+                onChange={(e) => setFormData(prev => ({ ...prev, is_active: e.target.checked }))}
+                className="h-4 w-4 text-zinc-600 focus:ring-zinc-500 border-zinc-300 rounded"
+              />
+              <label htmlFor="is_active" className="ml-2 block text-sm text-zinc-700">
+                Active
+              </label>
+            </div>
           </div>
 
           <div>
