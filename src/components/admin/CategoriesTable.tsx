@@ -13,6 +13,7 @@ interface Category {
   distance: string
   image_url?: string
   recommended?: boolean
+  is_active?: boolean
   max_participants?: number
   current_participants?: number
   min_age?: number
@@ -76,6 +77,9 @@ export default function CategoriesTable({
                 Status
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
+                Show
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
                 Actions
               </th>
             </tr>
@@ -136,6 +140,18 @@ export default function CategoriesTable({
                     {(category.current_participants || 0) < (category.max_participants || Infinity) 
                       ? 'Available' 
                       : 'Full'
+                    }
+                  </span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    category.is_active
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-red-100 text-red-800'
+                  }`}>
+                    {category.is_active 
+                      ? 'Active' 
+                      : 'Inactive'
                     }
                   </span>
                 </td>
