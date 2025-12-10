@@ -7,6 +7,7 @@ import { TypesCategory } from "@/types/database";
 
 interface FormData {
   personal: any;
+  preferences: any;
   emergency: any;
 }
 
@@ -28,7 +29,7 @@ export default function RegistrationSummary({ data, category, isCheck, onCheck, 
 
   return (
     <div>
-      <h2 className="text-xl md:text-2xl font-bold text-white mb-6">Registration Summary</h2>
+      <h2 className="text-2xl font-bold text-white mb-6">Registration Summary</h2>
 
       <div className="space-y-6">
         {/* Race Category Summary */}
@@ -36,16 +37,16 @@ export default function RegistrationSummary({ data, category, isCheck, onCheck, 
           <h3 className="text-lg font-semibold text-blue-400 mb-3">Race Category</h3>
           <div className="flex flex-col md:flex-row space-y-4 justify-between items-start">
             <div>
-              <h4 className="text-white font-bold md:text-xl">{category?.name}</h4>
+              <h4 className="text-white font-bold text-xl">{category?.name}</h4>
               <p className="text-blue-200 mt-2">{category?.distance}</p>
-              <ul className="text-blue-200 text-xs md:text-sm mt-2 space-y-1">
+              <ul className="text-blue-200 text-sm mt-2 space-y-1">
                 {category?.category_features?.map((f, index) => (
                   <li key={index}>• {f.feature}</li>
                 ))}
               </ul>
             </div>
             <div className="text-right">
-              <div className="text-xl md:text-2xl font-bold text-white">
+              <div className="text-2xl font-bold text-white">
                 IDR {category?.price.toLocaleString()}
               </div>
               {/* <button
@@ -60,7 +61,7 @@ export default function RegistrationSummary({ data, category, isCheck, onCheck, 
 
         {/* Personal Information Summary */}
         <div className="border border-zinc-700 p-4 md:p-6">
-          <h3 className="md:text-lg font-semibold text-white mb-4 flex items-center">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
             <Icon icon="mdi:account-outline" className="w-5 h-5 mr-2" />
             Personal Information
           </h3>
@@ -85,18 +86,42 @@ export default function RegistrationSummary({ data, category, isCheck, onCheck, 
             </div>
             <div>
               <span className="text-zinc-300">Gender:</span>
-              <p className="text-white font-medium capitalize">{data.personal.gender || '-'}</p>
+              <p className="text-white font-medium">{data.personal.gender || '-'}</p>
             </div>
             <div>
-              <span className="text-zinc-300">Instagram:</span>
-              <p className="text-white font-medium">{data.personal.instagram || '-'}</p>
+              <span className="text-zinc-300">ID Number:</span>
+              <p className="text-white font-medium">{data.personal.idNumber || '-'}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Race Preferences Summary */}
+        <div className="border border-zinc-700 p-4 md:p-6">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
+            <Icon icon="mdi:run-fast" className="w-5 h-5 mr-2" />
+            Race Preferences
+          </h3>
+          <div className="grid md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <span className="text-zinc-300">T-shirt Size:</span>
+              <p className="text-white font-medium">{data.preferences.tshirtSize || '-'}</p>
+            </div>
+            <div>
+              <span className="text-zinc-300">Experience Level:</span>
+              <p className="text-white font-medium">{data.preferences.runningExperience || '-'}</p>
+            </div>
+            <div className="md:col-span-2">
+              <span className="text-zinc-300">Special Requirements:</span>
+              <p className="text-white font-medium">
+                {data.preferences.specialRequirements || 'None'}
+              </p>
             </div>
           </div>
         </div>
 
         {/* Emergency Contact Summary */}
         <div className="border border-zinc-700 p-4 md:p-6">
-          <h3 className="md:text-lg font-semibold text-white mb-4 flex items-center">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
             <Icon icon="mdi:card-account-phone" className="w-5 h-5 mr-2" />
             Emergency Contact
           </h3>
@@ -119,12 +144,18 @@ export default function RegistrationSummary({ data, category, isCheck, onCheck, 
                 {data.emergency.medicalConditions || 'None declared'}
               </p>
             </div>
+            <div className="md:col-span-2">
+              <span className="text-zinc-300">Allergies:</span>
+              <p className="text-white font-medium">
+                {data.emergency.allergies || 'None declared'}
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Terms and Conditions */}
         <div className="bg-zinc-800 p-4 md:p-6">
-          <h3 className="md:text-lg font-semibold text-white mb-4">Terms & Conditions</h3>
+          <h3 className="text-lg font-semibold text-white mb-4">Terms & Conditions</h3>
 
           {/* <div className="space-y-3 text-sm text-zinc-300 max-h-40 overflow-y-auto mb-4 p-3 bg-zinc-900 rounded">
             <p><strong>1. Registration & Payment:</strong> Registration is confirmed only after full payment is received.</p>
@@ -137,7 +168,7 @@ export default function RegistrationSummary({ data, category, isCheck, onCheck, 
           </div> */}
 
           {/* Simplified Key Points */}
-          <div className="space-y-2 text-xs md:text-sm text-neutral-300 mb-4 p-3 bg-zinc-900 rounded">
+          <div className="space-y-2 text-sm text-neutral-300 mb-4 p-3 bg-zinc-900 rounded">
             <p>• <span className=" font-bold">Registration</span> is confirmed only after full payment</p>
             <p>• <span className=" font-bold">No refunds</span> for cancellations under any circumstances</p>
             <p>• <span className=" font-bold">Participants</span> must follow all safety instructions</p>
@@ -156,7 +187,7 @@ export default function RegistrationSummary({ data, category, isCheck, onCheck, 
             {/* <span className="text-white text-sm">
               I have read and agree to the Terms & Conditions, and confirm that all information provided is accurate.
             </span> */}
-            <span className="text-white text-xs md:text-sm cursor-pointer">
+            <span className="text-white text-sm cursor-pointer">
               I understand and agree to these terms and the full{' '}
               <Link href="/terms-of-service" className="text-primary-400 hover:text-primary-300 underline font-medium" target="_blank">
                 Terms of Service
