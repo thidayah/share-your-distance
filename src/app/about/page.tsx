@@ -27,7 +27,8 @@ export default function AboutPage() {
                   style={{ animationDelay: `${1 * 100}ms` }}
                 >
                   <img
-                    src="https://images.unsplash.com/photo-1607962837359-5e7e89f86776?q=80&w=1920&auto=format&fit=crop"
+                    // src="https://images.unsplash.com/photo-1607962837359-5e7e89f86776?q=80&w=1920&auto=format&fit=crop"
+                    src="https://i.ibb.co.com/ksfBF1nW/syd-about-3.jpg"
                     className=" object-cover aspect-video rounded-xs"
                   />
                 </div>
@@ -37,7 +38,8 @@ export default function AboutPage() {
                   style={{ animationDelay: `${2 * 100}ms` }}
                 >
                   <img
-                    src="https://images.unsplash.com/photo-1590764258299-0f91fa7f95e8?q=80&w=1920&auto=format&fit=crop"
+                    // src="https://images.unsplash.com/photo-1590764258299-0f91fa7f95e8?q=80&w=1920&auto=format&fit=crop"
+                    src="https://i.ibb.co.com/0pV1VySr/syd-about-2.jpg"
                     className=" object-cover aspect-video rounded-xs"
                   />
                 </div>
@@ -47,7 +49,8 @@ export default function AboutPage() {
                   style={{ animationDelay: `${3 * 100}ms` }}
                 >
                   <img
-                    src="https://plus.unsplash.com/premium_photo-1661868906940-5d8443acf49e?q=80&w=1920&auto=format&fit=crop"
+                    // src="https://plus.unsplash.com/premium_photo-1661868906940-5d8443acf49e?q=80&w=1920&auto=format&fit=crop"
+                    src="https://i.ibb.co.com/ZpzHNmBd/syd-about-1.jpg"
                     className=" object-cover aspect-video rounded-xs"
                   />
                 </div>
