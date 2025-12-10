@@ -6,18 +6,27 @@ import { useState, useEffect } from 'react';
 const heroSlides = [
   {
     id: 1,
-    image: 'https://images.unsplash.com/photo-1528720208104-3d9bd03cc9d4?q=80&w=1920&auto=format&fit=crop',
+    image: 'https://i.ibb.co.com/S1xGfDn/syd-banner-1.jpg',
+    // image: 'https://images.unsplash.com/photo-1528720208104-3d9bd03cc9d4?q=80&w=1920&auto=format&fit=crop',
     alt: 'Runners at sunrise'
   },
   {
     id: 2,
-    image: 'https://images.unsplash.com/photo-1727094141271-9bea5bc8c757?q=80&w=1920&auto=format&fit=crop',
+    image: 'https://i.ibb.co.com/6Jt3CgBs/syd-banner-2.jpg',
+    // image: 'https://images.unsplash.com/photo-1727094141271-9bea5bc8c757?q=80&w=1920&auto=format&fit=crop',
     alt: 'Group of runners'
   },
   {
     id: 3,
-    image: 'https://images.unsplash.com/photo-1574288763758-a17ce17c4088?q=80&w=1920&auto=format&fit=crop',
+    image: 'https://i.ibb.co.com/WThddLP/syd-banner-3.jpg',
+    // image: 'https://images.unsplash.com/photo-1574288763758-a17ce17c4088?q=80&w=1920&auto=format&fit=crop',
     alt: 'Finish line celebration'
+  },
+  {
+    id: 4,
+    image: 'https://i.ibb.co.com/Mkc3rfMB/syd-banner-4.jpg',
+    // image: 'https://images.unsplash.com/photo-1574288763758-a17ce17c4088?q=80&w=1920&auto=format&fit=crop',
+    alt: 'To be continue'
   }
 ];
 
@@ -60,26 +69,29 @@ export default function HeroSection() {
               className="w-full h-full bg-cover bg-center bg-no-repeat"
               style={{ backgroundImage: `url(${slide.image})` }}
             />
-            <div className="absolute inset-0 bg-black/50" />
+            <div className="absolute inset-0 bg-black/70" />
           </div>
         ))}
       </div>
 
       {/* Content */}
-      <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-6">
-        <div className="mb-2 animate-fade-in">
-          <p className="text-xs md:text-base mb-4">Registration Periode 11-18 December</p>
+      <div className="relative z-10 text-center justify-center text-white max-w-4xl mx-auto px-6">
+        <div className=" flex justify-center mb-2">
+          <img src={'https://i.ibb.co.com/dJM7FSPF/syd-logo.png'} className="object-cover w-[150px] md:w-[250px]" alt="SYD logo" />
         </div>
         <h1 className="text-5xl md:text-8xl font-bold mb-4 animate-slide-up tracking-[-6px] md:tracking-[-10px] ">
           Share&nbsp;&nbsp;Your&nbsp;&nbsp;Happiness
         </h1>
-        <p className="text-lg md:text-3xl mb-4 opacity-90 animate-fade-in italic">
+        {/* <p className="text-lg md:text-3xl mb-4 opacity-90 animate-fade-in italic">
           End Your Year with Meaningful Steps
-        </p>
+        </p> */}
         <div className="mb-4 animate-fade-in">
-          <p className="text-xs md:text-base mb-2">December 20, 2025 at Arei Flagship Store, Bandung</p>
+          {/* <p className="text-xs md:text-base mb-2">December 20, 2025 at Arei Flagship Store, Bandung</p> */}
+          <p className="text-xs md:text-2xl mb-2 italic">December 20, 2025 at Arei Flagship Store, Bandung</p>
         </div>
-        
+        <div className="mb-2 animate-fade-in">
+          <p className="text-xs md:text-base mb-4">Registration Periode 11-18 December</p>
+        </div>
 
         {/* Countdown Timer */}
         {/* <div className="mb-8 animate-slide-up">
@@ -88,7 +100,7 @@ export default function HeroSection() {
         
       </div>
       {/* Scroll Indicator */}
-      <div className="absolute bottom-32 md:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
         <button
           onClick={() => handleSmoothScroll('#category')}
           className="flex flex-col items-center cursor-pointer"
