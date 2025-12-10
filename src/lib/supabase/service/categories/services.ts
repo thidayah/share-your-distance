@@ -1,5 +1,6 @@
 // src/lib/supabase/services/categories/service.ts
 import { supabase } from "../../client";
+import { supabaseServer } from "../../server-client";
 import { categoryQueries } from './queries';
 import { CategoryCreate, CategoryUpdate } from './types';
 
@@ -11,32 +12,17 @@ export const categoryService = {
     return data;
   },
 
+  async getActive() {
+    const { data, error } = await categoryQueries.getActive();
+    if (error) throw error;
+    return data;
+  },
+
   async getById(id: string) {
     const { data, error } = await categoryQueries.getById(id);
     if (error) throw error;
     return data;
   },
-
-  // async getById(id: string) {
-  //   try {
-  //     const { data, error } = await categoryQueries.getById(id);
-
-  //     if (error) {
-  //       // Return null instead of throwing untuk "not found" errors
-  //       if (error.code === 'PGRST116') { // No rows returned
-  //         return null;
-  //       }
-  //       // Throw untuk other errors (connection, auth, etc)
-  //       throw error;
-  //     }
-      
-  //     return data;
-  //   } catch (error) {
-  //     console.error('Error in categoryService.getById:', error);
-  //     // Return null untuk semua error cases di level service
-  //     return null;
-  //   }
-  // },
 
   // CREATE operation
   async create(category: CategoryCreate, features: string[]) {
@@ -64,22 +50,43 @@ export const categoryService = {
     return this.getById(categoryData.id);
   },
 
-  // UPDATE operation
-  async update(id: string, updates: Partial<CategoryUpdate>) {
-    const { data, error } = await supabase
+  // UPDATE operation with features
+  async update(id: string, updates: Partial<CategoryUpdate>, features: string[]) {
+    const { data, error } = await supabaseServer
       .from('categories')
       .update(updates)
       .eq('id', id)
-      .select()
+      .select('*')
       .single();
 
     if (error) throw error;
-    return data;
+
+    // Delete existing features
+    await supabaseServer
+      .from('category_features')
+      .delete()
+      .eq('category_id', id);
+
+    // Insert new features
+    const featureInserts = features.map((feature, index) => ({
+      category_id: id,
+      feature,
+      display_order: index + 1,
+    }));
+
+    const { error: featuresError } = await supabaseServer
+      .from('category_features')
+      .insert(featureInserts);
+
+    if (featuresError) throw featuresError;
+
+    return this.getById(id);
+    // return data;
   },
 
   // DELETE operation
   async delete(id: string) {
-    const { error } = await supabase
+    const { error } = await supabaseServer
       .from('categories')
       .delete()
       .eq('id', id);

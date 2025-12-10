@@ -27,7 +27,8 @@ export default function AboutPage() {
                   style={{ animationDelay: `${1 * 100}ms` }}
                 >
                   <img
-                    src="https://images.unsplash.com/photo-1607962837359-5e7e89f86776?q=80&w=1920&auto=format&fit=crop"
+                    // src="https://images.unsplash.com/photo-1607962837359-5e7e89f86776?q=80&w=1920&auto=format&fit=crop"
+                    src="https://i.ibb.co.com/ksfBF1nW/syd-about-3.jpg"
                     className=" object-cover aspect-video rounded-xs"
                   />
                 </div>
@@ -37,7 +38,8 @@ export default function AboutPage() {
                   style={{ animationDelay: `${2 * 100}ms` }}
                 >
                   <img
-                    src="https://images.unsplash.com/photo-1590764258299-0f91fa7f95e8?q=80&w=1920&auto=format&fit=crop"
+                    // src="https://images.unsplash.com/photo-1590764258299-0f91fa7f95e8?q=80&w=1920&auto=format&fit=crop"
+                    src="https://i.ibb.co.com/0pV1VySr/syd-about-2.jpg"
                     className=" object-cover aspect-video rounded-xs"
                   />
                 </div>
@@ -47,7 +49,8 @@ export default function AboutPage() {
                   style={{ animationDelay: `${3 * 100}ms` }}
                 >
                   <img
-                    src="https://plus.unsplash.com/premium_photo-1661868906940-5d8443acf49e?q=80&w=1920&auto=format&fit=crop"
+                    // src="https://plus.unsplash.com/premium_photo-1661868906940-5d8443acf49e?q=80&w=1920&auto=format&fit=crop"
+                    src="https://i.ibb.co.com/ZpzHNmBd/syd-about-1.jpg"
                     className=" object-cover aspect-video rounded-xs"
                   />
                 </div>
@@ -65,7 +68,7 @@ export default function AboutPage() {
                     </p>
                     <p>
                       We're not just about who finishes first. We're about celebrating <strong>every finish</strong>.
-                      The first-time runner conquering 5K. The relay team supporting each other. The endurance seeker pushing their limits.
+                      The first-time runner conquering kilometers. The relay team supporting each other. The endurance seeker pushing their limits.
                     </p>
                     <p>
                       This isn't just another race. It's your year-end celebration. Your story of perseverance.
@@ -121,11 +124,11 @@ export default function AboutPage() {
             <section className="text-center">
               <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
                 <div>
-                  <div className="text-3xl font-bold text-zinc-100 mb-2">500+</div>
+                  <div className="text-3xl font-bold text-zinc-100 mb-2">100+</div>
                   <div className="text-zinc-400 text-sm">Expected Runners</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-zinc-100 mb-2">3</div>
+                  <div className="text-3xl font-bold text-zinc-100 mb-2">1</div>
                   <div className="text-zinc-400 text-sm">Race Categories</div>
                 </div>
                 <div>
@@ -141,7 +144,7 @@ export default function AboutPage() {
                 Ready to Share Your Distance?
               </h2>
               <p className="text-zinc-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-                Join hundreds of runners on December 20, 2025 at Gedung Sate.
+                Join hundreds of runners on December 20, 2025 at Arei Flagship Store.
                 Whether you're chasing a personal best or simply want to be part of something special,
                 there's a place for you here.
               </p>

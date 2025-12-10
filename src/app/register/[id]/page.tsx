@@ -5,7 +5,6 @@ import { useParams } from 'next/navigation';
 import { toast } from "react-toastify";
 
 import PersonalInfoForm from '@/components/PersonalInfoForm';
-import RacePreferencesForm from '@/components/RacePreferencesForm';
 import EmergencyContactForm from '@/components/EmergencyContactForm';
 import RegistrationSummary from '@/components/RegistrationSummary';
 import Button from '@/components/ui/Button';
@@ -13,8 +12,10 @@ import Template from "@/components/layout/Template";
 import Loading from "@/components/ui/Loading";
 import { categoryService } from "@/lib/supabase/service/categories/services";
 import { TypesCategory } from "@/types/database";
+import { supabase } from "@/lib/supabase/client";
+import CompletePayment from "@/components/CompletePayment";
 
-type FormStep = 'personal' | 'preferences' | 'emergency' | 'summary';
+type FormStep = 'personal' | 'emergency' | 'summary' | 'payment';
 
 export default function RegistrationPage() {
   const params = useParams();
@@ -32,12 +33,7 @@ export default function RegistrationPage() {
       phone: '',
       dateOfBirth: '',
       gender: '',
-      nationality: 'Indonesian',
-      idNumber: ''
-    },
-    preferences: {
-      tshirtSize: '',
-      runningExperience: '',
+      instagram: ''
     },
     emergency: {
       contactName: '',
@@ -47,12 +43,23 @@ export default function RegistrationPage() {
       allergies: '',
     },
   });
+  const [orderData, setOrderData] = useState<any>(null)
 
   useEffect(() => {
     (async () => {
       try {
-        const data = await categoryService.getById(categoryId);
-        // console.log({data});        
+        // const data = await categoryService.getById(categoryId);
+        const { data } = await supabase
+          .from('categories')
+          .select(`
+                *,
+                category_features (
+                  feature,
+                  display_order
+                )
+              `)
+          .eq('id', categoryId)
+          .single();
         setCategory(data)
         setTimeout(() => {
           setLoading(false)
@@ -78,8 +85,6 @@ export default function RegistrationPage() {
     if (!formData.personal.phone) messages.push('Phone Number required!')
     if (!formData.personal.dateOfBirth) messages.push('Date of Birth required!')
     if (!formData.personal.gender) messages.push('Gender required!')
-    if (!formData.personal.nationality) messages.push('Nationality required!')
-    if (!formData.personal.idNumber) messages.push('ID Number (KTP) required!')
     return messages;
   };
 
@@ -92,7 +97,8 @@ export default function RegistrationPage() {
   };
 
   const nextStep = () => {
-    const steps: FormStep[] = ['personal', 'preferences', 'emergency', 'summary'];
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    const steps: FormStep[] = ['personal', 'emergency', 'summary', 'payment'];
     const currentIndex = steps.indexOf(currentStep);
 
     if (currentIndex === 0) {
@@ -101,12 +107,12 @@ export default function RegistrationPage() {
         return msgs.forEach((msg) => toast.warning(msg));
       }
     } else if (currentIndex === 1) {
-      if (!formData.preferences.tshirtSize) return toast.warning('T-shirt Size required!')
-    } else if (currentIndex === 2) {
       const msgs = validateFormEmergency();
       if (msgs.length > 0) {
         return msgs.forEach((msg) => toast.warning(msg));
       }
+    } else if (currentIndex === 2) {
+
     }
 
     if (currentIndex < steps.length - 1) {
@@ -115,7 +121,8 @@ export default function RegistrationPage() {
   };
 
   const prevStep = () => {
-    const steps: FormStep[] = ['personal', 'preferences', 'emergency', 'summary'];
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+    const steps: FormStep[] = ['personal', 'emergency', 'summary', 'payment'];
     const currentIndex = steps.indexOf(currentStep);
     if (currentIndex > 0) {
       setCurrentStep(steps[currentIndex - 1]);
@@ -141,28 +148,20 @@ export default function RegistrationPage() {
           phone: formData.personal.phone,
           date_of_birth: formData.personal.dateOfBirth,
           gender: formData.personal.gender,
-          nationality: formData.personal.nationality,
-          id_number: formData.personal.idNumber,
-          // Race Preferences
-          tshirt_size: formData.preferences.tshirtSize,
-          running_experience: formData.preferences.runningExperience,
+          instagram: formData.personal.instagram,
           // Emergency Contact & Medical
           emergency_contact_name: formData.emergency.contactName,
           emergency_contact_phone: formData.emergency.contactPhone,
           emergency_contact_relationship: formData.emergency.contactRelationship,
           medical_conditions: formData.emergency.medicalConditions,
-          allergies: formData.emergency.allergies,
-          // Payment & Terms
+          // Payment
           total_amount: category?.price,
-          agreed_to_terms: true,
-          agreed_to_privacy_policy: true,
-          agreed_at: new Date().toISOString(),
         };
 
         // console.log('Submitting registration:', registrationData);
 
         // 2. Send to API route
-        const response = await fetch('/api/registrations', {
+        const response = await fetch('/api/registrations-v2', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -172,7 +171,7 @@ export default function RegistrationPage() {
 
         const result = await response.json();
 
-        console.log('Registration created:', result);
+        // console.log('Registration created:', result);
 
         if (!response.ok) {
           throw new Error(result.message || 'Failed to submit registration');
@@ -183,10 +182,9 @@ export default function RegistrationPage() {
 
         // 4. Redirect to payment page
         setTimeout(() => {
-          // window.location.replace(result?.payment?.redirect_url)
-          window.location.assign(result?.payment?.redirect_url)
+          setOrderData(result.data)
+          nextStep();
         }, 500);
-
       } catch (error) {
         // console.error('Registration submission error:', error);
 
@@ -215,13 +213,6 @@ export default function RegistrationPage() {
             category={category}
           />
         );
-      case 'preferences':
-        return (
-          <RacePreferencesForm
-            data={formData.preferences}
-            onChange={(data) => updateFormData('preferences', data)}
-          />
-        );
       case 'emergency':
         return (
           <EmergencyContactForm
@@ -239,12 +230,16 @@ export default function RegistrationPage() {
             onSubmit={handleSubmit}
           />
         );
+      case 'payment':
+        return (
+          <CompletePayment data={orderData} />
+        );
     }
   };
 
   return (
     <Template>
-      <div className="min-h-screen bg-gradient-to-b from-zinc-800 to-zinc-950 py-12">
+      <div className="min-h-screen bg-gradient-to-b from-zinc-800 to-zinc-950 py-6 md:py-12">
         {!isLoading && !category ? (
           <div className="text-center text-white min-h-screen flex justify-center items-center flex-col">
             <h1 className="text-2xl font-bold mb-4">Category Not Found</h1>
@@ -258,10 +253,10 @@ export default function RegistrationPage() {
 
             {/* Header */}
             <div className="text-center mb-8">
-              <h1 className="text-4xl font-bold text-white mb-2">
+              <h1 className="text-xl md:text-4xl font-bold text-white mb-2">
                 Register for {category.name}
               </h1>
-              <p className="text-zinc-400">{category.description}</p>
+              <p className="text-xs md:text-base text-zinc-400">{category.description}</p>
               <div className="text-primary-400 text-2xl font-semibold mt-2">
                 IDR {category.price.toLocaleString()}
               </div>
@@ -270,10 +265,10 @@ export default function RegistrationPage() {
             {/* Progress Bar */}
             <div className="mb-8">
               <div className="flex justify-between mb-2">
-                {['Personal Info', 'Preferences', 'Emergency', 'Summary'].map((step, index) => {
-                  const stepKey = ['personal', 'preferences', 'emergency', 'summary'][index];
+                {['Personal Info', 'Emergency', 'Summary', 'Payment'].map((step, index) => {
+                  const stepKey = ['personal', 'emergency', 'summary', 'payment'][index];
                   const isActive = currentStep === stepKey;
-                  const isCompleted = ['personal', 'preferences', 'emergency', 'summary'].indexOf(currentStep) > index;
+                  const isCompleted = ['personal', 'emergency', 'summary', 'payment'].indexOf(currentStep) > index;
 
                   return (
                     <div key={step} className="text-center flex-1">
@@ -294,7 +289,7 @@ export default function RegistrationPage() {
                 <div
                   className="bg-zinc-100 h-2 rounded-full transition-all duration-300"
                   style={{
-                    width: `${(['personal', 'preferences', 'emergency', 'summary'].indexOf(currentStep) + 1) * 25}%`
+                    width: `${(['personal', 'emergency', 'summary', 'payment'].indexOf(currentStep) + 1) * 25}%`
                   }}
                 />
               </div>
@@ -305,34 +300,36 @@ export default function RegistrationPage() {
               {renderStep()}
 
               {/* Navigation Buttons */}
-              <div className="flex justify-between mt-8 pt-6 border-t border-neutral-700">
-                <Button
-                  variant="outline"
-                  onClick={prevStep}
-                  disabled={currentStep === 'personal'}
-                >
-                  Previous
-                </Button>
+              {currentStep !== 'payment' && (
+                <div className="flex justify-between mt-8 pt-6 border-t border-neutral-700">
+                  <Button
+                    variant="outline"
+                    onClick={prevStep}
+                    disabled={currentStep === 'personal'}
+                  >
+                    Previous
+                  </Button>
 
-                {currentStep === 'summary' ? (
-                  <Button
-                    variant="primary"
-                    onClick={handleSubmit}
-                    isLoading={isSubmitting}
-                    className=" text-zinc-900 border-white"
-                  >
-                    Registration & Pay
-                  </Button>
-                ) : (
-                  <Button
-                    variant="primary"
-                    onClick={nextStep}
-                    className=" text-zinc-900 border-white"
-                  >
-                    Continue
-                  </Button>
-                )}
-              </div>
+                  {currentStep === 'summary' ? (
+                    <Button
+                      variant="primary"
+                      onClick={handleSubmit}
+                      isLoading={isSubmitting}
+                      className=" text-zinc-900 border-white"
+                    >
+                      Registration & Pay
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="primary"
+                      onClick={nextStep}
+                      className=" text-zinc-900 border-white"
+                    >
+                      Continue
+                    </Button>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         )}
