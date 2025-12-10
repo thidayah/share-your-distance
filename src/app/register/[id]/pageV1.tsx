@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { toast } from "react-toastify";
 
-import PersonalInfoForm from '@/components/PersonalInfoForm';
+// import PersonalInfoForm from '@/components/PersonalInfoForm';
+import PersonalInfoFormV1 from "@/components/PersonalInfoFormV1";
 import RacePreferencesForm from '@/components/RacePreferencesForm';
 import EmergencyContactForm from '@/components/EmergencyContactForm';
 import RegistrationSummary from '@/components/RegistrationSummary';
@@ -220,7 +221,8 @@ export default function RegistrationPage() {
     switch (currentStep) {
       case 'personal':
         return (
-          <PersonalInfoForm
+          // <PersonalInfoForm
+          <PersonalInfoFormV1
             data={formData.personal}
             onChange={(data) => updateFormData('personal', data)}
             category={category}

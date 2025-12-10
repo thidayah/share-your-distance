@@ -17,7 +17,7 @@ interface PersonalInfoFormProps {
   category?: TypesCategory;
 }
 
-export default function PersonalInfoForm({ data, onChange, category }: PersonalInfoFormProps) {
+export default function PersonalInfoFormV1({ data, onChange, category }: PersonalInfoFormProps) {
   const calculateAge = (birthDate: string) => {
     const today = new Date();
     const birth = new Date(birthDate);
