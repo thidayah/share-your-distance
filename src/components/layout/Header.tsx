@@ -100,7 +100,7 @@ export default function Header() {
                 className=" text-2xl md:text-3xl font-bold text-white tracking-[-3px] hover:text-zinc-400 transition-colors duration-300 cursor-pointer"
               >
                 {/* Share&nbsp;&nbsp;&nbsp;Your&nbsp;&nbsp;&nbsp;Distance */}
-                Syd .
+                Syd&nbsp;&nbsp;<span className=" text-xl">3 . 0</span>
               </button>
             </div>
 

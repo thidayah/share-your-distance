@@ -47,10 +47,10 @@ export default function BenefitsSection() {
       <div className="container mx-auto px-6">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-zinc-100 mb-6">
+          <h2 className="text-3xl md:text-5xl font-bold text-zinc-100 mb-6">
             Why Join Us?
           </h2>
-          <p className="text-lg text-zinc-100">
+          <p className="text-xs md:text-lg text-zinc-100">
             We believe every runner deserves an exceptional experience.
             Here's what makes our event special and memorable.
           </p>
@@ -61,25 +61,25 @@ export default function BenefitsSection() {
           {benefits.map((benefit, index) => (
             <div
               key={index}
-              className=" bg-zinc-900 p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group"
+              className=" bg-zinc-900 p-4 md:p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 group"
             >
               <div className=" flex items-center space-x-3 mb-4">
                 {/* Icon */}
-                <div className="text-4xl transform group-hover:scale-110 transition-transform duration-300">
+                <div className="text-xl md:text-4xl transform group-hover:scale-110 transition-transform duration-300">
                   {benefit.icon}
                 </div>
 
                 {/* Content */}
-                <h3 className="text-xl font-bold text-zinc-300 group-hover:text-zinc-100 transition-colors">
+                <h3 className="md:text-xl font-bold text-zinc-300 group-hover:text-zinc-100 transition-colors">
                   {benefit.title}
                 </h3>
               </div>
-              <p className="text-zinc-300 group-hover:text-zinc-100 leading-relaxed">
+              <p className="text-sm md:text-base text-zinc-300 group-hover:text-zinc-100 leading-relaxed">
                 {benefit.description}
               </p>
 
               {/* Hover Effect Line */}
-              <div className="w-0 h-1 bg-gradient-to-r from-zinc-500 to-white mt-6 group-hover:w-full transition-all duration-500"></div>
+              <div className="w-0 h-1 bg-gradient-to-r from-zinc-500 to-white mt-2 md:mt-6 group-hover:w-full transition-all duration-500"></div>
             </div>
           ))}
         </div>
@@ -87,10 +87,10 @@ export default function BenefitsSection() {
         {/* Call to Action */}
         <div className="text-center mt-12">
           <div className="bg-zinc-900 rounded-bl-4xl rounded-tr-4xl p-8 shadow-lg max-w-3xl mx-auto border">
-            <h3 className="text-2xl font-bold text-zinc-100 mb-4">
+            <h3 className="text-lg md:text-2xl font-bold text-zinc-100 mb-4">
               Ready to Create Unforgettable Memories?
             </h3>
-            <p className="text-zinc-300 mb-6">
+            <p className="text-sm md:text-base text-zinc-300 mb-6">
               Join us on December 20, 2025 and be part of something extraordinary.
               Your running journey deserves to be celebrated.
             </p>

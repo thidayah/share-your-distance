@@ -39,22 +39,22 @@ const aboutFeatures: FeatureCard[] = [
     <section id="about" className="py-24 bg-zinc-950">
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-zinc-100 mb-16">
+          <h2 className="text-3xl md:text-5xl font-bold text-zinc-100 mb-8 md:mb-16">
             What is <i>"Share Your Distance"?</i>
           </h2>
 
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="text-left">
-              <p className="text-lg text-zinc-100 mb-6">
+              <p className="text-xs md:text-lg text-zinc-100 mb-6">
                 Share Your Distance is not just another running event. It's a celebration of community,
                 personal achievement, and the power of shared experiences.
               </p>
-              <p className="text-lg text-zinc-100 mb-6">
+              <p className="text-xs md:text-lg text-zinc-100 mb-6">
                 As we approach the end of 2025, we invite you to join hundreds of fellow runners
                 in creating meaningful memories and celebrating the journey together.
               </p>
               <div className="bg-zinc-50 border-l-4 border-zinc-500 p-4">
-                <p className="text-zinc-900 font-semibold">
+                <p className="text-sm md:text-base text-zinc-900 font-semibold">
                   "Every step you take tells a story. Every kilometer you share creates a connection."
                 </p>
               </div>
@@ -78,7 +78,7 @@ const aboutFeatures: FeatureCard[] = [
                     {/* Text Content */}
                     <div className="mt-12 transform transition-all duration-500 group-hover:-translate-y-2">
                       {/* Title - Visible by default, hides on hover */}
-                      <h3 className="text-white font-bold text-lg mb-1 opacity-100 group-hover:opacity-0 group-hover:translate-y-2 transition-all duration-300">
+                      <h3 className="text-white font-bold md:text-lg mb-1 opacity-100 group-hover:opacity-0 group-hover:translate-y-2 transition-all duration-300">
                         {feature.title}
                       </h3>
 

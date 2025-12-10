@@ -21,7 +21,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: 'Share Your Distance - Running Race',
-  description: 'End your year with meaningful steps. Join us on December 20, 2025 at Gedung Sate.',
+  description: 'End your year with meaningful steps. Join us on December 20, 2025 at Arei Flagship Store.',
 };
 
 export default function RootLayout({

@@ -13,21 +13,21 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="md:col-span-2">
             <div className=" text-3xl text-white font-bold mb-4 tracking-[-3px]">Share&nbsp;&nbsp;&nbsp;Your&nbsp;&nbsp;Distance</div>
-            <p className="text-zinc-300 mb-4 max-w-md">
+            <p className="text-sm md:text-base text-zinc-300 mb-4 max-w-md">
               Join us on December 20, 2025 for an unforgettable running experience.
               Share your distance, create memories, and celebrate achievements together.
             </p>
             <div className="flex items-center space-x-4">
-              <a href="#" className="text-zinc-300 hover:text-white transition-colors">
+              <a href={`https://wa.me/6285183081136?text=Halo%20*Share%20Your%20Distance*,%20saya%20mau%20bertanya`} target="_blank" className="text-zinc-300 hover:text-white transition-colors">
                 <Icon icon="mdi:whatsapp" className="w-6 h-6" />
               </a>
-              <a href="#" className="text-zinc-300 hover:text-white transition-colors">
+              <a href="https://www.instagram.com/sobatsabtu" target="_blank" className="text-zinc-300 hover:text-white transition-colors">
                 <Icon icon="mdi:instagram" className="w-6 h-6" />
               </a>
               {/* <a href="#" className="text-zinc-300 hover:text-white transition-colors">
                 <Icon icon="mdi:facebook" className="w-6 h-6" />
               </a> */}
-              <a href="#" className="text-zinc-300 hover:text-white transition-colors">
+              <a href="https://www.x.com/sobatsabtu" target="_blank" className="text-zinc-300 hover:text-white transition-colors">
                 <Icon icon="mdi:twitter" className="w-6 h-6" />
               </a>
               {/* <a href="#" className="text-zinc-300 hover:text-white transition-colors">
@@ -41,22 +41,22 @@ export default function Footer() {
             <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/about" className="text-zinc-300 hover:text-white transition-colors">
+                <Link href="/about" className="text-zinc-300 hover:text-white transition-colors text-sm md:text-base">
                   About Event
                 </Link>
               </li>
               <li>
-                <Link href="/category" className="text-zinc-300 hover:text-white transition-colors">
+                <Link href="/category" className="text-zinc-300 hover:text-white transition-colors text-sm md:text-base">
                   Race Categories
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-zinc-300 hover:text-white transition-colors">
+                <Link href="/contact" className="text-zinc-300 hover:text-white transition-colors text-sm md:text-base">
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link href="/faq" className="text-zinc-300 hover:text-white transition-colors">
+                <Link href="/faq" className="text-zinc-300 hover:text-white transition-colors text-sm md:text-base">
                   FAQ
                 </Link>
               </li>
@@ -69,11 +69,11 @@ export default function Footer() {
             <ul className="space-y-3 text-zinc-300">
               <li className="flex items-center">
                 <Icon icon="mdi:email-outline" className="w-5 h-5 mr-3" />
-                <span>hello@shareyourdistance.online</span>
+                <span className="text-sm md:text-base">hello@shareyourdistance.online</span>
               </li>
               <li className="flex items-center">
                 <Icon icon="mdi:phone-outline" className="w-5 h-5 mr-3" />
-                <span>+62 123 4567 890</span>
+                <span className="text-sm md:text-base">+62 851 8308 1136</span>
               </li>
               {/* <li className="flex items-center">
                <Icon icon="mdi:map-marker-outline" className="w-5 h-5 mr-3" />
@@ -88,7 +88,7 @@ export default function Footer() {
       <div className="border-t border-zinc-800">
         <div className="container mx-auto px-6 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-zinc-300 text-sm">
+            <p className="text-zinc-300 text-xs md:text-sm">
               © {currentYear} Share Your Distance. All rights reserved.
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">

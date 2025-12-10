@@ -67,16 +67,19 @@ export default function HeroSection() {
 
       {/* Content */}
       <div className="relative z-10 text-center text-white max-w-4xl mx-auto px-6">
-        <h1 className="text-5xl md:text-8xl font-bold mb-6 animate-slide-up tracking-[-5px] md:tracking-[-10px] ">
-          Share&nbsp;&nbsp;Your&nbsp;&nbsp;Distance
+        <div className="mb-2 animate-fade-in">
+          <p className="text-xs md:text-base mb-4">Registration Periode 11-18 December</p>
+        </div>
+        <h1 className="text-5xl md:text-8xl font-bold mb-4 animate-slide-up tracking-[-6px] md:tracking-[-10px] ">
+          Share&nbsp;&nbsp;Your&nbsp;&nbsp;Happiness
         </h1>
-        <p className="text-xl md:text-3xl mb-6 opacity-90 animate-fade-in italic">
+        <p className="text-lg md:text-3xl mb-4 opacity-90 animate-fade-in italic">
           End Your Year with Meaningful Steps
         </p>
-
-        <div className="mb-8 animate-fade-in">
-          <p className="text-sm md:text-base mb-2">December 20, 2025 at Gedung Sate, Bandung</p>
+        <div className="mb-4 animate-fade-in">
+          <p className="text-xs md:text-base mb-2">December 20, 2025 at Arei Flagship Store, Bandung</p>
         </div>
+        
 
         {/* Countdown Timer */}
         {/* <div className="mb-8 animate-slide-up">
@@ -85,7 +88,7 @@ export default function HeroSection() {
         
       </div>
       {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+      <div className="absolute bottom-32 md:bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
         <button
           onClick={() => handleSmoothScroll('#category')}
           className="flex flex-col items-center cursor-pointer"
