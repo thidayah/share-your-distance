@@ -1,39 +1,44 @@
 export default function AboutSection() {
 
   interface FeatureCard {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-}
+    id: number;
+    title: string;
+    description: string;
+    image: string;
+  }
 
-const aboutFeatures: FeatureCard[] = [
-  {
-    id: 1,
-    title: "Community",
-    description: "Run together, grow together in our supportive community",
-    image: "https://images.unsplash.com/photo-1607962837359-5e7e89f86776?q=80&w=1920&auto=format&fit=crop",
-  },
-  {
-    id: 2,
-    title: "Achievement",
-    description: "Celebrate personal milestones and push your limits further",
-    image: "https://images.unsplash.com/photo-1508730328641-47c1616341b7?q=80&w=1920&auto=format&fit=crop",
-  },
-  {
-    id: 3,
-    title: "Experience",
-    description: "Create lasting memories in an unforgettable running journey",
-    image: "https://images.unsplash.com/photo-1590764258299-0f91fa7f95e8?q=80&w=1920&auto=format&fit=crop",
-  },
-  {
-    id: 4,
-    title: "Purpose",
-    description: "Run with make every step count towards something greater",
-    image: "https://plus.unsplash.com/premium_photo-1661868906940-5d8443acf49e?q=80&w=1920&auto=format&fit=crop",
-  },
-];
-
+  const aboutFeatures: FeatureCard[] = [
+    {
+      id: 1,
+      title: "Community",
+      description: "Run together, grow together in our supportive community",
+      image: "https://i.ibb.co.com/1tmbt7Sw/community-image.jpg",
+      // image: "https://images.unsplash.com/photo-1607962837359-5e7e89f86776?q=80&w=1920&auto=format&fit=crop",
+    },
+    {
+      id: 2,
+      title: "Together",
+      description: "Grow, connect, and achieve more together with shared goals",
+      image: "https://i.ibb.co.com/6RWSHBfV/together-image.jpg",
+      // title: "Achievement",
+      // description: "Celebrate personal milestones and push your limits further",
+      // image: "https://images.unsplash.com/photo-1508730328641-47c1616341b7?q=80&w=1920&auto=format&fit=crop",
+    },
+    {
+      id: 3,
+      title: "Experience",
+      description: "Create lasting memories in an unforgettable running journey",
+      image: "https://i.ibb.co.com/TMsY79k6/experienc-image.jpg",
+      // image: "https://images.unsplash.com/photo-1590764258299-0f91fa7f95e8?q=80&w=1920&auto=format&fit=crop",
+    },
+    {
+      id: 4,
+      title: "Purpose",
+      description: "Run with make every step count towards something greater",
+      image: "https://i.ibb.co.com/0jGv5sQL/purpose-image.jpg",
+      // image: "https://plus.unsplash.com/premium_photo-1661868906940-5d8443acf49e?q=80&w=1920&auto=format&fit=crop",
+    },
+  ];
 
   return (
     <section id="about" className="py-24 bg-zinc-950">
