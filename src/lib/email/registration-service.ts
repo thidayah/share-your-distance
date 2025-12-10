@@ -1,6 +1,7 @@
 // src/lib/email/registration-service.ts
 import { PaymentSuccessful } from "@/components/emails/PaymentSuccesfull";
 import { RegistrationConfirmation } from "@/components/emails/RegistrationConfirmation";
+import { RegistrationConfirmationV2 } from "@/components/emails/RegistrationConfirmationV2";
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -33,6 +34,22 @@ export const registrationService = {
         to: [item.email],
         subject: `Registration Confirmation - ${item.registration_number}`,
         react: RegistrationConfirmation(item),
+      });
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error sending registration confirmation:', error);
+      throw error;
+    }
+  },
+
+  async sendRegistrationConfirmationV2(item: RegistrationConfirmationProps) {
+    try {
+      const { data, error } = await resend.emails.send({
+        from: `Share Your Distance Contact <${process.env.RESEND_FROM}>`,
+        to: [item.email],
+        subject: `Registration Confirmation - ${item.registration_number}`,
+        react: RegistrationConfirmationV2(item),
       });
       if (error) throw error;
       return data;
