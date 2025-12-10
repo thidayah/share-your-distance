@@ -7,7 +7,8 @@ interface PersonalInfoData {
   phone: string;
   dateOfBirth: string;
   gender: string;
-  instagram: string;
+  nationality: string;
+  idNumber: string;
 }
 
 interface PersonalInfoFormProps {
@@ -43,11 +44,11 @@ export default function PersonalInfoForm({ data, onChange, category }: PersonalI
     }
   };
 
-  const baseClasses = "text-sm w-full bg-zinc-800 border border-zinc-600 px-4 py-3 text-white focus:border-zinc-100 focus:outline-none transition-colors"
+  const baseClasses = "w-full bg-zinc-800 border border-zinc-600 px-4 py-3 text-white focus:border-zinc-100 focus:outline-none transition-colors"
 
   return (
     <div>
-      <h2 className="text-xl md:text-2xl font-bold text-white mb-6">Personal Information</h2>
+      <h2 className="text-2xl font-bold text-white mb-6">Personal Information</h2>
 
       {category?.health_warning && (
         <div className="bg-orange-500/20 border border-orange-500/30 p-4 mb-6">
@@ -89,7 +90,7 @@ export default function PersonalInfoForm({ data, onChange, category }: PersonalI
 
         <div>
           <label className="block text-white text-sm font-medium mb-2">
-            Whatsapp Number *
+            Phone Number *
           </label>
           <input
             type="tel"
@@ -97,7 +98,7 @@ export default function PersonalInfoForm({ data, onChange, category }: PersonalI
             value={data.phone}
             onChange={(e) => onChange({ phone: e.target.value })}
             className={baseClasses}
-            placeholder="0812 3456 7890"
+            placeholder="+62 812 3456 7890"
           />
         </div>
 
@@ -143,19 +144,38 @@ export default function PersonalInfoForm({ data, onChange, category }: PersonalI
 
         <div>
           <label className="block text-white text-sm font-medium mb-2">
-            Instagram
+            Nationality *
+          </label>
+          <div className={baseClasses}>
+          <select
+            required
+            value={data.nationality}
+            onChange={(e) => onChange({ nationality: e.target.value })}
+            className=" focus:outline-none w-full bg-zinc-800"
+          >
+            <option value="Indonesian">Indonesian</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        </div>
+      </div>
+
+      {data.nationality === 'Indonesian' && (
+        <div className="mt-6">
+          <label className="block text-white text-sm font-medium mb-2">
+            ID Number (KTP) *
           </label>
           <input
             type="text"
             required
-            value={data.instagram}
-            onChange={(e) => onChange({ instagram: e.target.value })}
+            value={data.idNumber}
+            onChange={(e) => onChange({ idNumber: e.target.value })}
             className={baseClasses}
-            placeholder="@your_username"
+            placeholder="16-digit ID number"
+            maxLength={16}
           />
         </div>
-      </div>
-      
+      )}
     </div>
   );
 }
