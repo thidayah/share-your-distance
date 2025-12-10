@@ -87,7 +87,7 @@ export default function HeroSection() {
         </p> */}
         <div className="mb-4 animate-fade-in">
           {/* <p className="text-xs md:text-base mb-2">December 20, 2025 at Arei Flagship Store, Bandung</p> */}
-          <p className="text-xs md:text-2xl mb-2 italic">December 20, 2025 at Arei Flagship Store, Bandung</p>
+          <p className="text-xs md:text-2xl mb-2 italic">December 20, 2025 at <b>Arei Flagship Store, Bandung</b></p>
         </div>
         <div className="mb-2 animate-fade-in">
           <p className="text-xs md:text-base mb-4">Registration Periode 11-18 December</p>
@@ -97,7 +97,7 @@ export default function HeroSection() {
         {/* <div className="mb-8 animate-slide-up">
           <CountdownTimer targetDate="2025-12-27T06:00:00" />
         </div> */}
-        
+
       </div>
       {/* Scroll Indicator */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
