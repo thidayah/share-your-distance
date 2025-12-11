@@ -6,8 +6,10 @@ import { signOut } from "@/lib/admin-session"
 import { Icon } from "@iconify/react"
 
 const navigation = [
-  { name: 'Dashboard', href: '/admin/dashboard', icon: <Icon icon="mdi:chart-box" className="size-5"/> },
-  { name: 'Registrations', href: '/admin/registrations', icon: <Icon icon="mdi:account-multiple" className="size-5"/> },
+  // { name: 'Dashboard', href: '/admin/dashboard', icon: <Icon icon="mdi:chart-box" className="size-5"/> },
+  // { name: 'Registrations', href: '/admin/registrations', icon: <Icon icon="mdi:account-multiple" className="size-5"/> },
+  { name: 'Dashboard', href: '/admin/dashboard-v2', icon: <Icon icon="mdi:chart-box" className="size-5"/> },
+  { name: 'Registrations', href: '/admin/registrations-v2', icon: <Icon icon="mdi:account-multiple" className="size-5"/> },
   { name: 'Categories', href: '/admin/categories', icon: <Icon icon="mdi:category-plus-outline" className="size-5"/> },
   { name: 'Messages', href: '/admin/contact-messages', icon: <Icon icon="mdi:email-mark-as-unread" className="size-5"/> },
 ]
