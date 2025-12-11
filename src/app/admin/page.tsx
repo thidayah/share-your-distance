@@ -42,7 +42,8 @@ export default function AdminLogin() {
       })
       const data = await response.json()
       if (response.ok) {
-        router.push('/admin/dashboard')
+        // router.push('/admin/dashboard')
+        router.push('/admin/dashboard-v2')
         router.refresh()
       } else {
         setError(data.message || 'Login failed')

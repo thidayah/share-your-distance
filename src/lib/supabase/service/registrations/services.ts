@@ -84,7 +84,7 @@ export const registrationService = {
       .from('registrations_v2')
       .select(`
       *,
-      category:categories(name, distance)
+      category:categories(name, description, price, distance, max_participants, current_participants)
     `)
       .order('created_at', { ascending: false });
 
@@ -185,7 +185,7 @@ export const registrationService = {
       .update(updateData)
       .eq('id', id)
       // .select()
-      .select(`*,category:categories(name, distance)`)
+      .select(`*,category:categories(name, description, price, distance, max_participants, current_participants)`)
       .single();
 
     if (error) throw error;
