@@ -1,5 +1,6 @@
 // src/lib/email/registration-service.ts
 import { PaymentSuccessful } from "@/components/emails/PaymentSuccesfull";
+import { PaymentSuccessfulV2 } from "@/components/emails/PaymentSuccesfullV2";
 import { RegistrationConfirmation } from "@/components/emails/RegistrationConfirmation";
 import { RegistrationConfirmationV2 } from "@/components/emails/RegistrationConfirmationV2";
 import { Resend } from 'resend';
@@ -66,6 +67,27 @@ export const registrationService = {
         to: item.email,
         subject: `Payment Successful - ${item.registration_number}`,
         react: PaymentSuccessful(item),
+      });
+
+      if (error) {
+        console.error('Error sending payment success email:', error);
+        return { status: false, error };
+      }
+
+      return { status: true, data };
+    } catch (error) {
+      console.error('Error in sendPaymentSuccess:', error);
+      return { status: false, error };
+    }
+  },
+
+  async sendPaymentSuccessV2(item: PaymentSuccessProps) {
+    try {
+      const { data, error } = await resend.emails.send({
+        from: `Share Your Distance Contact <${process.env.RESEND_FROM}>`,
+        to: item.email,
+        subject: `Payment Successful - ${item.registration_number}`,
+        react: PaymentSuccessfulV2(item),
       });
 
       if (error) {

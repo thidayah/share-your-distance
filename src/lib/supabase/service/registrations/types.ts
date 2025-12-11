@@ -33,6 +33,8 @@ export interface Registration {
     name: string;
     distance: string;
   };
+  unique_code?: string;
+  instagram?: string;
 }
 
 export interface RegistrationFilters {
