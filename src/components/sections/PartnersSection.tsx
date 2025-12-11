@@ -24,7 +24,8 @@ const partners = {
     },
     {
       name: "Arei",
-      logo: "https://i.ibb.co.com/gL4kfxqH/arei-logo.png",
+      // logo: "https://i.ibb.co.com/gL4kfxqH/arei-logo.png",
+      logo: "https://i.ibb.co.com/HT9x7bGG/arei-logo-new.jpg",
       url: "https://areioutdoorgear.co.id",
     },
     // {
@@ -84,7 +85,7 @@ export default function PartnersSection() {
             {partners.organizers.map((organizer, index) => (
               <div
                 key={organizer.name}
-                className="group relative w-[300px]"
+                className="group relative w-[200px] md:w-[300px]"
               >
                 <img src={organizer.logo} className=" object-cover" />
               </div>
@@ -102,13 +103,13 @@ export default function PartnersSection() {
             {partners.ourPartners.map((partner, index) => (
               <div
                 key={index}
-                className="group w-[175px]"
+                className="group w-[100px] md:w-[150px]"
               >
                 <div>
                   {partner.logo ?
                     <img src={partner.logo} className=" object-cover" />
                     :
-                    <h2 className="text-zinc-300 font-semibold text-2xl md:text-5xl italic tracking-[-2px] md:tracking-[-4px] underline underline-offset-4">
+                    <h2 className="text-center text-zinc-300 font-bold text-2xl md:text-4xl italic tracking-[-2px] md:tracking-[-3px] underline underline-offset-4">
                       {partner.name}
                     </h2>
                   }
