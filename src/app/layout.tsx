@@ -20,9 +20,45 @@ import "./globals.css";
 // });
 
 export const metadata: Metadata = {
-  title: 'Share Your Distance - Running Race',
-  description: 'End your year with meaningful steps. Join us on December 20, 2025 at Arei Flagship Store.',
+  title: "Share Your Distance – Running Race 2025",
+  description:
+    "End your year with meaningful steps. Join the Share Your Distance running race on December 20, 2025 at Arei Flagship Store.",
+  keywords: [
+    "running event",
+    "running race",
+    "lari 2025",
+    "fun run",
+    "Arei",
+    "Share Your Distance",
+    "event lari desember",
+    "community running"
+  ],
+  alternates: {
+    canonical: "https://www.shareyourdistance.online/",
+  },
+  openGraph: {
+    title: "Share Your Distance – Running Race 2025",
+    description:
+      "End your year with meaningful steps. Join the Share Your Distance running race on December 20, 2025 at Arei Flagship Store.",
+    url: "https://www.shareyourdistance.online/",
+    siteName: "Share Your Distance",
+    images: [
+      {
+        url: "/images/share-your-distance.jpeg",
+        width: 1200,
+        height: 630,
+        alt: "Share Your Distance Running Race 2025",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/images/share-your-distance.jpeg"],
+  },
 };
+
 
 export default function RootLayout({
   children,
@@ -39,7 +75,7 @@ export default function RootLayout({
     //     {children}
     //   </body>
     // </html>
-    <html lang="en" 
+    <html lang="en"
     // className={ubuntu.variable}
     >
       <body className="">{children}</body>
