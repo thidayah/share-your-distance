@@ -98,7 +98,7 @@ export default function PartnersSection() {
             Partners
           </h3>
           {/* <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-16 items-center place-content-center "> */}
-          <div className="flex flex-row gap-16 items-center place-content-center ">
+          <div className="flex flex-row gap-8 md:gap-16 items-center place-content-center ">
             {partners.ourPartners.map((partner, index) => (
               <div
                 key={index}
