@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { registrationService } from '@/lib/supabase/service/registrations/services'
 import { RegistrationFilters } from "@/lib/supabase/service/registrations/types"
 import { registrationService as registrationServiceEmail } from "@/lib/email/registration-service";
+import { supabaseServer } from "@/lib/supabase/server-client";
 
 export async function GET(request: NextRequest) {
   try {
@@ -50,6 +51,7 @@ export async function POST(request: NextRequest) {
           data.status,
           data.paymentDate
         );
+
         break;
 
       // case 'assign_bib':
@@ -66,6 +68,20 @@ export async function POST(request: NextRequest) {
     let sendEmail;
 
     if (result && data.status === 'paid') {
+      // Update current participants
+      const { data: updatedCategory, error: updatedCategoryError } = await supabaseServer
+        .from('categories')
+        .update({ current_participants: parseInt(result.category.current_participants) + 1 })
+        .eq('id', result.category_id)
+        .select('*')
+        .single();
+
+      if (updatedCategoryError) {
+        console.error('Failed to update current participants:', updatedCategoryError);
+      }
+
+      result = { ...result, category: updatedCategory }
+
       // Send email payment successfully
       const emailForm = {
         email: result.email,
