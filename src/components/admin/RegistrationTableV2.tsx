@@ -43,7 +43,9 @@ export default function RegistrationsTableV2({
     return date.toLocaleDateString('id-ID', {
       day: '2-digit',
       month: 'short',
-      year: 'numeric'
+      year: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric'
     })
   }
 
