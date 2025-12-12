@@ -36,7 +36,7 @@ export default function RegistrationsClientV2() {
   })
   const [pagination, setPagination] = useState({
     page: 1,
-    limit: 20,
+    limit: 10,
     total: 0,
     totalPages: 1
   })
@@ -115,7 +115,7 @@ export default function RegistrationsClientV2() {
   }, [filters.page, filters.limit])
 
   useEffect(() => {
-    if (clear) { 
+    if (clear) {
       fetchRegistrations()
     }
   }, [clear])
@@ -137,7 +137,7 @@ export default function RegistrationsClientV2() {
       end_date: '',
       has_bib: '',
       page: 1,
-      limit: 20,
+      limit: 10,
     })
     setClear(true)
   }
@@ -167,6 +167,81 @@ export default function RegistrationsClientV2() {
     }
   }
 
+  const calculateAge = (dateOfBirth: string) => {
+    const birthDate = new Date(dateOfBirth)
+    const today = new Date()
+    let age = today.getFullYear() - birthDate.getFullYear()
+    const monthDiff = today.getMonth() - birthDate.getMonth()
+
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--
+    }
+
+    return age
+  }
+
+  const formatDateTime = (dateString: string) => {
+    return new Date(dateString).toLocaleString('id-ID', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+  }
+
+  const exportToCSV = () => {
+    // Simple CSV export
+    const headers = [
+      'Unique Code',
+      'Full Name',
+      'Email',
+      'Phone',
+      'Age',
+      'Gender',
+      'Event',
+      'Registration Date',
+      'Payment Status',
+      'Payment Amount',
+      'Payment Date',
+      'Emergency Contact',
+      'Emergency Phone',
+      'Emergency Relationship'
+    ]
+
+    const rows = registrations.map(p => [
+      p.unique_code,
+      p.full_name,
+      p.email,
+      p.phone,
+      calculateAge(p.date_of_birth),
+      p.gender.charAt(0).toUpperCase() + p.gender.slice(1),
+      p.category?.name || '',
+      formatDateTime(p.created_at),
+      p.payment_status.toUpperCase(),
+      p.total_amount,
+      p.payment_date ? formatDateTime(p.payment_date) : '',
+      p.emergency_contact_name || '',
+      p.emergency_contact_phone || '',
+      p.emergency_contact_relationship || ''
+    ])
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/xls' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `Registrations_${new Date().toISOString().split('T')[0]}.xls`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    window.URL.revokeObjectURL(url)
+  }
+
   return (
     <div className="space-y-6">
       {/* <div className="flex justify-between items-center">
@@ -178,6 +253,14 @@ export default function RegistrationsClientV2() {
       <div className="bg-white rounded-lg border border-zinc-200 shadow-sm">
         <div className="p-6 border-b border-zinc-200 flex justify-between items-center">
           <h2 className="text-xl font-semibold text-zinc-900">Manage Registrations</h2>
+          <div>
+            <button
+              onClick={exportToCSV}
+              className="flex-1 bg-white text-zinc-900 border border-zinc-900 px-4 py-2 rounded-md hover:bg-zinc-100 focus:outline-none transition focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 cursor-pointer"
+            >
+              Export CSV
+            </button>
+          </div>
         </div>
 
         <RegistrationFiltersV2
