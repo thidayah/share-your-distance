@@ -40,7 +40,6 @@ export default function RegistrationPage() {
       contactPhone: '',
       contactRelationship: '',
       medicalConditions: '',
-      allergies: '',
     },
   });
   const [orderData, setOrderData] = useState<any>(null)
@@ -93,6 +92,7 @@ export default function RegistrationPage() {
     if (!formData.emergency.contactName) messages.push('Contact Name required!')
     if (!formData.emergency.contactPhone) messages.push('Phone Number required!')
     if (!formData.emergency.contactRelationship) messages.push('Relationship required!')
+    if (!formData.emergency.medicalConditions) messages.push('Medical / Allergies Conditions required!')
     return messages;
   };
 
