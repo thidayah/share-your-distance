@@ -91,7 +91,7 @@ export const registrationService = {
     // Fungsi helper untuk apply filters
     const applyFilters = (query: any) => {
       if (search) {
-        query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%,registration_number.ilike.%${search}%`);
+        query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%,unique_code.ilike.%${search}%`);
       }
       if (payment_status) {
         query = query.eq('payment_status', payment_status);

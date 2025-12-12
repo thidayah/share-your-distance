@@ -91,7 +91,7 @@ export default function RegistrationFiltersV2({
           onChange={(e) => onChange({ category_id: e.target.value })}
           className="w-full px-3 py-2 text-zinc-600 border border-zinc-300 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:border-transparent"
         >
-          <option defaultValue=''>All Category</option>
+          <option value={''} defaultValue=''>All Category</option>
           {categories.map(row => (
             <option key={row.id} value={row.id}>
               {row.name}
