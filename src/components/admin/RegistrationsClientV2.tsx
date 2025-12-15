@@ -108,6 +108,18 @@ export default function RegistrationsClientV2() {
     }
   }
 
+  const fetchExport = async () => {
+    try {
+      const response = await fetch(`/api/admin/registrations-v2?limit=1000`)
+      const result = await response.json()
+      if (response.ok) {
+        exportToCSV(result.data.items || [])
+      }
+    } catch (error) {
+      console.error('Error fetching export:', error)
+    }
+  }
+
   useEffect(() => {
     fetchRegistrations()
     fetchStats()
@@ -190,7 +202,7 @@ export default function RegistrationsClientV2() {
     })
   }
 
-  const exportToCSV = () => {
+  const exportToCSV = (data: Registration[]) => {
     // Simple CSV export
     const headers = [
       'Unique Code',
@@ -209,7 +221,7 @@ export default function RegistrationsClientV2() {
       'Emergency Relationship'
     ]
 
-    const rows = registrations.map(p => [
+    const rows = data.map(p => [
       p.unique_code,
       p.full_name,
       p.email,
@@ -255,7 +267,7 @@ export default function RegistrationsClientV2() {
           <h2 className="text-xl font-semibold text-zinc-900">Manage Registrations</h2>
           <div>
             <button
-              onClick={exportToCSV}
+              onClick={fetchExport}
               className="flex-1 bg-white text-zinc-900 border border-zinc-900 px-4 py-2 rounded-md hover:bg-zinc-100 focus:outline-none transition focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 cursor-pointer"
             >
               Export CSV
