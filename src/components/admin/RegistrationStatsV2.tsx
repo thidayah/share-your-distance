@@ -15,7 +15,7 @@ export default function RegistrationStatsV2({ stats }: StatsProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg border border-zinc-200 shadow-sm p-6">
+    <div className="bg-white rounded-lg border border-zinc-200 shadow-sm p-4">
       <h2 className="text-lg font-semibold text-zinc-900 mb-4">Registration Statistics</h2>
       
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

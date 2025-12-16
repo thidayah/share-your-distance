@@ -90,7 +90,7 @@ const DashboardClientV2 = () => {
 
       {/* Recent Activity Section */}
       <div className="bg-white rounded-lg border border-zinc-200 shadow-sm">
-        <div className="p-6 border-b border-zinc-200">
+        <div className="p-4 border-b border-zinc-200">
           <h2 className="text-lg font-semibold text-zinc-900">Recent Activity</h2>
         </div>
         <div className="p-6">

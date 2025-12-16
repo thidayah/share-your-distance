@@ -13,9 +13,9 @@ export default async function AdminTemplate({ children }: AdminTemplateProps) {
 
   return (
     <div className={`min-h-screen bg-zinc-50 font-ubuntu`}>
-      <div className="flex">
+      <div className="flex flex-col lg:flex-row">
         <AdminSidebar />
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-4 lg:p-6">
           {children}
         </main>
       </div>
