@@ -76,7 +76,7 @@ export default function ContactMessagesClient() {
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg border border-zinc-200 shadow-sm">
-        <div className="p-6 border-b border-zinc-200 flex justify-between items-center">
+        <div className="p-4 border-b border-zinc-200 flex justify-between items-center">
           <h2 className="text-xl font-semibold text-zinc-900">Manage Contact Messages</h2>
         </div>
         <ContactMessagesTable
