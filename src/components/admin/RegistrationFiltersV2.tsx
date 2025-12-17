@@ -37,7 +37,7 @@ export default function RegistrationFiltersV2({
   ]
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4">
       {/* Date Range */}
       <div>
         <label className="block text-sm font-medium text-zinc-700 mb-1">
@@ -101,7 +101,7 @@ export default function RegistrationFiltersV2({
       </div>
 
       {/* Search Input */}
-      <div className=" col-span-3">
+      <div className=" md:col-span-3">
         <label className="block text-sm font-medium text-zinc-700 mb-1">
           Search
         </label>
@@ -120,7 +120,7 @@ export default function RegistrationFiltersV2({
           onClick={onSearch}
           className="flex-1 bg-zinc-900 text-white px-4 py-2 rounded-md hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:ring-offset-2 cursor-pointer"
         >
-          Apply Filters
+          Apply
         </button>
         <button
           onClick={onClear}

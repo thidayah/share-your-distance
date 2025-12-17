@@ -22,10 +22,10 @@ export default function RegistrationDetailsModalV2({ registration, onClose }: Re
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', {
       day: '2-digit',
-      month: 'long',
+      month: 'short',
       year: 'numeric',
-      // hour: '2-digit',
-      // minute: '2-digit'
+      hour: '2-digit',
+      minute: '2-digit'
     })
   }
 
@@ -178,10 +178,10 @@ export default function RegistrationDetailsModalV2({ registration, onClose }: Re
                       <div className="text-xs text-zinc-900 font-semibold">Registration Date</div>
                       <div className="text-sm text-zinc-500 font-medium">{formatDate(registration.created_at)}</div>
                     </div>
-                    <div>
+                    {/* <div>
                       <div className="text-xs text-zinc-900 font-semibold">Last Updated</div>
                       <div className="text-sm text-zinc-500 font-medium">{formatDate(registration.updated_at)}</div>
-                    </div>
+                    </div> */}
                   </div>
 
                   {registration.ip_address && (
