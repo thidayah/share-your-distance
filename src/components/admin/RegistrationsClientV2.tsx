@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { Registration } from "@/lib/supabase/service/registrations/types"
 import RegistrationFiltersV2 from "./RegistrationFiltersV2"
 import RegistrationsTableV2 from "./RegistrationTableV2"
+import { normalizePhone } from "@/utils"
 
 interface FilterState {
   search: string;
@@ -225,7 +226,7 @@ export default function RegistrationsClientV2() {
       p.unique_code,
       p.full_name,
       p.email,
-      p.phone,
+      normalizePhone(p.phone),
       calculateAge(p.date_of_birth),
       p.gender.charAt(0).toUpperCase() + p.gender.slice(1),
       p.category?.name || '',
@@ -234,7 +235,7 @@ export default function RegistrationsClientV2() {
       p.total_amount,
       p.payment_date ? formatDateTime(p.payment_date) : '',
       p.emergency_contact_name || '',
-      p.emergency_contact_phone || '',
+      normalizePhone(p.emergency_contact_phone) || '',
       p.emergency_contact_relationship || ''
     ])
 
@@ -263,7 +264,7 @@ export default function RegistrationsClientV2() {
       {/* <RegistrationStats stats={stats} /> */}
 
       <div className="bg-white rounded-lg border border-zinc-200 shadow-sm">
-        <div className="p-6 border-b border-zinc-200 flex justify-between items-center">
+        <div className="p-4 border-b border-zinc-200 flex justify-between items-center">
           <h2 className="text-xl font-semibold text-zinc-900">Manage Registrations</h2>
           <div>
             <button
