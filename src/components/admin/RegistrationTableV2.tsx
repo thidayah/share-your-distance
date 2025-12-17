@@ -106,7 +106,7 @@ export default function RegistrationsTableV2({
   return (
     <>
       <div className="bg-white rounded-b-lg border-t border-zinc-200 shadow-sm overflow-hidden">
-        <div className="   pb-40">
+        <div className="pb-40 overflow-x-auto">
           <table className="w-full">
             <thead className="bg-zinc-50">
               <tr>
@@ -145,7 +145,7 @@ export default function RegistrationsTableV2({
                   </td>
                 </tr>
               )}
-              {registrations.length === 0 && (
+              {!loading && registrations.length === 0 && (
                 <tr>
                   <td colSpan={6} className=" text-center py-4 text-sm text-zinc-600">No Data</td>
                 </tr>
@@ -307,7 +307,7 @@ export default function RegistrationsTableV2({
         {/* Pagination */}
         {pagination.totalPages > 1 && (
           <div className="px-6 py-4 border-t border-zinc-200 bg-zinc-50">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 items-center justify-between">
               <div className="text-sm text-zinc-700">
                 Showing <span className="font-medium">{(pagination.page - 1) * pagination.limit + 1}</span> to{' '}
                 <span className="font-medium">
