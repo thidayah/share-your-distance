@@ -85,12 +85,22 @@ export default function CategoriesTable({
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-zinc-200">
-            {!categories.length && (
+            {loading && (
+                <tr>
+                  <td colSpan={7} className="bg-white rounded-lg border border-zinc-00 shadow-sm p-8 text-center">
+                    <div className="flex justify-center">
+                      <Icon icon="svg-spinners:ring-resize" className=" size-8 text-zinc-600" />
+                    </div>
+                    <p className="mt-4 text-zinc-600">Loading...</p>
+                  </td>
+                </tr>
+              )}
+            {!loading && !categories.length && (
               <tr>
                 <td colSpan={7} className=" text-center px-6 py-4 whitespace-nowrap text-sm text-zinc-900">No Data</td>
               </tr>
             )}
-            {categories.map((category) => (
+            {!loading && categories.map((category) => (
               <tr key={category.id} className="hover:bg-zinc-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
