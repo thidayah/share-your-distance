@@ -30,7 +30,8 @@ const partners = {
     },
     {
       name: "Barber Bos",
-      logo: "https://i.ibb.co.com/rKwck36T/barberbos-logo.png",
+      // logo: "https://i.ibb.co.com/rKwck36T/barberbos-logo.png",
+      logo: "https://i.ibb.co.com/ds9dDHjb/barberbos-white-logo.png",
       url: "",
     },
     {
