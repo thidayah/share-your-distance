@@ -144,7 +144,7 @@ export default function RegistrationPage() {
           category_id: category?.id,
           // Personal Information
           full_name: formData.personal.fullName,
-          email: formData.personal.email,
+          email: formData.personal.email.toLocaleLowerCase(),
           phone: formData.personal.phone,
           date_of_birth: formData.personal.dateOfBirth,
           gender: formData.personal.gender,
