@@ -28,6 +28,41 @@ const partners = {
       logo: "https://i.ibb.co.com/HT9x7bGG/arei-logo-new.jpg",
       url: "https://areioutdoorgear.co.id",
     },
+    {
+      name: "Barber Bos",
+      logo: "https://i.ibb.co.com/rKwck36T/barberbos-logo.png",
+      url: "",
+    },
+    {
+      name: "BTRC",
+      logo: "https://i.ibb.co.com/svQvYqdb/btrc-logo.png",
+      url: "",
+    },
+    {
+      name: "Cendol Elizabeth",
+      logo: "https://i.ibb.co.com/4nFD9BbH/cendol-elizabeth-logo.png",
+      url: "",
+    },
+    {
+      name: "Dyno",
+      logo: "https://i.ibb.co.com/FLkdjJpW/dyno-logo.png",
+      url: "",
+    },
+    {
+      name: "Hey Kama",
+      logo: "https://i.ibb.co.com/BV0ZzgQy/kama-logo.png",
+      url: "",
+    },
+    {
+      name: "Shoenlab",
+      logo: "https://i.ibb.co.com/B25SjzdV/shoenlab-logo.png",
+      url: "",
+    },
+    {
+      name: "Pocari",
+      logo: "https://i.ibb.co.com/8Fpj2jf/pocari-logo.png",
+      url: "",
+    },
     // {
     //   name: "Strava",
     //   logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Strava_Logo.svg/1280px-Strava_Logo.svg.png",
@@ -98,14 +133,15 @@ export default function PartnersSection() {
           <h3 className="text-2xl font-bold text-white text-center mb-12">
             Partners
           </h3>
-          {/* <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-16 items-center place-content-center "> */}
-          <div className="flex flex-row gap-8 md:gap-16 items-center place-content-center ">
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-16 items-center place-content-center ">
+          {/* <div className="flex flex-row gap-8 md:gap-16 items-center place-content-center "> */}
             {partners.ourPartners.map((partner, index) => (
               <div
                 key={index}
-                className="group w-[100px] md:w-[150px]"
+                // className="group w-[100px] md:w-[150px]"
+                className="flex justify-center "
               >
-                <div>
+                <div className="group w-[100px] md:w-[150px]">
                   {partner.logo ?
                     <img src={partner.logo} className=" object-cover" />
                     :
