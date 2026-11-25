@@ -11,6 +11,7 @@ export default function Header() {
 
   const [isFloating, setIsFloating] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [lang, setLang] = useState<'ID' | 'EN'>('EN');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,6 +30,10 @@ export default function Header() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  const toggleLanguage = () => {
+    setLang((prev) => (prev === 'EN' ? 'ID' : 'EN'));
+  };
+
   const handleNavClick = (href: string) => {
     setIsMenuOpen(false);
     if (href.startsWith('#')) {
@@ -44,9 +49,18 @@ export default function Header() {
   };
 
   return (
-    <header className={`site-header absolute inset-x-0 top-0 z-40 text-white ${isFloating ? 'is-floating' : ''}`}>
-      <div className={`wrap site-header-inner relative flex items-center justify-between py-4 ${isMenuOpen ? 'menu-open' : ''}`}>
-        <Link href="/" className="flex items-center gap-3" aria-label="Share Your Distance — beranda" onClick={() => setIsMenuOpen(false)}>
+    <header
+      className={`site-header absolute inset-x-0 top-0 z-20 text-white${isFloating ? ' is-floating' : ''}`}
+    >
+      <div
+        className={`wrap site-header-inner relative flex items-center justify-between py-4${isMenuOpen ? ' menu-open' : ''}`}
+      >
+        <Link
+          href="/"
+          className="flex items-center gap-3"
+          aria-label="Share Your Distance — beranda"
+          onClick={() => setIsMenuOpen(false)}
+        >
           <Image
             src="/assets/Logo Putih.png"
             alt="Sobat Sabtu"
@@ -101,7 +115,18 @@ export default function Header() {
             </button>
           </nav>
 
-          <div className="header-actions">
+          <div className="header-actions flex items-center gap-3">
+            {/* Tombol Ganti Bahasa */}
+            <button
+              className="lang"
+              id="lang"
+              type="button"
+              aria-label={lang === 'EN' ? 'Switch language to English' : 'Ganti bahasa ke Indonesia'}
+              onClick={toggleLanguage}
+            >
+              <span className="lang-label">{lang}</span>
+            </button>
+
             <Link
               href={pathname === '/' ? '#daftar' : '/category'}
               onClick={(e) => {
