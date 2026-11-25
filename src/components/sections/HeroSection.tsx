@@ -1,115 +1,166 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-// import CountdownTimer from '@/components/ui/CountDownTimer';
+import Image from 'next/image';
 
-const heroSlides = [
-  {
-    id: 1,
-    image: 'https://i.ibb.co.com/S1xGfDn/syd-banner-1.jpg',
-    // image: 'https://images.unsplash.com/photo-1528720208104-3d9bd03cc9d4?q=80&w=1920&auto=format&fit=crop',
-    alt: 'Runners at sunrise'
-  },
-  {
-    id: 2,
-    image: 'https://i.ibb.co.com/6Jt3CgBs/syd-banner-2.jpg',
-    // image: 'https://images.unsplash.com/photo-1727094141271-9bea5bc8c757?q=80&w=1920&auto=format&fit=crop',
-    alt: 'Group of runners'
-  },
-  {
-    id: 3,
-    image: 'https://i.ibb.co.com/WThddLP/syd-banner-3.jpg',
-    // image: 'https://images.unsplash.com/photo-1574288763758-a17ce17c4088?q=80&w=1920&auto=format&fit=crop',
-    alt: 'Finish line celebration'
-  },
-  {
-    id: 4,
-    image: 'https://i.ibb.co.com/Mkc3rfMB/syd-banner-4.jpg',
-    // image: 'https://images.unsplash.com/photo-1574288763758-a17ce17c4088?q=80&w=1920&auto=format&fit=crop',
-    alt: 'To be continue'
-  }
-];
+interface TimeLeft {
+  days: string;
+  hours: string;
+  minutes: string;
+  seconds: string;
+}
 
 export default function HeroSection() {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const [timeLeft, setTimeLeft] = useState<TimeLeft>({
+    days: '00',
+    hours: '00',
+    minutes: '00',
+    seconds: '00',
+  });
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
-    }, 5000);
-    return () => clearInterval(interval);
+    // Target: 19 Desember 2026 06:00 WIB (UTC+7) -> 18 Desember 23:00 UTC
+    const targetDate = Date.UTC(2026, 11, 18, 23, 0, 0);
+
+    const updateCountdown = () => {
+      const now = Date.now();
+      const difference = Math.max(0, targetDate - now);
+
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((difference / (1000 * 60)) % 60);
+      const seconds = Math.floor((difference / 1000) % 60);
+
+      setTimeLeft({
+        days: String(days).padStart(2, '0'),
+        hours: String(hours).padStart(2, '0'),
+        minutes: String(minutes).padStart(2, '0'),
+        seconds: String(seconds).padStart(2, '0'),
+      });
+    };
+
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 1000);
+    return () => clearInterval(timer);
   }, []);
 
-  const handleSmoothScroll = (href: string) => {
-    const targetId = href.substring(1)
-    const targetElement = document.getElementById(targetId)
-
-    if (targetElement) {
-      const headerHeight = 30
-      const targetPosition = targetElement.offsetTop - headerHeight
-
-      window.scrollTo({
-        top: targetPosition,
-        behavior: 'smooth'
-      })
+  const handleScrollToDaftar = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const el = document.getElementById('daftar');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
     }
-  }
+  };
 
   return (
-    <section id="home" className="relative h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Slides */}
-      <div className="absolute inset-0">
-        {heroSlides.map((slide, index) => (
-          <div
-            key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100' : 'opacity-0'
-              }`}
-          >
-            <div
-              className="w-full h-full bg-cover bg-center bg-no-repeat"
-              style={{ backgroundImage: `url(${slide.image})` }}
-            />
-            <div className="absolute inset-0 bg-black/70" />
+    <section id="top" className="relative overflow-hidden bg-[var(--ink)] text-white">
+      <div className="track dots pointer-events-none absolute inset-0 opacity-40"></div>
+
+      <div className="wrap hero-grid relative grid min-h-[740px] grid-cols-1 items-center gap-12 pb-16 pt-32 lg:grid-cols-[1.04fr_.96fr]">
+        {/* Left Column: Heading & Countdown */}
+        <div className="relative z-10 max-w-[640px]">
+          <h1 className="hero-title mb-5 text-[4rem] sm:text-[5rem] lg:text-[5.6rem] font-black leading-[.88] tracking-[-.075em]">
+            SHARE
+            <br />
+            <span className="text-[var(--lime)]">YOUR</span>
+            <br />
+            DISTANCE
+            <span className="text-[var(--sky)]">.</span>
+          </h1>
+
+          <div className="mb-8 flex flex-wrap items-center gap-4 text-sm font-semibold text-white/85">
+            <span className="flex items-center gap-2">
+              <span className="text-[var(--lime)] text-xs">●</span> Sabtu, 19 Desember 2026
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="text-[var(--sky)] text-xs">●</span> Departmen Sports Lab, Bandung
+            </span>
           </div>
-        ))}
+
+          <div>
+            <a
+              href="#daftar"
+              onClick={handleScrollToDaftar}
+              className="btn lime !px-7 !py-4 text-base font-extrabold shadow-lg shadow-black/20"
+            >
+              Daftar sekarang ↗
+            </a>
+          </div>
+
+          <div className="mt-10 max-w-[470px] border-t border-white/25 pt-5">
+            <p className="eyebrow mb-4 text-white/60">Hitung mundur ke garis start</p>
+            <div className="grid grid-cols-4 gap-2">
+              <div className="countcell text-center">
+                <strong key={`days-${timeLeft.days}`} className="countval block text-4xl sm:text-6xl font-black tabular-nums tick-up">
+                  {timeLeft.days}
+                </strong>
+                <span className="text-[10px] uppercase tracking-widest text-white/65">Hari</span>
+              </div>
+              <div className="countcell text-center">
+                <strong key={`hours-${timeLeft.hours}`} className="countval block text-4xl sm:text-6xl font-black tabular-nums tick-up">
+                  {timeLeft.hours}
+                </strong>
+                <span className="text-[10px] uppercase tracking-widest text-white/65">Jam</span>
+              </div>
+              <div className="countcell text-center">
+                <strong key={`minutes-${timeLeft.minutes}`} className="countval block text-4xl sm:text-6xl font-black tabular-nums tick-up">
+                  {timeLeft.minutes}
+                </strong>
+                <span className="text-[10px] uppercase tracking-widest text-white/65">Menit</span>
+              </div>
+              <div className="countcell text-center">
+                <strong key={`seconds-${timeLeft.seconds}`} className="countval block text-4xl sm:text-6xl font-black tabular-nums tick-up">
+                  {timeLeft.seconds}
+                </strong>
+                <span className="text-[10px] uppercase tracking-widest text-white/65">Detik</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Visual Collage */}
+        <div className="collage relative mx-auto min-h-[380px] sm:min-h-[520px] w-full max-w-[590px]">
+          {/* Main Photo */}
+          <div className="absolute right-0 top-0 h-[73%] w-[84%] rotate-2 border-[7px] border-white/10 bg-white/10 p-2 shadow-2xl">
+            <div className="photo relative h-full w-full rounded">
+              <Image
+                src="/assets/syd-banner-1.jpeg"
+                alt="Pelari melewati tim yang memberi dukungan di sisi lintasan"
+                fill
+                priority
+                className="object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Secondary Photo */}
+          <div className="absolute bottom-4 left-0 h-[47%] w-[55%] -rotate-3 border-[7px] border-[var(--ink)] bg-[var(--ink)] p-2 shadow-2xl">
+            <div className="photo relative h-full w-full rounded">
+              {/* Fallback image */}
+              <img
+                src="https://images.pexels.com/photos/12585936/pexels-photo-12585936.jpeg?auto=compress&cs=tinysrgb&w=700"
+                alt="Dua pelari menyerahkan tongkat estafet"
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
+            </div>
+          </div>
+
+          {/* Format Badge */}
+          <div className="absolute bottom-0 right-0 rotate-3 bg-[var(--lime)] px-5 py-4 text-[var(--ink)] shadow-xl">
+            <span className="eyebrow block">Format lomba</span>
+            <strong className="text-2xl font-black">4 × 600 M</strong>
+          </div>
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="relative z-10 text-center justify-center text-white max-w-4xl mx-auto px-6">
-        <div className=" flex justify-center mb-2">
-          <img src={'https://i.ibb.co.com/dJM7FSPF/syd-logo.png'} className="object-cover w-[150px] md:w-[250px]" alt="SYD logo" />
+      {/* Bottom Values Ribbon */}
+      <div className="hero-values border-t border-white/15">
+        <div className="wrap flex flex-wrap justify-between gap-3 py-4 text-xs font-bold uppercase tracking-wider text-white/70">
+          <span>One Team.</span>
+          <span>Four Runners.</span>
+          <span>One Shared Distance.</span>
         </div>
-        <h1 className="text-5xl md:text-8xl font-bold mb-4 animate-slide-up tracking-[-6px] md:tracking-[-10px] ">
-          Share&nbsp;&nbsp;Your&nbsp;&nbsp;Happiness
-        </h1>
-        {/* <p className="text-lg md:text-3xl mb-4 opacity-90 animate-fade-in italic">
-          End Your Year with Meaningful Steps
-        </p> */}
-        <div className="mb-4 animate-fade-in">
-          {/* <p className="text-xs md:text-base mb-2">December 20, 2025 at Arei Flagship Store, Bandung</p> */}
-          <p className="text-xs md:text-2xl mb-2 italic">December 20, 2025 at <b>Arei Flagship Store, Bandung</b></p>
-        </div>
-        <div className="mb-2 animate-fade-in">
-          <p className="text-xs md:text-base mb-4">Registration Periode 11-18 December</p>
-        </div>
-
-        {/* Countdown Timer */}
-        {/* <div className="mb-8 animate-slide-up">
-          <CountdownTimer targetDate="2025-12-27T06:00:00" />
-        </div> */}
-
-      </div>
-      {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <button
-          onClick={() => handleSmoothScroll('#category')}
-          className="flex flex-col items-center cursor-pointer"
-        >
-          <span className="text-sm mb-2 opacity-80">Scroll for explorer</span>
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
-        </button>
       </div>
     </section>
   );
