@@ -1,6 +1,5 @@
-import Button from "./Button"
-import Link from "next/link";
-import { TypesCategory } from "@/types/database";
+import Link from 'next/link';
+import { TypesCategory } from '@/types/database';
 
 interface CategoryCardProps {
   item: TypesCategory;
@@ -8,93 +7,75 @@ interface CategoryCardProps {
   className?: string;
 }
 
-export default function CategoryCard({ item, index }: CategoryCardProps) {
+export default function CategoryCard({ item }: CategoryCardProps) {
+  const isClosed = item.max_participants ? item.current_participants >= item.max_participants : false;
+
   return (
     <div
       key={item.id}
-      className={`
-                  max-w-[350px]  
-                  relative p-8 transition-all duration-500 hover:scale-105
-                    ${item.recommended
-          ? 'border-zinc-500 bg-zinc-800 shadow-xl'
-          : 'border-neutral-200 bg-zinc-900 shadow-lg hover:shadow-xl'
-        }
-                    animate-slide-up
-                  `}
-    // style={{ animationDelay: `${index * 200}ms` }}
+      className={`relative w-full max-w-[360px] rounded-2xl border bg-white p-8 shadow-xl transition-all duration-300 hover:-translate-y-1 ${
+        item.recommended ? 'border-[var(--blue)] shadow-blue-500/10' : 'border-[var(--line)]'
+      }`}
     >
       {/* Recommended Badge */}
       {item.recommended && (
-        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-          <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
-            Most Popular
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+          <span className="rounded-full bg-[var(--lime)] px-4 py-1 text-xs font-black uppercase tracking-wider text-[var(--ink)] shadow-md">
+            Paling Populer
           </span>
         </div>
       )}
 
       {/* Category Header */}
-      <div className="text-center mb-8">
-        <h3 className={` text-lg md:text-2xl font-bold mb-4`}>
+      <div className="mb-6 text-center">
+        <h3 className="mb-2 text-xl md:text-2xl font-black text-[var(--ink)]">
           {item.name}
         </h3>
-        <div className={`text-2xl md:text-3xl font-bold mb-2`}>
-          IDR {item.price.toLocaleString()}
-          <span className="text-sm font-normal text-zinc-400 block">
-            {item.id === 'estafet-200m' ? 'per team' : 'per person'}
+        <div className="mb-2 text-2xl md:text-3xl font-black text-[var(--blue)]">
+          Rp{item.price.toLocaleString('id-ID')}
+          <span className="block text-xs font-semibold text-[var(--muted)] mt-1">
+            {item.id === 'estafet-200m' ? 'per tim' : 'per orang'}
           </span>
         </div>
       </div>
 
       {/* Description */}
-      <p className="text-sm md:text-base mb-8 text-center">
+      <p className="mb-6 text-center text-sm text-[var(--muted)] leading-relaxed">
         {item.description}
       </p>
 
       {/* Features List */}
-      <ul className="space-y-4 mb-8">
+      <ul className="mb-8 space-y-3 text-sm text-[var(--ink)]">
         {item.category_features?.map((feat, fIndex) => (
           <li key={fIndex} className="flex items-center">
-            <svg
-              className={`w-5 h-5 mr-3 flex-shrink-0 ${item.recommended ? 'text-blue-500' : 'text-zinc-500'
-                }`}
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-            </svg>
-            <span className="text-sm md:text-base">{feat?.feature}</span>
+            <span className="mr-3 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--paper)] text-[var(--blue)] font-bold text-xs">
+              ✓
+            </span>
+            <span>{feat?.feature}</span>
           </li>
         ))}
       </ul>
 
       {/* CTA Button */}
       <div className="text-center">
-        {(item.max_participants && item.current_participants >= item.max_participants) ?
-          <Button
-            variant={'outline'}
-            size="md"
-            fullWidth
+        {isClosed ? (
+          <button
             disabled
-            className=" bg-red-400 border-red-400"
+            className="btn w-full bg-neutral-200 text-neutral-500 cursor-not-allowed font-bold"
           >
-            Closed
-          </Button>
-          :
-          <Link href={`/register/${item.id}`}>
-            <Button
-              variant={item.recommended ? 'primary' : 'outline'}
-              size="md"
-              fullWidth
-              className={`
-                ${item.recommended ? 'bg-zinc-700 hover:bg-zinc-600'
-                  : 'border-zinc-200 text-zinc-200 hover:bg-zinc-100 hover:text-zinc-900'
-                }`}
-            >
-              Register Now
-            </Button>
+            Pendaftaran Ditutup
+          </button>
+        ) : (
+          <Link
+            href={`/register/${item.id}`}
+            className={`btn w-full font-extrabold ${
+              item.recommended ? 'lime' : 'dark'
+            }`}
+          >
+            Daftar Sekarang ↗
           </Link>
-        }
+        )}
       </div>
     </div>
-  )
+  );
 }
