@@ -9,9 +9,11 @@ interface TemplateProps {
 
 export default function Template({ children }: TemplateProps) {
   return (
-    <main className="min-h-screen font-ubuntu">
+    <div className="min-h-screen bg-[var(--paper)] text-[var(--ink)] antialiased flex flex-col">
       <Header />
-      {children}
+      <div className="flex-1">
+        {children}
+      </div>
       <Footer />
       <ToastContainer
         position="top-right"
@@ -26,6 +28,6 @@ export default function Template({ children }: TemplateProps) {
         theme="dark"
         transition={Bounce}
       />
-    </main>
+    </div>
   );
 }
