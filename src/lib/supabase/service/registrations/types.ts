@@ -39,6 +39,7 @@ export interface Registration {
 }
 
 export interface RegistrationCreateInput {
+  registration_number: string;
   category_id: string;
   full_name: string;
   email: string;

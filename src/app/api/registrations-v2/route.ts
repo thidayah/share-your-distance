@@ -187,6 +187,7 @@ export async function POST(request: NextRequest) {
     const ipAddress = isIP(candidateIp) ? candidateIp : null;
 
     const registrationInput: RegistrationCreateInput = {
+      registration_number: registrationNumber,
       category_id: categoryId,
       full_name: fullName,
       email,
