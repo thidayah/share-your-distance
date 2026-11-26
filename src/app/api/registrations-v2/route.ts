@@ -30,7 +30,7 @@ function isValidStravaUrl(value: string): boolean {
     const url = new URL(value);
     return url.protocol === 'https:'
       && ['strava.com', 'www.strava.com'].includes(url.hostname.toLowerCase())
-      && /^\/athletes\/\d+\/?$/.test(url.pathname);
+      && /^\/athletes\/[a-z\d_-]+\/?$/i.test(url.pathname);
   } catch {
     return false;
   }
