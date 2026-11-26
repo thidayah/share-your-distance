@@ -437,7 +437,7 @@ export default function AlurSection() {
             preload="none"
             aria-label={t('Video pelari berlari bersama', 'Video of runners running together')}
           >
-            <source src="/assets/Moving together.mp4" type="video/mp4" />
+            <source src="https://biyurtytnwlmxuninybb.supabase.co/storage/v1/object/public/syd-images/Moving%20together,%20sharing%20the%20same%20vision.mp4" type="video/mp4" />
           </video>
           <div className="runner-shade"></div>
           <div className="runner-copy">
