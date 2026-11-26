@@ -176,7 +176,7 @@ export async function POST(request: NextRequest) {
     if (duplicateError) throw duplicateError;
     if (existingRegistration) {
       return NextResponse.json(
-        { status: false, message: 'You have already registered for this category' },
+        { status: false, message: 'You have already registered for this event category' },
         { status: 409 },
       );
     }
