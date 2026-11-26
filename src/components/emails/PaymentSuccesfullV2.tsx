@@ -97,8 +97,7 @@ export const PaymentSuccessfulV2 = ({
             <Text
               style={{
                 margin: 0,
-                color: 'rgba(216, 250, 101, 0.16)',
-                WebkitTextStroke: '1px rgba(216, 250, 101, 0.55)',
+                color: colors.lime,
                 fontSize: '34px',
                 fontWeight: 900,
                 lineHeight: 0.9,
