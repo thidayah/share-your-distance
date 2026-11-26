@@ -1,3 +1,5 @@
+export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'expired' | 'refunded' | 'cancelled';
+
 export interface Registration {
   id: string;
   registration_number: string;
@@ -6,35 +8,53 @@ export interface Registration {
   email: string;
   phone: string;
   date_of_birth: string;
-  gender: 'male' | 'female' | 'other';
-  nationality: string;
-  id_number?: string;
-  tshirt_size?: 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL';
-  running_experience?: string;
+  gender: 'male' | 'female' | 'other' | null;
+  instagram: string | null;
+  strava_url: string;
+  nationality: string | null;
+  id_number: string | null;
   emergency_contact_name: string;
   emergency_contact_phone: string;
   emergency_contact_relationship: string;
-  medical_conditions?: string;
+  medical_conditions: string | null;
   total_amount: number;
-  payment_status: 'pending' | 'paid' | 'failed' | 'refunded' | 'cancelled';
-  payment_method?: string;
-  payment_date?: string;
-  external_payment_id?: string;
-  bib_number?: string;
-  bib_assigned_at?: string;
-  finish_time?: string;
-  agreed_to_terms: boolean;
-  agreed_to_privacy_policy: boolean;
-  agreed_at: string;
+  payment_status: PaymentStatus;
+  payment_method: string | null;
+  external_order_id: string | null;
+  external_transaction_id: string | null;
+  payment_date: string | null;
+  consent_given_at: string | null;
+  ip_address: string | null;
   created_at: string;
   updated_at: string;
-  ip_address?: string;
   category?: {
+    id: string;
     name: string;
+    description: string;
+    price: number;
     distance: string;
+    max_participants: number | null;
+    current_participants: number | null;
   };
-  unique_code?: string;
-  instagram?: string;
+}
+
+export interface RegistrationCreateInput {
+  category_id: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  date_of_birth: string;
+  gender: 'male' | 'female' | 'other';
+  instagram?: string | null;
+  strava_url: string;
+  emergency_contact_name: string;
+  emergency_contact_phone: string;
+  emergency_contact_relationship: string;
+  medical_conditions?: string | null;
+  total_amount: number;
+  consent_given_at: string;
+  external_order_id?: string | null;
+  ip_address?: string | null;
 }
 
 export interface RegistrationFilters {
@@ -43,7 +63,6 @@ export interface RegistrationFilters {
   category_id?: string;
   start_date?: string;
   end_date?: string;
-  has_bib?: boolean;
   page?: number;
   limit?: number;
 }

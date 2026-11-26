@@ -1,4 +1,3 @@
-import { toast } from "react-toastify";
 import { TypesCategory } from "@/types/database";
 
 interface PersonalInfoData {
@@ -17,7 +16,7 @@ interface PersonalInfoFormProps {
   category?: TypesCategory;
 }
 
-export default function PersonalInfoFormV1({ data, onChange, category }: PersonalInfoFormProps) {
+export default function PersonalInfoFormV1({ data, onChange }: PersonalInfoFormProps) {
   const calculateAge = (birthDate: string) => {
     const today = new Date();
     const birth = new Date(birthDate);
@@ -31,17 +30,6 @@ export default function PersonalInfoFormV1({ data, onChange, category }: Persona
 
   const handleDateChange = (date: string) => {
     onChange({ dateOfBirth: date });
-
-    // Validate age requirements
-    if (date) {
-      const age = calculateAge(date);
-      if (category?.min_age && age < category.min_age) {
-        toast.warning(`Minimum age for this category is ${category.min_age}`);
-      }
-      if (category?.max_age && age > category.max_age) {
-        toast.warning(`Maximum age for this category is ${category.max_age}`);
-      }
-    }
   };
 
   const baseClasses = "w-full bg-zinc-800 border border-zinc-600 px-4 py-3 text-white focus:border-zinc-100 focus:outline-none transition-colors"
@@ -49,15 +37,6 @@ export default function PersonalInfoFormV1({ data, onChange, category }: Persona
   return (
     <div>
       <h2 className="text-2xl font-bold text-white mb-6">Personal Information</h2>
-
-      {category?.health_warning && (
-        <div className="bg-orange-500/20 border border-orange-500/30 p-4 mb-6">
-          <div className="flex items-start">
-            <span className="text-orange-400 mr-2">⚠️</span>
-            <p className="text-orange-200 text-sm">{category.health_warning}</p>
-          </div>
-        </div>
-      )}
 
       <div className="grid md:grid-cols-2 gap-6">
         <div>
@@ -113,12 +92,9 @@ export default function PersonalInfoFormV1({ data, onChange, category }: Persona
             onChange={(e) => handleDateChange(e.target.value)}
             className={baseClasses}
           />
-          {data.dateOfBirth && category?.min_age && (
+          {data.dateOfBirth && (
             <p className="text-neutral-400 text-xs mt-1">
               Age: {calculateAge(data.dateOfBirth)} years
-              {category.min_age && (
-                <span> (Minimum: {category.min_age})</span>
-              )}
             </p>
           )}
         </div>

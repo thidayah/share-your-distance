@@ -1,9 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { categoryService } from '@/lib/supabase/service/categories/services';
 
 export async function GET() {
   try {
-    const data = await categoryService.getAll();
+    const data = await categoryService.getActive();
     return NextResponse.json(
       { success: true, data }
     );
@@ -15,15 +15,9 @@ export async function GET() {
   }
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const category = await categoryService.create(body.category, body.features);
-    return NextResponse.json(category);
-  } catch (error) {
-    return NextResponse.json(
-      { success: false, message: 'Failed to create category', error }, 
-      { status: 500 },
-    );
-  }
+export async function POST() {
+  return NextResponse.json(
+    { success: false, message: 'Category management is only available in the admin API' },
+    { status: 405 },
+  );
 }

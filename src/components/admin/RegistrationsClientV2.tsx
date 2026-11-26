@@ -12,7 +12,6 @@ interface FilterState {
   category_id: string;
   start_date: string;
   end_date: string;
-  has_bib: string;
   page: number;
   limit: number;
 }
@@ -47,7 +46,6 @@ export default function RegistrationsClientV2() {
     category_id: '',
     start_date: '',
     end_date: '',
-    has_bib: '',
     page: 1,
     limit: 10
   })
@@ -148,7 +146,6 @@ export default function RegistrationsClientV2() {
       category_id: '',
       start_date: '',
       end_date: '',
-      has_bib: '',
       page: 1,
       limit: 10,
     })
@@ -206,7 +203,7 @@ export default function RegistrationsClientV2() {
   const exportToCSV = (data: Registration[]) => {
     // Simple CSV export
     const headers = [
-      'Unique Code',
+      'Registration Number',
       'Full Name',
       'Email',
       'Phone',
@@ -223,12 +220,12 @@ export default function RegistrationsClientV2() {
     ]
 
     const rows = data.map(p => [
-      p.unique_code,
+      p.registration_number,
       p.full_name,
       p.email,
       normalizePhone(p.phone),
       calculateAge(p.date_of_birth),
-      p.gender.charAt(0).toUpperCase() + p.gender.slice(1),
+      p.gender ? p.gender.charAt(0).toUpperCase() + p.gender.slice(1) : '',
       p.category?.name || '',
       formatDateTime(p.created_at),
       p.payment_status.toUpperCase(),

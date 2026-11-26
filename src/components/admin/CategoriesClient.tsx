@@ -6,11 +6,6 @@ import CategoriesTable from './CategoriesTable'
 import CategoryModal from './CategoryModal'
 import { toast } from "react-toastify"
 
-interface CategoryFeature {
-  feature: string
-  display_order: number
-}
-
 interface Category {
   id: string
   name: string
@@ -22,11 +17,8 @@ interface Category {
   is_active?: boolean
   max_participants?: number
   current_participants?: number
-  min_age?: number
-  max_age?: number
-  health_warning?: string
   display_order?: number
-  category_features: CategoryFeature[]
+  features: string[]
 }
 
 // interface CategoriesClientProps {
@@ -110,8 +102,8 @@ export default function CategoriesClient() {
       // }
       if (result.success) {        
         toast.success(result.message || 'Data updated successfully')
-          setCategories(prev =>
-          prev.map(cat => cat.id === id ? { ...cat, ...result.category } : cat)
+        setCategories(prev =>
+          prev.map(cat => cat.id === id ? { ...cat, ...result.data } : cat)
         )
         setIsModalOpen(false)
         setEditingCategory(null)

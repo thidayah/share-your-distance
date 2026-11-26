@@ -123,9 +123,6 @@ export default function RegistrationsTableV2({
                   Payment
                 </th>
                 {/* <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                  Bib Number
-                </th> */}
-                {/* <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
                   Registered
                 </th> */}
                 <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
@@ -155,7 +152,7 @@ export default function RegistrationsTableV2({
                   {/* Registration Number */}
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-zinc-900">
-                      {registration.unique_code}
+                      {registration.registration_number}
                     </div>
                     <div className="text-xs text-zinc-500">
                       {/* ID: {registration.id.substring(0, 8)}... */}
@@ -224,18 +221,6 @@ export default function RegistrationsTableV2({
                       {formatCurrency(registration.total_amount)}
                     </div>
                   </td>
-
-                  {/* Bib Number */}
-                  {/* <td className="px-6 py-4 whitespace-nowrap">
-                    {registration.bib_number ? (
-                      <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                        <Icon icon="mdi:numeric" className="h-4 w-4 mr-1" />
-                        {registration.bib_number}
-                      </div>
-                    ) : (
-                      <span className="text-sm text-zinc-400">Not assigned</span>
-                    )}
-                  </td> */}
 
                   {/* Registration Date */}
                   {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-500">

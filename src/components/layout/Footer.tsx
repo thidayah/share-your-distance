@@ -1,7 +1,11 @@
-import Link from 'next/link';
+'use client';
+
 import Image from 'next/image';
+import { useLanguage } from '@/lib/i18n';
+import { DEVELOPER_URL, EMAIL_URL, INSTAGRAM_URL, WHATSAPP_URL } from '@/data/siteLinks';
 
 export default function Footer() {
+  const { t } = useLanguage();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -22,21 +26,11 @@ export default function Footer() {
             </p>
           </div>
           <div className="sm:justify-self-end">
-            <p className="eyebrow mb-4 text-white/55 sm:text-right">Kontak</p>
+            <p className="eyebrow mb-4 text-white/55 sm:text-right">{t('Kontak', 'Contact')}</p>
             <div className="flex flex-row gap-3 sm:justify-end">
               <a
                 className="grid h-12 w-12 place-items-center rounded-full border border-white/20 text-white transition-colors hover:border-[var(--lime)] hover:bg-white/10 hover:text-[var(--lime)]"
-                href="mailto:hello@shareyourdistance.online"
-                aria-label="Email hello@shareyourdistance.online"
-              >
-                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.8">
-                  <rect x="3" y="5" width="18" height="14" rx="2" />
-                  <path d="m4 7 8 6 8-6" />
-                </svg>
-              </a>
-              <a
-                className="grid h-12 w-12 place-items-center rounded-full border border-white/20 text-white transition-colors hover:border-[var(--lime)] hover:bg-white/10 hover:text-[var(--lime)]"
-                href="https://wa.me/6285183081136?text=Halo%20Share%20Your%20Distance,%20saya%20mau%20bertanya"
+                href={WHATSAPP_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="WhatsApp"
@@ -47,7 +41,7 @@ export default function Footer() {
               </a>
               <a
                 className="grid h-12 w-12 place-items-center rounded-full border border-white/20 text-white transition-colors hover:border-[var(--lime)] hover:bg-white/10 hover:text-[var(--lime)]"
-                href="https://instagram.com/sobatsabtu"
+                href={INSTAGRAM_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram @sobatsabtu"
@@ -58,20 +52,33 @@ export default function Footer() {
                   <circle cx="17.5" cy="6.5" r=".8" className="fill-current stroke-none" />
                 </svg>
               </a>
+              <a
+                className="grid h-12 w-12 place-items-center rounded-full border border-white/20 text-white transition-colors hover:border-[var(--lime)] hover:bg-white/10 hover:text-[var(--lime)]"
+                href={EMAIL_URL}
+                aria-label="Email hello@shareyourdistance.online"
+              >
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.8">
+                  <rect x="3" y="5" width="18" height="14" rx="2" />
+                  <path d="m4 7 8 6 8-6" />
+                </svg>
+              </a>
+              <a
+                className="grid h-12 w-12 place-items-center rounded-full border border-white/20 text-white transition-colors hover:border-[var(--lime)] hover:bg-white/10 hover:text-[var(--lime)]"
+                href={DEVELOPER_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={t('Situs pengembang', 'Developer site')}
+              >
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m8 8-4 4 4 4m8-8 4 4-4 4m-3-11-2 14" />
+                </svg>
+              </a>
             </div>
           </div>
         </div>
-        <div className="border-t border-white/15 pt-5 flex flex-col sm:flex-row justify-between items-center text-xs tracking-wide text-white/50 gap-3">
-          <p>Copyright © {currentYear} Sobat Sabtu · All Rights Reserved</p>
-          <div className="flex gap-5">
-            <Link href="/privacy-policy" className="hover:text-white transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/terms-of-service" className="hover:text-white transition-colors">
-              Terms of Service
-            </Link>
-          </div>
-        </div>
+        <p className="border-t border-white/15 pt-5 text-center text-xs tracking-wide text-white/50">
+          Copyright © {currentYear} Sobat Sabtu · All Rights Reserved
+        </p>
       </div>
     </footer>
   );

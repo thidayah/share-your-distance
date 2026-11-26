@@ -4,14 +4,15 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
+import { useLanguage } from '@/lib/i18n';
 
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
+  const { lang, toggle, t } = useLanguage();
 
   const [isFloating, setIsFloating] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [lang, setLang] = useState<'ID' | 'EN'>('EN');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -29,10 +30,6 @@ export default function Header() {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
-
-  const toggleLanguage = () => {
-    setLang((prev) => (prev === 'EN' ? 'ID' : 'EN'));
-  };
 
   const handleNavClick = (href: string) => {
     setIsMenuOpen(false);
@@ -78,7 +75,7 @@ export default function Header() {
           type="button"
           aria-controls="header-menu"
           aria-expanded={isMenuOpen}
-          aria-label={isMenuOpen ? 'Tutup menu' : 'Buka menu'}
+          aria-label={isMenuOpen ? t('Tutup menu', 'Close menu') : t('Buka menu', 'Open menu')}
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -91,20 +88,20 @@ export default function Header() {
         </button>
 
         <div className="header-menu" id="header-menu">
-          <nav className="navlinks flex gap-7 text-sm font-semibold" aria-label="Navigasi utama">
+          <nav className="navlinks flex gap-7 text-sm font-semibold" aria-label={t('Navigasi utama', 'Main navigation')}>
             <button
               type="button"
               onClick={() => handleNavClick('#format')}
               className="hover:text-[var(--lime)] transition-colors cursor-pointer text-left"
             >
-              Format
+              {t('Format', 'Format')}
             </button>
             <button
               type="button"
               onClick={() => handleNavClick('#alur')}
               className="hover:text-[var(--lime)] transition-colors cursor-pointer text-left"
             >
-              Alur
+              {t('Alur', 'How it works')}
             </button>
             <button
               type="button"
@@ -121,25 +118,18 @@ export default function Header() {
               className="lang"
               id="lang"
               type="button"
-              aria-label={lang === 'EN' ? 'Switch language to English' : 'Ganti bahasa ke Indonesia'}
-              onClick={toggleLanguage}
+              aria-label={lang === 'id' ? 'Switch language to English' : 'Ganti bahasa ke Indonesia'}
+              onClick={toggle}
             >
-              <span className="lang-label">{lang}</span>
+              <span className="lang-label">{lang === 'id' ? 'EN' : 'ID'}</span>
             </button>
 
             <Link
-              href={pathname === '/' ? '#daftar' : '/category'}
-              onClick={(e) => {
-                if (pathname === '/') {
-                  e.preventDefault();
-                  handleNavClick('#daftar');
-                } else {
-                  setIsMenuOpen(false);
-                }
-              }}
+              href="/category"
+              onClick={() => setIsMenuOpen(false)}
               className="btn lime !min-h-11 !px-5 !py-2"
             >
-              Daftar ↗
+              {t('Daftar ↗', 'Register ↗')}
             </Link>
           </div>
         </div>

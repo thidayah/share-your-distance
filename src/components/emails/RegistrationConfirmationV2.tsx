@@ -74,6 +74,11 @@ export const RegistrationConfirmationV2 = ({
               <div className="mb-4 px-6 py-2 mx-8 text-white bg-zinc-700">
                 <Text className="font-bold mb-1">Complete Your Payment</Text>
                 <Text className="text-sm">To secure your spot, please complete your payment within <b>24 hours</b>.</Text>
+                {payment_url && (
+                  <Text className="text-sm mt-4">
+                    <Link href={payment_url} className="text-blue-300 underline">Continue to secure payment</Link>
+                  </Text>
+                )}
                 <div>&nbsp;</div>
               </div>
 

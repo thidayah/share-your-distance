@@ -39,8 +39,8 @@ export default function RegistrationSummary({ data, category, isCheck, onCheck, 
               <h4 className="text-white font-bold md:text-xl">{category?.name}</h4>
               <p className="text-blue-200 mt-2">{category?.distance}</p>
               <ul className="text-blue-200 text-xs md:text-sm mt-2 space-y-1">
-                {category?.category_features?.map((f, index) => (
-                  <li key={index}>• {f.feature}</li>
+                {category?.features?.map((feature, index) => (
+                  <li key={index}>• {feature}</li>
                 ))}
               </ul>
             </div>

@@ -25,11 +25,17 @@ export async function POST(request: Request) {
     }
 
     // Insert to Supabase database
-    const result = await contactMessagesService.create(body);
+    const result = await contactMessagesService.create({
+      name,
+      email,
+      category,
+      subject,
+      message,
+    });
 
     // Send emails concurrently
-    const adminEmailPromise = await contactService.sendToAdmin(body)
-    const userEmailPromise = await contactService.sendToUser(body)
+    const adminEmailPromise = contactService.sendToAdmin(body)
+    const userEmailPromise = contactService.sendToUser(body)
 
     const [adminResult, userResult] = await Promise.allSettled([
       adminEmailPromise,
@@ -70,20 +76,6 @@ export async function POST(request: Request) {
         message: 'Failed to submit contact form, please try again later or contact us directly at hello@shareyourdistance.online',
         error
       },
-      { status: 500 }
-    );
-  }
-}
-
-export async function GET() {
-  try {
-    const data = await contactMessagesService.getAll();
-    return NextResponse.json(
-      { success: true, data }
-    );
-  } catch (error) {
-    return NextResponse.json(
-      { success: false, message: 'Failed to fetch data', error },
       { status: 500 }
     );
   }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 // import { Geist, Geist_Mono, Ubuntu } from "next/font/google";
 // @ts-ignore
 import "./globals.css";
+import { LanguageProvider } from "@/lib/i18n";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -20,26 +21,28 @@ import "./globals.css";
 // });
 
 export const metadata: Metadata = {
-  title: "Share Your Distance – Running Race 2025",
+  metadataBase: new URL("https://www.shareyourdistance.online/"),
+  title: "Share Your Distance Vol 4.0 — Sobat Sabtu",
   description:
-    "End your year with meaningful steps. Join the Share Your Distance running race on December 20, 2025 at Arei Flagship Store.",
+    "Satu Tim. Empat Pelari. Satu Jarak. Share Your Distance Vol 4.0 bersama Sobat Sabtu di Bandung.",
   keywords: [
-    "running event",
-    "running race",
-    "lari 2025",
-    "fun run",
-    "Arei",
     "Share Your Distance",
-    "event lari desember",
+    "Sobat Sabtu",
+    "running event",
+    "relay race",
+    "lari estafet",
+    "lari 2026",
+    "Bandung",
+    "4 x 600M",
     "community running"
   ],
   alternates: {
     canonical: "https://www.shareyourdistance.online/",
   },
   openGraph: {
-    title: "Share Your Distance – Running Race 2025",
+    title: "Share Your Distance Vol 4.0 — Sobat Sabtu",
     description:
-      "End your year with meaningful steps. Join the Share Your Distance running race on December 20, 2025 at Arei Flagship Store.",
+      "Satu Tim. Empat Pelari. Satu Jarak. Share Your Distance Vol 4.0 bersama Sobat Sabtu di Bandung.",
     url: "https://www.shareyourdistance.online/",
     siteName: "Share Your Distance",
     images: [
@@ -47,10 +50,10 @@ export const metadata: Metadata = {
         url: "/images/share-your-distance.jpeg",
         width: 1200,
         height: 630,
-        alt: "Share Your Distance Running Race 2025",
+        alt: "Share Your Distance Vol 4.0",
       },
     ],
-    locale: "en_US",
+    locale: "id_ID",
     type: "website",
   },
   twitter: {
@@ -78,7 +81,9 @@ export default function RootLayout({
     <html lang="en"
     // className={ubuntu.variable}
     >
-      <body className="">{children}</body>
+      <body className="">
+        <LanguageProvider>{children}</LanguageProvider>
+      </body>
     </html>
   );
 }

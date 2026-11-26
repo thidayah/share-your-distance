@@ -1,230 +1,250 @@
-// src/app/api/webhooks/midtrans/route.ts
+import { createHash, timingSafeEqual } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
-import crypto from 'crypto';
-import { supabase } from "@/lib/supabase/client";
-import { supabaseServer } from "@/lib/supabase/server-client";
-import { registrationService } from "@/lib/email/registration-service";
+import { registrationService } from '@/lib/supabase/service/registrations/services';
+import { supabaseServer } from '@/lib/supabase/server-client';
+import { registrationService as emailService } from '@/lib/email/registration-service';
+import { PaymentStatus } from '@/lib/supabase/service/registrations/types';
 
-// Verify Midtrans signature (optional but recommended)
-function verifySignature(signature: string, orderId: string, statusCode: string, grossAmount: string, serverKey: string): boolean {
-  const hash = crypto
-    .createHash('sha512')
-    .update(orderId + statusCode + grossAmount + serverKey)
-    .digest('hex');
-  return hash === signature;
+interface MidtransNotification {
+  order_id: string;
+  status_code: string;
+  gross_amount: string;
+  signature_key: string;
+  transaction_status: string;
+  transaction_id?: string;
+  transaction_time?: string;
+  settlement_time?: string;
+  payment_type?: string;
+  currency?: string;
+  fraud_status?: string;
 }
 
-// {
-//   "transaction_time": "2023-11-15 18:45:13", 
-//   // Waktu transaksi dibuat / diproses di Midtrans (WIB)
-//   "transaction_status": "settlement",
-//   // Status akhir pembayaran:
-//   // settlement = pembayaran berhasil (capture/paid)
-//   "transaction_id": "513f1f01-c9da-474c-9fc9-d5c64364b709",
-//   // ID internal Midtrans (bukan order_id Anda)
-//   "status_message": "midtrans payment notification",
-//   // Pesan standar dari Midtrans
-//   "status_code": "200",
-//   // Kode status Midtrans (bukan HTTP response)
-//   "signature_key": "197af1f465083d543b104197ae4484ae98a21e3902ef02fc4edc9c4b7309fc9c652466383ee7fc0d90a016466d85eb80c4c2e1f7c542872a15c6d2da91637e4a",
-//   // Hash keamanan untuk verifikasi:
-//   // signature = SHA512(order_id + status_code + gross_amount + server_key)
-//   "settlement_time": "2023-11-15 22:45:13",
-//   // Waktu transaksi resmi diselesaikan (paid)
-//   "payment_type": "gopay",
-//   // Metode pembayaran yang dipakai user (gopay, qris, bank_transfer, vb, dll)
-//   "order_id": "payment_notif_test_G474896332_8b191561-7b69-49a9-b661-ad1996d3e96b",
-//   // ID transaksi yang Anda kirim ke Midtrans saat create transaction
-//   "merchant_id": "G474896332",
-//   // Merchant ID akun Midtrans Anda
-//   "gross_amount": "105000.00",
-//   // Total harga yang dibayar customer (string format)
-//   "fraud_status": "accept",
-//   // Hanya muncul untuk kartu kredit.
-//   // accept = pembayaran aman,
-//   // challenge = butuh verifikasi manual
-//   "currency": "IDR"
-//   // Mata uang transaksi
-// }
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const {
-      transaction_id,
-      order_id,
-      status_code,
-      transaction_status,
-      transaction_time,
-      payment_type,
-      gross_amount,
-      currency,
-      fraud_status,
-      signature_key
-    } = body;
+function verifySignature(notification: MidtransNotification, serverKey: string): boolean {
+  const expected = createHash('sha512')
+    .update(
+      notification.order_id
+      + notification.status_code
+      + notification.gross_amount
+      + serverKey,
+    )
+    .digest();
 
-    // Verify signature (optional - comment out if causing issues during testing)
+  if (!/^[a-f\d]{128}$/i.test(notification.signature_key)) return false;
+  const actual = Buffer.from(notification.signature_key, 'hex');
+  return actual.length === expected.length && timingSafeEqual(actual, expected);
+}
 
-    // const signature = request.headers.get('x-signature');
-    // if (signature && !verifySignature(signature, order_id, status_code, gross_amount, process.env.MIDTRANS_SERVER_KEY!)) {
-    //   console.error('Invalid webhook signature');
-    //   return NextResponse.json({ status: false, message: 'Invalid signature' }, { status: 401 });
-    // }
-
-    const isProd = process.env.MIDTRANS_IS_PRODUCTION === "true";
-
-    // Signature check ONLY on Production
-    if (isProd) {
-      const valid = verifySignature(
-        signature_key,
-        order_id,
-        status_code,
-        gross_amount,
-        process.env.MIDTRANS_SERVER_KEY!
-      );
-
-      if (!valid) {
-        console.error("Invalid signature from Midtrans");
-        return NextResponse.json({ status: false, message: 'Invalid signature' }, { status: 401 });
-      }
-    } else {
-      console.log("Signature verification skipped (development mode)");
-    }
-
-    // Extract registration ID from order_id (format: REG-{registrationNumber}-{timestamp})
-    const registrationNumber = order_id.split('-')[1] + '-' + order_id.split('-')[2];
-
-    if (!registrationNumber) {
-      console.error('Invalid order_id format:', order_id);
-      return NextResponse.json({ status: false, message: 'Invalid order_id', data: order_id }, { status: 400 });
-    }
-
-    let payment_status = 'pending';
-    let payment_date = null;
-
-    if (transaction_status === 'capture' || transaction_status === 'settlement') {
-      if (fraud_status === 'accept') {
-        payment_status = 'paid';
-        payment_date = new Date(transaction_time).toISOString();
-      }
-    }
-    else if (transaction_status === 'pending') {
-      payment_status = 'pending';
-    }
-    else if (['deny', 'cancel', 'expire'].includes(transaction_status)) {
-      payment_status = 'failed';
-    }
-
-    const { data: dataRegistration } = await supabase
-      .from('registrations')
-      .select(`*, category:categories (*)`)
-      .eq('registration_number', registrationNumber)
-      .single();
-
-    if (!dataRegistration) {
-      return NextResponse.json({ status: false, message: 'Registration not found' }, { status: 404 });
-    }
-
-    let categoryBib = 'BIB';
-    let sequenceBib = 1;
-    if (dataRegistration) {
-      categoryBib = dataRegistration.category.name.split(' ')[0].toUpperCase();
-      sequenceBib = parseInt(dataRegistration.category.current_participants) + 1;
-    }
-    let bibNumber = `${categoryBib}-${sequenceBib.toString().padStart(4, '0')}`;
-
-    // Update registration status
-    const { data: updateStatusData, error: updateStatusError } = await supabaseServer
-      .from('registrations')
-      .update({
-        external_payment_id: order_id,
-        payment_status: payment_status,
-        payment_method: payment_status === 'paid' ? payment_type : null,
-        payment_date: payment_status === 'paid' ? payment_date : null,
-        // Generate bib number
-        bib_number: payment_status === 'paid' ? bibNumber : null,
-        bib_assigned_at: payment_status === 'paid' ? new Date().toISOString() : null,
-      })
-      .eq('registration_number', registrationNumber)
-      .select('*')
-      .single();
-
-    if (updateStatusError) {
-      console.error('Database update error:', updateStatusError);
-      return NextResponse.json({ status: false, message: 'Failed to update registration status', error: updateStatusError }, { status: 500 });
-    }
-
-    // Add transaction history
-    const { data: historyData, error: historyError } = await supabaseServer
-      .from('transactions_history')
-      .insert({
-        registration_id: dataRegistration.id,
-        external_transaction_id: transaction_id,
-        status: transaction_status,
-        time: new Date(transaction_time).toISOString(),
-        payment_type: payment_type,
-        amount: parseFloat(gross_amount),
-        currency: currency,
-        gateway_response: body, // save full response for debugging
-      })
-      .select('*')
-      .single();
-
-    if (historyError) {
-      console.error('Database insert error:', historyError);
-      return NextResponse.json({ status: false, message: 'Failed to insert transactions history', error: historyError }, { status: 500 });
-    }
-
-    // Update current participants
-    if (payment_status === 'paid') {
-      const { error: updateParticipantError } = await supabaseServer
-        .from('categories')
-        .update({ current_participants: sequenceBib })
-        .eq('id', dataRegistration.category_id);
-
-      if (updateParticipantError) {
-        return NextResponse.json({ status: false, message: 'Failed to update participants', error: updateParticipantError }, { status: 500 });
-      }
-
-      // Send email payment successfully
-      const emailForm = {
-        email: dataRegistration.email,
-        name: dataRegistration.full_name,
-        category: dataRegistration.category?.name || 'Unknown Category',
-        registration_number: registrationNumber,
-        bib_number: bibNumber,
-        amount: parseFloat(gross_amount),
-        payment_date: payment_date!,
-        payment_method: payment_type,
-      };
-
-      const sendEmail = await registrationService.sendPaymentSuccess(emailForm);
-
-      if (!sendEmail.status) {
-        console.error('Failed to send payment success email:', sendEmail.error);
-        // Jangan return error, log saja karena pembayaran sudah sukses
-      }
-    }
-
-    return NextResponse.json({ status: true, message: 'Webhook processed', body, data: updateStatusData, history: historyData }, { status: 200 });
-  } catch (error) {
-    console.error('Webhook processing error:', error);
-    return NextResponse.json({ status: false, message: 'Webhook processing failed', error }, { status: 500 });
+function toPaymentStatus(notification: MidtransNotification): PaymentStatus | null {
+  switch (notification.transaction_status) {
+    case 'settlement':
+      return 'paid';
+    case 'capture':
+      return notification.fraud_status === 'accept' ? 'paid' : 'pending';
+    case 'pending':
+    case 'authorize':
+      return 'pending';
+    case 'deny':
+      return 'failed';
+    case 'cancel':
+      return 'cancelled';
+    case 'expire':
+      return 'expired';
+    case 'refund':
+    case 'partial_refund':
+      return 'refunded';
+    default:
+      return null;
   }
 }
 
-// export async function POST(req: Request) {
-//   try {
-//     const body = await req.json();
-//     console.log("MIDTRANS NOTIF:", body);
+function preserveFinalPayment(current: PaymentStatus, incoming: PaymentStatus): PaymentStatus {
+  if (current === 'refunded' || incoming === 'refunded') return 'refunded';
+  if (current === 'paid') return 'paid';
+  if (current !== 'pending' && incoming === 'pending') return current;
+  return incoming;
+}
 
-//     return NextResponse.json({ status: true, message: 'Ok', data: body });
-//   } catch (err) {
-//     console.error("Webhook Error:", err);
-//     return NextResponse.json({ error: "Invalid" }, { status: 400 });
-//   }
-// }
+function parseNotification(value: Record<string, unknown>): MidtransNotification | null {
+  const { order_id, status_code, gross_amount, signature_key, transaction_status } = value;
+  if (
+    typeof order_id !== 'string' || !order_id
+    || typeof status_code !== 'string' || !status_code
+    || typeof gross_amount !== 'string' || !gross_amount
+    || typeof signature_key !== 'string' || !signature_key
+    || typeof transaction_status !== 'string' || !transaction_status
+  ) return null;
+  if (
+    (value.transaction_id !== undefined && typeof value.transaction_id !== 'string')
+    || (value.transaction_time !== undefined && typeof value.transaction_time !== 'string')
+    || (value.settlement_time !== undefined && typeof value.settlement_time !== 'string')
+    || (value.payment_type !== undefined && typeof value.payment_type !== 'string')
+    || (value.currency !== undefined && typeof value.currency !== 'string')
+    || (value.fraud_status !== undefined && typeof value.fraud_status !== 'string')
+  ) return null;
 
-export async function GET() {
-  return NextResponse.json({ status: true, message: 'Ok' });
+  return {
+    order_id,
+    status_code,
+    gross_amount,
+    signature_key,
+    transaction_status,
+    transaction_id: typeof value.transaction_id === 'string' ? value.transaction_id : undefined,
+    transaction_time: typeof value.transaction_time === 'string' ? value.transaction_time : undefined,
+    settlement_time: typeof value.settlement_time === 'string' ? value.settlement_time : undefined,
+    payment_type: typeof value.payment_type === 'string' ? value.payment_type : undefined,
+    currency: typeof value.currency === 'string' ? value.currency : undefined,
+    fraud_status: typeof value.fraud_status === 'string' ? value.fraud_status : undefined,
+  };
+}
+
+export async function POST(request: NextRequest) {
+  let payload: unknown;
+  try {
+    payload = await request.json();
+  } catch {
+    return NextResponse.json({ status: false, message: 'Invalid JSON payload' }, { status: 400 });
+  }
+
+  if (!isRecord(payload)) {
+    return NextResponse.json({ status: false, message: 'Invalid notification payload' }, { status: 400 });
+  }
+
+  const notification = parseNotification(payload);
+  if (!notification) {
+    return NextResponse.json({ status: false, message: 'Missing or invalid notification fields' }, { status: 400 });
+  }
+
+  const serverKey = process.env.MIDTRANS_SERVER_KEY;
+  if (!serverKey) {
+    console.error('MIDTRANS_SERVER_KEY is not configured');
+    return NextResponse.json({ status: false, message: 'Payment notification is not configured' }, { status: 500 });
+  }
+
+  if (!verifySignature(notification, serverKey)) {
+    console.error('Rejected Midtrans notification with invalid signature');
+    return NextResponse.json({ status: false, message: 'Invalid signature' }, { status: 401 });
+  }
+
+  const incomingStatus = toPaymentStatus(notification);
+  if (!incomingStatus) {
+    return NextResponse.json({ status: false, message: 'Unsupported Midtrans transaction status' }, { status: 400 });
+  }
+
+  const amount = Number(notification.gross_amount);
+  if (!Number.isFinite(amount) || !Number.isInteger(amount) || amount < 0) {
+    return NextResponse.json({ status: false, message: 'Invalid transaction amount' }, { status: 400 });
+  }
+
+  if (notification.currency && notification.currency !== 'IDR') {
+    return NextResponse.json({ status: false, message: 'Unsupported transaction currency' }, { status: 400 });
+  }
+
+  try {
+    const registration = await registrationService.getByExternalOrderId(notification.order_id);
+    if (!registration) {
+      return NextResponse.json({ status: false, message: 'Registration not found' }, { status: 404 });
+    }
+
+    if (registration.total_amount !== amount) {
+      console.error('Midtrans amount does not match registration amount', {
+        orderId: notification.order_id,
+        expectedAmount: registration.total_amount,
+        receivedAmount: amount,
+      });
+      return NextResponse.json({ status: false, message: 'Transaction amount mismatch' }, { status: 400 });
+    }
+
+    const effectiveStatus = preserveFinalPayment(registration.payment_status, incomingStatus);
+    const paymentDateValue = notification.settlement_time || notification.transaction_time;
+    const paymentDate = paymentDateValue ? new Date(paymentDateValue) : null;
+    if (paymentDate && Number.isNaN(paymentDate.getTime())) {
+      return NextResponse.json({ status: false, message: 'Invalid transaction time' }, { status: 400 });
+    }
+
+    const updateData: Record<string, unknown> = {
+      payment_status: effectiveStatus,
+      payment_method: notification.payment_type || registration.payment_method,
+      external_transaction_id: notification.transaction_id || registration.external_transaction_id,
+      updated_at: new Date().toISOString(),
+    };
+    if (effectiveStatus === 'paid') {
+      if (registration.payment_status === 'paid') {
+        updateData.payment_date = registration.payment_date;
+      } else if (incomingStatus === 'paid' && paymentDate) {
+        updateData.payment_date = paymentDate.toISOString();
+      }
+    }
+
+    const { data: updatedRegistration, error: updateError } = await supabaseServer
+      .from('syd_registrations')
+      .update(updateData)
+      .eq('id', registration.id)
+      .eq('payment_status', registration.payment_status)
+      .select('*')
+      .maybeSingle();
+
+    if (updateError) throw updateError;
+
+    const { error: transactionError } = await supabaseServer
+      .from('syd_transactions')
+      .upsert({
+        registration_id: registration.id,
+        external_order_id: notification.order_id,
+        external_transaction_id: notification.transaction_id || null,
+        status: notification.transaction_status,
+        status_code: notification.status_code,
+        payment_type: notification.payment_type || null,
+        fraud_status: notification.fraud_status || null,
+        amount,
+        currency: notification.currency || 'IDR',
+        signature_verified: true,
+        gateway_response: payload,
+        time: paymentDate?.toISOString() || null,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'external_order_id' });
+
+    if (transactionError) throw transactionError;
+
+    const finalRegistration = updatedRegistration || await registrationService.getByExternalOrderId(notification.order_id);
+    if (!finalRegistration) throw new Error('Registration disappeared while processing notification');
+
+    if (
+      registration.payment_status !== effectiveStatus
+      || (registration.payment_status === 'paid' && incomingStatus === 'refunded')
+    ) {
+      await registrationService.syncCategoryPaidCount(registration.category_id);
+    }
+
+    const newlyPaid = Boolean(updatedRegistration)
+      && registration.payment_status !== 'paid'
+      && effectiveStatus === 'paid';
+
+    if (newlyPaid) {
+      const emailResult = await emailService.sendPaymentSuccessV2({
+        email: finalRegistration.email,
+        name: finalRegistration.full_name,
+        category: finalRegistration.category?.name || 'Unknown Category',
+        registration_number: finalRegistration.registration_number,
+        amount: finalRegistration.total_amount,
+        payment_date: finalRegistration.payment_date || new Date().toISOString(),
+        payment_method: finalRegistration.payment_method || 'Midtrans',
+      });
+
+      if (!emailResult.status) {
+        console.error('Payment success email failed:', emailResult.error);
+      }
+    }
+
+    return NextResponse.json({ status: true, message: 'Webhook processed' });
+  } catch (error) {
+    console.error('Midtrans webhook processing failed:', error);
+    return NextResponse.json(
+      { status: false, message: 'Failed to process payment notification' },
+      { status: 500 },
+    );
+  }
 }

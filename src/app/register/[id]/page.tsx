@@ -8,12 +8,24 @@ import Loading from '@/components/ui/Loading';
 import CompletePayment from '@/components/CompletePayment';
 import { supabase } from '@/lib/supabase/client';
 import { TypesCategory } from '@/types/database';
+import { useLanguage } from '@/lib/i18n';
 
 type FormStep = 'personal' | 'emergency' | 'summary' | 'payment';
+
+interface OrderData {
+  registration_number: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  total_amount: number;
+  redirect_url: string;
+  category: { name: string };
+}
 
 export default function RegistrationPage() {
   const params = useParams();
   const categoryId = params.id as string;
+  const { lang, t } = useLanguage();
 
   const [isLoading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,20 +56,14 @@ export default function RegistrationPage() {
     },
   });
 
-  const [orderData, setOrderData] = useState<any>(null);
+  const [orderData, setOrderData] = useState<OrderData | null>(null);
 
   useEffect(() => {
     (async () => {
       try {
         const { data, error } = await supabase
-          .from('categories')
-          .select(`
-            *,
-            category_features (
-              feature,
-              display_order
-            )
-          `)
+        .from('syd_categories')
+        .select('*')
           .eq('id', categoryId)
           .single();
 
@@ -101,7 +107,7 @@ export default function RegistrationPage() {
     if (!formData.personal.dateOfBirth) return '—';
     try {
       const [y, m, d] = formData.personal.dateOfBirth.split('-').map(Number);
-      return new Intl.DateTimeFormat('id-ID', {
+      return new Intl.DateTimeFormat(lang === 'id' ? 'id-ID' : 'en-GB', {
         day: 'numeric',
         month: 'long',
         year: 'numeric',
@@ -109,50 +115,65 @@ export default function RegistrationPage() {
     } catch {
       return formData.personal.dateOfBirth;
     }
-  }, [formData.personal.dateOfBirth]);
+  }, [formData.personal.dateOfBirth, lang]);
 
   const validatePersonal = () => {
     const { fullName, email, phone, dateOfBirth, gender } = formData.personal;
     if (!fullName.trim()) {
-      toast.warning('Nama lengkap wajib diisi!');
+      toast.warning(t('Nama lengkap wajib diisi!', 'Full name is required!'));
       return false;
     }
     if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) {
-      toast.warning('Email valid wajib diisi!');
+      toast.warning(t('Email valid wajib diisi!', 'A valid email is required!'));
       return false;
     }
     if (!phone.trim()) {
-      toast.warning('Nomor WhatsApp wajib diisi!');
+      toast.warning(t('Nomor WhatsApp wajib diisi!', 'WhatsApp number is required!'));
       return false;
     }
     if (!dateOfBirth) {
-      toast.warning('Tanggal lahir wajib diisi!');
+      toast.warning(t('Tanggal lahir wajib diisi!', 'Date of birth is required!'));
       return false;
     }
     const age = calculateAge(dateOfBirth);
     if (age < 17) {
-      toast.warning('Peserta harus berusia minimal 17 tahun pada tanggal acara!');
+      toast.warning(t('Peserta harus berusia minimal 17 tahun pada tanggal acara!', 'Participants must be at least 17 years old on the event date!'));
       return false;
     }
     if (!gender) {
-      toast.warning('Silakan pilih gender!');
+      toast.warning(t('Silakan pilih gender!', 'Please select a gender!'));
+      return false;
+    }
+    if (!isValidStravaUrl(formData.personal.strava)) {
+      toast.warning(t('URL profil Strava yang valid wajib diisi!', 'A valid Strava profile URL is required!'));
       return false;
     }
     return true;
   };
 
+  const isValidStravaUrl = (value: string) => {
+    try {
+      const url = new URL(value.trim());
+      return url.protocol === 'https:'
+        && ['strava.com', 'www.strava.com'].includes(url.hostname.toLowerCase())
+        && /^\/athletes\/\d+\/?$/.test(url.pathname);
+    } catch {
+      return false;
+    }
+  };
+
   const validateEmergency = () => {
     const { contactName, contactPhone, contactRelationship } = formData.emergency;
     if (!contactName.trim()) {
-      toast.warning('Nama kontak darurat wajib diisi!');
+      toast.warning(t('Nama kontak darurat wajib diisi!', 'Emergency contact name is required!'));
       return false;
     }
     if (!contactPhone.trim()) {
-      toast.warning('Nomor telepon darurat wajib diisi!');
+      toast.warning(t('Nomor telepon darurat wajib diisi!', 'Emergency phone number is required!'));
       return false;
     }
     if (!contactRelationship) {
-      toast.warning('Silakan pilih hubungan kontak darurat!');
+      toast.warning(t('Silakan pilih hubungan kontak darurat!', 'Please select the emergency contact relationship!'));
       return false;
     }
     return true;
@@ -178,7 +199,7 @@ export default function RegistrationPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isAgreed) {
-      toast.warning('Silakan setujui Syarat & Ketentuan dan Kebijakan Privasi terlebih dahulu!');
+      toast.warning(t('Silakan setujui Syarat & Ketentuan dan Kebijakan Privasi terlebih dahulu!', 'Please agree to the Terms & Conditions and Privacy Policy first!'));
       return;
     }
 
@@ -192,11 +213,12 @@ export default function RegistrationPage() {
         date_of_birth: formData.personal.dateOfBirth,
         gender: formData.personal.gender,
         instagram: formData.personal.instagram.trim(),
+        strava_url: formData.personal.strava.trim(),
         emergency_contact_name: formData.emergency.contactName.trim(),
         emergency_contact_phone: formData.emergency.contactPhone.trim(),
         emergency_contact_relationship: formData.emergency.contactRelationship,
         medical_conditions: formData.emergency.medicalConditions.trim() || 'Tidak ada',
-        total_amount: category?.price || 50000,
+        consent_given: true,
       };
 
       const response = await fetch('/api/registrations-v2', {
@@ -210,11 +232,16 @@ export default function RegistrationPage() {
         throw new Error(result.message || 'Gagal menyimpan pendaftaran');
       }
 
-      toast.success('Pendaftaran berhasil disimpan!');
+      if (typeof result.data?.redirect_url !== 'string') {
+        throw new Error(t('Tautan pembayaran tidak tersedia.', 'Payment checkout URL is unavailable.'));
+      }
+
+      toast.success(t('Pendaftaran berhasil. Mengarahkan ke pembayaran...', 'Registration saved. Redirecting to payment...'));
       setOrderData(result.data);
       goToStep('payment');
-    } catch (err: any) {
-      toast.error(err.message || 'Terjadi kesalahan saat memproses pendaftaran.');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : t('Terjadi kesalahan saat memproses pendaftaran.', 'An error occurred while processing your registration.');
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -228,8 +255,8 @@ export default function RegistrationPage() {
 
       {!isLoading && !category && (
         <div className="text-center py-40">
-          <h1 className="text-3xl font-black text-[var(--ink)] mb-4">Kategori Tidak Ditemukan</h1>
-          <p className="text-[var(--muted)]">Kategori lomba yang Anda cari tidak tersedia atau sudah ditutup.</p>
+          <h1 className="text-3xl font-black text-[var(--ink)] mb-4">{t('Kategori Tidak Ditemukan', 'Category Not Found')}</h1>
+          <p className="text-[var(--muted)]">{t('Kategori lomba yang Anda cari tidak tersedia atau sudah ditutup.', 'The race category you are looking for is unavailable or has been closed.')}</p>
         </div>
       )}
 
@@ -238,9 +265,9 @@ export default function RegistrationPage() {
           {/* Header Banner */}
           <section className="bg-[var(--ink)] pb-12 text-white">
             <div className="wrap pt-28 md:pt-32">
-              <p className="eyebrow mb-4 text-[var(--sky)]">Pendaftaran peserta</p>
+              <p className="eyebrow mb-4 text-[var(--sky)]">{t('Pendaftaran peserta', 'Participant registration')}</p>
               <h1 className="max-w-3xl text-4xl font-black leading-tight tracking-[-.055em] md:text-6xl">
-                Ambil giliranmu. Kami carikan timnya.
+                {t('Ambil giliranmu. Kami carikan timnya.', 'Take your turn. We’ll find your team.')}
               </h1>
 
               {/* Wizard Steps Indicator */}
@@ -251,7 +278,7 @@ export default function RegistrationPage() {
                   <span className="step-dot grid h-8 w-8 shrink-0 place-items-center rounded-full">
                     {stepIndex > 0 ? '✓' : '1'}
                   </span>
-                  <span>Informasi pribadi</span>
+                  <span>{t('Informasi pribadi', 'Personal information')}</span>
                 </li>
                 <li
                   className={`wizard-step flex items-center gap-2 ${stepIndex === 1 ? 'active' : stepIndex > 1 ? 'complete' : ''}`}
@@ -259,7 +286,7 @@ export default function RegistrationPage() {
                   <span className="step-dot grid h-8 w-8 shrink-0 place-items-center rounded-full">
                     {stepIndex > 1 ? '✓' : '2'}
                   </span>
-                  <span>Darurat</span>
+                  <span>{t('Darurat', 'Emergency')}</span>
                 </li>
                 <li
                   className={`wizard-step flex items-center gap-2 ${stepIndex >= 2 ? 'active' : ''}`}
@@ -267,7 +294,7 @@ export default function RegistrationPage() {
                   <span className="step-dot grid h-8 w-8 shrink-0 place-items-center rounded-full">
                     {stepIndex > 2 ? '✓' : '3'}
                   </span>
-                  <span>Ringkasan</span>
+                  <span>{t('Ringkasan', 'Summary')}</span>
                 </li>
               </ol>
             </div>
@@ -277,7 +304,7 @@ export default function RegistrationPage() {
           <section className="-mt-5">
             <div className="wrap grid items-start gap-6 lg:grid-cols-[1.35fr_.65fr]">
               {/* Form Content / Complete Payment */}
-              {currentStep === 'payment' ? (
+              {currentStep === 'payment' && orderData ? (
                 <div className="panel p-5 sm:p-8 shadow-xl shadow-slate-900/5">
                   <CompletePayment data={orderData} />
                 </div>
@@ -287,25 +314,25 @@ export default function RegistrationPage() {
                   {currentStep === 'personal' && (
                     <div className="wizard-panel step-enter">
                       <div className="mb-7">
-                        <p className="eyebrow mb-2 text-[var(--blue)]">Langkah 1 dari 3</p>
-                        <h2 className="text-2xl font-black tracking-tight text-[var(--ink)]">Informasi pribadi</h2>
+                        <p className="eyebrow mb-2 text-[var(--blue)]">{t('Langkah 1 dari 3', 'Step 1 of 3')}</p>
+                        <h2 className="text-2xl font-black tracking-tight text-[var(--ink)]">{t('Informasi pribadi', 'Personal information')}</h2>
                       </div>
 
                       <div className="grid gap-5 sm:grid-cols-2">
                         <div className="field sm:col-span-2">
-                          <label htmlFor="full-name">Nama lengkap *</label>
+                          <label htmlFor="full-name">{t('Nama lengkap', 'Full name')} *</label>
                           <input
                             id="full-name"
                             name="full-name"
                             value={formData.personal.fullName}
                             onChange={(e) => updatePersonal('fullName', e.target.value)}
-                            placeholder="Nama sesuai identitas"
+                            placeholder={t('Nama sesuai identitas', 'Name as shown on your ID')}
                             required
                           />
                         </div>
 
                         <div className="field">
-                          <label htmlFor="email">Email *</label>
+                          <label htmlFor="email">{t('Email', 'Email')} *</label>
                           <input
                             id="email"
                             name="email"
@@ -318,7 +345,7 @@ export default function RegistrationPage() {
                         </div>
 
                         <div className="field">
-                          <label htmlFor="phone">Nomor WhatsApp *</label>
+                          <label htmlFor="phone">{t('Nomor WhatsApp', 'WhatsApp number')} *</label>
                           <input
                             id="phone"
                             name="phone"
@@ -331,7 +358,7 @@ export default function RegistrationPage() {
                         </div>
 
                         <div className="field">
-                          <label htmlFor="birth-date">Tanggal lahir * (Min. 17 tahun)</label>
+                          <label htmlFor="birth-date">{t('Tanggal lahir', 'Date of birth')} * ({t('Min. 17 tahun', 'Min. 17 years')})</label>
                           <input
                             id="birth-date"
                             name="birth-date"
@@ -343,7 +370,7 @@ export default function RegistrationPage() {
                         </div>
 
                         <div className="field">
-                          <label htmlFor="gender">Gender *</label>
+                          <label htmlFor="gender">{t('Gender', 'Gender')} *</label>
                           <select
                             id="gender"
                             name="gender"
@@ -351,9 +378,9 @@ export default function RegistrationPage() {
                             onChange={(e) => updatePersonal('gender', e.target.value)}
                             required
                           >
-                            <option value="">Pilih gender</option>
-                            <option value="male">Laki-laki</option>
-                            <option value="female">Perempuan</option>
+                            <option value="">{t('Pilih gender', 'Select gender')}</option>
+                            <option value="male">{t('Laki-laki', 'Male')}</option>
+                            <option value="female">{t('Perempuan', 'Female')}</option>
                           </select>
                         </div>
 
@@ -369,11 +396,12 @@ export default function RegistrationPage() {
                         </div>
 
                         <div className="field">
-                          <label htmlFor="strava">Profil Strava (tidak privat)</label>
+                          <label htmlFor="strava">{t('Profil Strava', 'Strava profile')} * <span className="font-normal text-[var(--muted)]">{t('(tidak privat)', '(not private)')}</span></label>
                           <input
                             id="strava"
                             name="strava"
                             type="url"
+                            required
                             value={formData.personal.strava}
                             onChange={(e) => updatePersonal('strava', e.target.value)}
                             placeholder="https://www.strava.com/athletes/..."
@@ -387,7 +415,7 @@ export default function RegistrationPage() {
                           onClick={handleNextPersonal}
                           className="btn lime !px-6 font-extrabold cursor-pointer"
                         >
-                          <span>Lanjutkan</span>
+                          <span>{t('Lanjutkan', 'Continue')}</span>
                           <span aria-hidden="true">→</span>
                         </button>
                       </div>
@@ -398,25 +426,25 @@ export default function RegistrationPage() {
                   {currentStep === 'emergency' && (
                     <div className="wizard-panel step-enter">
                       <div className="mb-7">
-                        <p className="eyebrow mb-2 text-[var(--blue)]">Langkah 2 dari 3</p>
-                        <h2 className="text-2xl font-black tracking-tight text-[var(--ink)]">Kontak darurat</h2>
+                        <p className="eyebrow mb-2 text-[var(--blue)]">{t('Langkah 2 dari 3', 'Step 2 of 3')}</p>
+                        <h2 className="text-2xl font-black tracking-tight text-[var(--ink)]">{t('Kontak darurat', 'Emergency contact')}</h2>
                       </div>
 
                       <div className="grid gap-5 sm:grid-cols-2">
                         <div className="field sm:col-span-2">
-                          <label htmlFor="emergency-name">Nama kontak darurat *</label>
+                          <label htmlFor="emergency-name">{t('Nama kontak darurat', 'Emergency contact name')} *</label>
                           <input
                             id="emergency-name"
                             name="emergency-name"
                             value={formData.emergency.contactName}
                             onChange={(e) => updateEmergency('contactName', e.target.value)}
-                            placeholder="Nama kontak darurat"
+                            placeholder={t('Nama kontak darurat', 'Emergency contact name')}
                             required
                           />
                         </div>
 
                         <div className="field">
-                          <label htmlFor="emergency-phone">Nomor telepon *</label>
+                          <label htmlFor="emergency-phone">{t('Nomor telepon', 'Phone number')} *</label>
                           <input
                             id="emergency-phone"
                             name="emergency-phone"
@@ -429,7 +457,7 @@ export default function RegistrationPage() {
                         </div>
 
                         <div className="field">
-                          <label htmlFor="relationship">Hubungan *</label>
+                          <label htmlFor="relationship">{t('Hubungan', 'Relationship')} *</label>
                           <select
                             id="relationship"
                             name="relationship"
@@ -437,25 +465,25 @@ export default function RegistrationPage() {
                             onChange={(e) => updateEmergency('contactRelationship', e.target.value)}
                             required
                           >
-                            <option value="">Pilih hubungan</option>
-                            <option value="parent">Orang tua / wali</option>
-                            <option value="partner">Pasangan</option>
-                            <option value="sibling">Saudara kandung</option>
-                            <option value="relative">Keluarga</option>
-                            <option value="friend">Teman</option>
-                            <option value="other">Lainnya</option>
+                            <option value="">{t('Pilih hubungan', 'Select relationship')}</option>
+                            <option value="parent">{t('Orang tua / wali', 'Parent / guardian')}</option>
+                            <option value="partner">{t('Pasangan', 'Spouse / partner')}</option>
+                            <option value="sibling">{t('Saudara kandung', 'Sibling')}</option>
+                            <option value="relative">{t('Keluarga', 'Relative')}</option>
+                            <option value="friend">{t('Teman', 'Friend')}</option>
+                            <option value="other">{t('Lainnya', 'Other')}</option>
                           </select>
                         </div>
 
                         <div className="field sm:col-span-2">
-                          <label htmlFor="medical">Kondisi medis yang perlu diketahui</label>
+                          <label htmlFor="medical">{t('Kondisi medis yang perlu diketahui', 'Known medical conditions')}</label>
                           <textarea
                             id="medical"
                             name="medical"
                             rows={4}
                             value={formData.emergency.medicalConditions}
                             onChange={(e) => updateEmergency('medicalConditions', e.target.value)}
-                            placeholder="Alergi, riwayat penyakit, atau obat rutin (bila ada)"
+                            placeholder={t('Alergi, riwayat penyakit, atau obat rutin (bila ada)', 'Allergies, medical history, or regular medication (if any)')}
                           />
                         </div>
                       </div>
@@ -466,14 +494,14 @@ export default function RegistrationPage() {
                           onClick={() => goToStep('personal')}
                           className="btn border border-[var(--line)] bg-white cursor-pointer"
                         >
-                          ← Kembali
+                          {t('← Kembali', '← Back')}
                         </button>
                         <button
                           type="button"
                           onClick={handleNextEmergency}
                           className="btn lime !px-6 font-extrabold cursor-pointer"
                         >
-                          <span>Lanjutkan</span>
+                          <span>{t('Lanjutkan', 'Continue')}</span>
                           <span aria-hidden="true">→</span>
                         </button>
                       </div>
@@ -484,34 +512,34 @@ export default function RegistrationPage() {
                   {currentStep === 'summary' && (
                     <div className="wizard-panel step-enter">
                       <div className="mb-7">
-                        <p className="eyebrow mb-2 text-[var(--blue)]">Langkah 3 dari 3</p>
-                        <h2 className="text-2xl font-black tracking-tight text-[var(--ink)]">Ringkasan pendaftaran</h2>
+                        <p className="eyebrow mb-2 text-[var(--blue)]">{t('Langkah 3 dari 3', 'Step 3 of 3')}</p>
+                        <h2 className="text-2xl font-black tracking-tight text-[var(--ink)]">{t('Ringkasan pendaftaran', 'Registration summary')}</h2>
                         <p className="mt-2 text-sm text-[var(--muted)]">
-                          Periksa kembali semua data sebelum melanjutkan ke pembayaran.
+                          {t('Periksa kembali semua data sebelum melanjutkan ke pembayaran.', 'Review all details before continuing to payment.')}
                         </p>
                       </div>
 
                       <dl className="divide-y divide-[var(--line)] rounded-2xl border border-[var(--line)] px-4">
                         <div className="grid gap-1 py-3 sm:grid-cols-[180px_1fr]">
-                          <dt className="text-xs font-bold text-[var(--muted)]">Nama lengkap</dt>
+                          <dt className="text-xs font-bold text-[var(--muted)]">{t('Nama lengkap', 'Full name')}</dt>
                           <dd className="break-words text-sm font-semibold text-[var(--ink)]">{formData.personal.fullName || '—'}</dd>
                         </div>
                         <div className="grid gap-1 py-3 sm:grid-cols-[180px_1fr]">
-                          <dt className="text-xs font-bold text-[var(--muted)]">Email</dt>
+                          <dt className="text-xs font-bold text-[var(--muted)]">{t('Email', 'Email')}</dt>
                           <dd className="break-words text-sm font-semibold text-[var(--ink)]">{formData.personal.email || '—'}</dd>
                         </div>
                         <div className="grid gap-1 py-3 sm:grid-cols-[180px_1fr]">
-                          <dt className="text-xs font-bold text-[var(--muted)]">Nomor WhatsApp</dt>
+                          <dt className="text-xs font-bold text-[var(--muted)]">{t('Nomor WhatsApp', 'WhatsApp number')}</dt>
                           <dd className="break-words text-sm font-semibold text-[var(--ink)]">{formData.personal.phone || '—'}</dd>
                         </div>
                         <div className="grid gap-1 py-3 sm:grid-cols-[180px_1fr]">
-                          <dt className="text-xs font-bold text-[var(--muted)]">Tanggal lahir</dt>
+                          <dt className="text-xs font-bold text-[var(--muted)]">{t('Tanggal lahir', 'Date of birth')}</dt>
                           <dd className="text-sm font-semibold text-[var(--ink)]">{formattedBirthDate}</dd>
                         </div>
                         <div className="grid gap-1 py-3 sm:grid-cols-[180px_1fr]">
-                          <dt className="text-xs font-bold text-[var(--muted)]">Gender</dt>
+                          <dt className="text-xs font-bold text-[var(--muted)]">{t('Gender', 'Gender')}</dt>
                           <dd className="text-sm font-semibold text-[var(--ink)]">
-                            {formData.personal.gender === 'male' ? 'Laki-laki' : formData.personal.gender === 'female' ? 'Perempuan' : '—'}
+                            {formData.personal.gender === 'male' ? t('Laki-laki', 'Male') : formData.personal.gender === 'female' ? t('Perempuan', 'Female') : '—'}
                           </dd>
                         </div>
                         {formData.personal.instagram && (
@@ -520,37 +548,35 @@ export default function RegistrationPage() {
                             <dd className="break-words text-sm font-semibold text-[var(--ink)]">{formData.personal.instagram}</dd>
                           </div>
                         )}
-                        {formData.personal.strava && (
-                          <div className="grid gap-1 py-3 sm:grid-cols-[180px_1fr]">
-                            <dt className="text-xs font-bold text-[var(--muted)]">Profil Strava</dt>
-                            <dd className="break-words text-sm font-semibold text-[var(--ink)]">{formData.personal.strava}</dd>
-                          </div>
-                        )}
                         <div className="grid gap-1 py-3 sm:grid-cols-[180px_1fr]">
-                          <dt className="text-xs font-bold text-[var(--muted)]">Nama kontak darurat</dt>
+                          <dt className="text-xs font-bold text-[var(--muted)]">{t('Profil Strava', 'Strava profile')}</dt>
+                          <dd className="break-words text-sm font-semibold text-[var(--ink)]">{formData.personal.strava}</dd>
+                        </div>
+                        <div className="grid gap-1 py-3 sm:grid-cols-[180px_1fr]">
+                          <dt className="text-xs font-bold text-[var(--muted)]">{t('Nama kontak darurat', 'Emergency contact name')}</dt>
                           <dd className="break-words text-sm font-semibold text-[var(--ink)]">{formData.emergency.contactName || '—'}</dd>
                         </div>
                         <div className="grid gap-1 py-3 sm:grid-cols-[180px_1fr]">
-                          <dt className="text-xs font-bold text-[var(--muted)]">Nomor telepon darurat</dt>
+                          <dt className="text-xs font-bold text-[var(--muted)]">{t('Nomor kontak darurat', 'Emergency phone')}</dt>
                           <dd className="break-words text-sm font-semibold text-[var(--ink)]">{formData.emergency.contactPhone || '—'}</dd>
                         </div>
                         <div className="grid gap-1 py-3 sm:grid-cols-[180px_1fr]">
-                          <dt className="text-xs font-bold text-[var(--muted)]">Hubungan</dt>
+                          <dt className="text-xs font-bold text-[var(--muted)]">{t('Hubungan', 'Relationship')}</dt>
                           <dd className="text-sm font-semibold text-[var(--ink)]">{formData.emergency.contactRelationship || '—'}</dd>
                         </div>
                         <div className="grid gap-1 py-3 sm:grid-cols-[180px_1fr]">
-                          <dt className="text-xs font-bold text-[var(--muted)]">Kondisi medis</dt>
+                          <dt className="text-xs font-bold text-[var(--muted)]">{t('Kondisi medis', 'Known medical conditions')}</dt>
                           <dd className="whitespace-pre-wrap break-words text-sm font-semibold text-[var(--ink)]">
-                            {formData.emergency.medicalConditions || 'Tidak ada'}
+                            {formData.emergency.medicalConditions || t('Tidak ada', 'None')}
                           </dd>
                         </div>
                       </dl>
 
                       {/* Agreement Checkbox */}
                       <div className="mt-6 rounded-2xl bg-[var(--paper)] p-5">
-                        <h3 className="font-extrabold text-[var(--ink)]">Persetujuan pendaftaran</h3>
+                        <h3 className="font-extrabold text-[var(--ink)]">{t('Persetujuan pendaftaran', 'Registration agreements')}</h3>
                         <p className="mt-2 text-sm leading-relaxed text-[var(--muted)]">
-                          Baca ringkasan ketentuan acara dan penggunaan data sebelum menyelesaikan pendaftaran.
+                          {t('Baca ringkasan ketentuan acara dan penggunaan data sebelum menyelesaikan pendaftaran.', 'Review the event terms and how your information is used before completing registration.')}
                         </p>
                         <label htmlFor="terms-consent" className="mt-4 flex cursor-pointer items-start gap-3 text-sm leading-relaxed text-[var(--ink)]">
                           <input
@@ -560,7 +586,7 @@ export default function RegistrationPage() {
                             onChange={(e) => setAgreed(e.target.checked)}
                             className="mt-1 h-4 w-4 shrink-0 accent-[var(--blue)] cursor-pointer"
                           />
-                          <span>Saya menyetujui Syarat & Ketentuan dan telah membaca Kebijakan Privasi.</span>
+                          <span>{t('Saya menyetujui Syarat & Ketentuan dan telah membaca Kebijakan Privasi.', 'I agree to the Terms & Conditions and have read the Privacy Policy.')}</span>
                         </label>
                         <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 pl-7 text-sm font-bold text-[var(--blue)]">
                           <button
@@ -568,14 +594,14 @@ export default function RegistrationPage() {
                             onClick={() => setTermsOpen(true)}
                             className="underline underline-offset-4 cursor-pointer hover:text-[var(--ink)]"
                           >
-                            Baca Syarat & Ketentuan
+                            {t('Baca Syarat & Ketentuan', 'Read Terms & Conditions')}
                           </button>
                           <button
                             type="button"
                             onClick={() => setPrivacyOpen(true)}
                             className="underline underline-offset-4 cursor-pointer hover:text-[var(--ink)]"
                           >
-                            Baca Kebijakan Privasi
+                            {t('Baca Kebijakan Privasi', 'Read Privacy Policy')}
                           </button>
                         </div>
                       </div>
@@ -586,14 +612,14 @@ export default function RegistrationPage() {
                           onClick={() => goToStep('emergency')}
                           className="btn border border-[var(--line)] bg-white cursor-pointer"
                         >
-                          ← Kembali
+                          {t('← Kembali', '← Back')}
                         </button>
                         <button
                           type="submit"
                           disabled={isSubmitting}
                           className="btn lime !px-6 font-extrabold cursor-pointer disabled:opacity-50"
                         >
-                          {isSubmitting ? 'Memproses...' : 'Register & Pay'}
+                          {isSubmitting ? t('Memproses...', 'Processing...') : 'Register & Pay'}
                         </button>
                       </div>
                     </div>
@@ -605,7 +631,7 @@ export default function RegistrationPage() {
               <aside id="registration-summary" className="registration-summary space-y-4 lg:sticky lg:top-24">
                 <div className="panel overflow-hidden">
                   <div className="summary-desktop-heading bg-[var(--blue)] p-5 text-white">
-                    <p className="eyebrow text-white/70">Ringkasan pendaftaran</p>
+                    <p className="eyebrow text-white/70">{t('Ringkasan pendaftaran', 'Registration summary')}</p>
                     <h2 className="mt-2 text-xl font-black">{category.name}</h2>
                   </div>
 
@@ -618,11 +644,11 @@ export default function RegistrationPage() {
                     onClick={() => setSummaryExpanded(!isSummaryExpanded)}
                   >
                     <span className="summary-mobile-title">
-                      <span className="eyebrow text-white/70">Ringkasan pendaftaran</span>
+                      <span className="eyebrow text-white/70">{t('Ringkasan pendaftaran', 'Registration summary')}</span>
                       <strong>{category.name}</strong>
                     </span>
                     <strong className="summary-mobile-price">
-                      Rp{category.price.toLocaleString('id-ID')}
+                      Rp{category.price.toLocaleString(lang === 'id' ? 'id-ID' : 'en-US')}
                     </strong>
                     <svg
                       className={`summary-chevron ${isSummaryExpanded ? 'rotate-180' : ''}`}
@@ -640,19 +666,19 @@ export default function RegistrationPage() {
                   >
                     <div className="flex items-start">
                       <div>
-                        <p className="text-sm font-bold text-[var(--ink)]">Sabtu, 19 Desember 2026</p>
+                        <p className="text-sm font-bold text-[var(--ink)]">{t('Sabtu, 19 Desember 2026', 'Saturday, 19 December 2026')}</p>
                         <p className="mt-1 text-xs text-[var(--muted)]">Departmen Sports Lab, Bandung</p>
                       </div>
                     </div>
 
                     <div className="border-t border-[var(--line)] pt-4">
-                      <p className="eyebrow mb-3 text-[var(--muted)]">Termasuk dalam pendaftaran</p>
+                      <p className="eyebrow mb-3 text-[var(--muted)]">{t('Termasuk dalam pendaftaran', 'Included with your entry')}</p>
                       <ul className="space-y-2 text-sm text-[var(--ink)]">
-                        {category.category_features && category.category_features.length > 0 ? (
-                          category.category_features.map((item, idx) => (
+                        {category.features && category.features.length > 0 ? (
+                          category.features.map((feature, idx) => (
                             <li key={idx} className="flex gap-2">
                               <span className="text-[var(--blue)]">✓</span>
-                              {item.feature}
+                              {feature}
                             </li>
                           ))
                         ) : (
@@ -668,9 +694,9 @@ export default function RegistrationPage() {
                     </div>
 
                     <div className="summary-price flex items-end justify-between border-t border-[var(--line)] pt-4">
-                      <span className="text-sm font-semibold text-[var(--ink)]">Biaya per orang</span>
+                      <span className="text-sm font-semibold text-[var(--ink)]">{t('Biaya per orang', 'Entry fee per person')}</span>
                       <strong className="text-2xl font-black text-[var(--ink)]">
-                        Rp{category.price.toLocaleString('id-ID')}
+                        Rp{category.price.toLocaleString(lang === 'id' ? 'id-ID' : 'en-US')}
                       </strong>
                     </div>
                   </div>
@@ -687,7 +713,7 @@ export default function RegistrationPage() {
                   <header className="flex items-start justify-between gap-4 border-b border-[var(--line)] p-5 sm:p-7">
                     <div>
                       <p className="eyebrow mb-2 text-[var(--blue)]">Share Your Distance Vol 4.0</p>
-                      <h2 className="text-2xl font-black text-[var(--ink)]">Syarat & Ketentuan</h2>
+                      <h2 className="text-2xl font-black text-[var(--ink)]">{t('Syarat & Ketentuan', 'Terms & Conditions')}</h2>
                     </div>
                     <button
                       type="button"
@@ -699,25 +725,25 @@ export default function RegistrationPage() {
                   </header>
                   <div className="overflow-y-auto p-5 text-sm leading-relaxed sm:p-7 text-[var(--ink)]">
                     <p className="mb-5 text-[var(--muted)]">
-                      Dengan mendaftar, Anda menyetujui ketentuan berikut untuk mengikuti acara Share Your Distance.
+                      {t('Dengan mendaftar, Anda menyetujui ketentuan berikut untuk mengikuti acara Share Your Distance.', 'By registering, you agree to the following terms for participating in Share Your Distance.')}
                     </p>
                     <ol className="list-decimal space-y-5 pl-5">
                       <li>
-                        <strong>Informasi pendaftaran</strong>
+                        <strong>{t('Informasi pendaftaran', 'Registration information')}</strong>
                         <p className="mt-1 text-[var(--muted)]">
-                          Berikan informasi pendaftaran yang akurat dan terkini. Peserta individu akan ditempatkan ke dalam tim oleh panitia.
+                          {t('Berikan informasi pendaftaran yang akurat dan terkini. Peserta individu akan ditempatkan ke dalam tim oleh panitia.', 'Provide accurate and current registration information. Individual participants will be assigned to a team by the organizers.')}
                         </p>
                       </li>
                       <li>
-                        <strong>Usia, kesehatan, dan keselamatan</strong>
+                        <strong>{t('Usia, kesehatan, dan keselamatan', 'Age, health, and safety')}</strong>
                         <p className="mt-1 text-[var(--muted)]">
-                          Peserta harus berusia minimal 17 tahun pada tanggal acara. Pastikan kondisi kesehatan memungkinkan Anda mengikuti kegiatan, dan patuhi aturan lomba serta arahan keselamatan panitia.
+                          {t('Peserta harus berusia minimal 17 tahun pada tanggal acara. Pastikan kondisi kesehatan memungkinkan Anda mengikuti kegiatan, dan patuhi aturan lomba serta arahan keselamatan panitia.', 'Participants must be at least 17 years old on the event date. Make sure your health allows you to take part, and follow race rules and organizer safety instructions.')}
                         </p>
                       </li>
                       <li>
-                        <strong>Biaya dan perubahan acara</strong>
+                        <strong>{t('Biaya dan perubahan acara', 'Fees and event changes')}</strong>
                         <p className="mt-1 text-[var(--muted)]">
-                          Biaya pendaftaran tidak dapat dikembalikan atau dialihkan, termasuk karena cedera, sakit, atau keadaan darurat pribadi. Jika keadaan tak terduga mengharuskan perubahan tanggal, lokasi, atau format acara, panitia akan menyampaikan informasinya kepada peserta.
+                          {t('Biaya pendaftaran tidak dapat dikembalikan atau dialihkan, termasuk karena cedera, sakit, atau keadaan darurat pribadi. Jika keadaan tak terduga mengharuskan perubahan tanggal, lokasi, atau format acara, panitia akan menyampaikan informasinya kepada peserta.', 'Registration fees are non-refundable and non-transferable, including in cases of injury, illness, or personal emergencies. If unforeseen circumstances require a change to the event date, location, or format, the organizers will inform participants.')}
                         </p>
                       </li>
                     </ol>
@@ -728,7 +754,7 @@ export default function RegistrationPage() {
                       onClick={() => setTermsOpen(false)}
                       className="btn lime !min-h-11 !px-5 !py-2 cursor-pointer font-extrabold"
                     >
-                      Tutup
+                      {t('Tutup', 'Close')}
                     </button>
                   </footer>
                 </div>
@@ -744,7 +770,7 @@ export default function RegistrationPage() {
                   <header className="flex items-start justify-between gap-4 border-b border-[var(--line)] p-5 sm:p-7">
                     <div>
                       <p className="eyebrow mb-2 text-[var(--blue)]">Share Your Distance Vol 4.0</p>
-                      <h2 className="text-2xl font-black text-[var(--ink)]">Kebijakan Privasi</h2>
+                      <h2 className="text-2xl font-black text-[var(--ink)]">{t('Kebijakan Privasi', 'Privacy Policy')}</h2>
                     </div>
                     <button
                       type="button"
@@ -756,25 +782,25 @@ export default function RegistrationPage() {
                   </header>
                   <div className="overflow-y-auto p-5 text-sm leading-relaxed sm:p-7 text-[var(--ink)]">
                     <p className="mb-5 text-[var(--muted)]">
-                      Informasi yang Anda berikan digunakan untuk mengelola pendaftaran dan mendukung keselamatan peserta selama acara.
+                      {t('Informasi yang Anda berikan digunakan untuk mengelola pendaftaran dan mendukung keselamatan peserta selama acara.', 'Information you provide is used to manage registration and support participant safety during the event.')}
                     </p>
                     <ol className="list-decimal space-y-5 pl-5">
                       <li>
-                        <strong>Informasi yang dikumpulkan</strong>
+                        <strong>{t('Informasi yang dikumpulkan', 'Information collected')}</strong>
                         <p className="mt-1 text-[var(--muted)]">
-                          Formulir meminta nama, email, nomor telepon, tanggal lahir, gender, kontak darurat dan hubungannya dengan Anda, serta informasi kondisi medis. Profil Instagram dan Strava bersifat opsional.
+                          {t('Formulir meminta nama, email, nomor telepon, tanggal lahir, gender, kontak darurat dan hubungannya dengan Anda, serta informasi kondisi medis. Profil Instagram dan Strava bersifat opsional.', 'The form requests your name, email, phone number, date of birth, gender, emergency contact and their relationship to you, and medical information. Instagram and Strava profiles are optional.')}
                         </p>
                       </li>
                       <li>
-                        <strong>Penggunaan dan pembagian informasi</strong>
+                        <strong>{t('Penggunaan dan pembagian informasi', 'Use and sharing')}</strong>
                         <p className="mt-1 text-[var(--muted)]">
-                          Informasi digunakan untuk memproses pendaftaran, menyampaikan informasi acara, dan membantu keselamatan atau layanan medis darurat. Informasi yang diperlukan dapat dibagikan kepada tim operasional acara, penyedia layanan acara, atau petugas medis untuk keperluan tersebut.
+                          {t('Informasi digunakan untuk memproses pendaftaran, menyampaikan informasi acara, dan membantu keselamatan atau layanan medis darurat. Informasi yang diperlukan dapat dibagikan kepada tim operasional acara, penyedia layanan acara, atau petugas medis untuk keperluan tersebut.', 'Information is used to process registration, send event updates, and support safety or emergency medical care. Necessary information may be shared with event operations, event service providers, or medical personnel for these purposes.')}
                         </p>
                       </li>
                       <li>
-                        <strong>Penyimpanan dan hak Anda</strong>
+                        <strong>{t('Penyimpanan dan hak Anda', 'Retention and your rights')}</strong>
                         <p className="mt-1 text-[var(--muted)]">
-                          Informasi disimpan selama diperlukan untuk mengelola acara dan memenuhi kewajiban administrasi atau hukum. Anda dapat meminta akses, koreksi, atau penghapusan informasi dengan menghubungi penyelenggara melalui kanal kontak resmi yang tercantum di situs.
+                          {t('Informasi disimpan selama diperlukan untuk mengelola acara dan memenuhi kewajiban administrasi atau hukum. Anda dapat meminta akses, koreksi, atau penghapusan informasi dengan menghubungi penyelenggara melalui kanal kontak resmi yang tercantum di situs.', 'Information is retained as needed to manage the event and meet administrative or legal obligations. You may request access, correction, or deletion by contacting the organizers through the official contact channel listed on the site.')}
                         </p>
                       </li>
                     </ol>
@@ -785,7 +811,7 @@ export default function RegistrationPage() {
                       onClick={() => setPrivacyOpen(false)}
                       className="btn lime !min-h-11 !px-5 !py-2 cursor-pointer font-extrabold"
                     >
-                      Tutup
+                      {t('Tutup', 'Close')}
                     </button>
                   </footer>
                 </div>

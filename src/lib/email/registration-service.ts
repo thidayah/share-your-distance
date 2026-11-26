@@ -21,7 +21,7 @@ export interface PaymentSuccessProps {
   name: string;
   category: string;
   registration_number: string;
-  bib_number: string;
+  bib_number?: string;
   amount: number;
   payment_date: string;
   payment_method: string;
@@ -66,7 +66,7 @@ export const registrationService = {
         from: `Share Your Distance Contact <${process.env.RESEND_FROM}>`,
         to: item.email,
         subject: `Payment Successful - ${item.registration_number}`,
-        react: PaymentSuccessful(item),
+        react: PaymentSuccessful({ ...item, bib_number: item.bib_number || '' }),
       });
 
       if (error) {

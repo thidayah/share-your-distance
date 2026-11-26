@@ -1,67 +1,151 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { SplitText } from 'gsap/SplitText';
+import { useLanguage } from '@/lib/i18n';
+
+const RUNNERS = 4;
+const LEG_METERS = 600;
+const TOTAL_METERS = RUNNERS * LEG_METERS;
+
+function formatRelayDistance(value: number, language: string) {
+  const rounded = Math.floor(value);
+  return `${rounded.toLocaleString(language === 'id' ? 'id-ID' : 'en-US')} M`;
+}
 
 export default function FormatSection() {
-  const pathRef = useRef<SVGPathElement>(null);
-  const [batonPos, setBatonPos] = useState({ x: 235, y: 127 });
-  const [runnerNumber, setRunnerNumber] = useState('01');
-  const [distance, setDistance] = useState(0);
+  const { lang, t } = useLanguage();
+  const sectionRef = useRef<HTMLElement>(null);
+  const routeRef = useRef<SVGPathElement>(null);
+  const batonRef = useRef<SVGGElement>(null);
+  const runnerNumberRef = useRef<SVGTextElement>(null);
+  const distanceRef = useRef<HTMLElement>(null);
+  const metersRef = useRef(0);
+  const langRef = useRef(lang);
 
   useEffect(() => {
-    let animationFrameId: number;
-    let startTime: number | null = null;
-    const duration = 16000; // 16 seconds full cycle for 4 runners (4 seconds per runner)
+    langRef.current = lang;
+    if (distanceRef.current) {
+      distanceRef.current.textContent = formatRelayDistance(metersRef.current, lang);
+    }
+  }, [lang]);
 
-    const animate = (timestamp: number) => {
-      if (!startTime) startTime = timestamp;
-      const elapsed = (timestamp - startTime) % duration;
-      const progress = elapsed / duration; // 0 to 1
+  useEffect(() => {
+    const section = sectionRef.current;
+    const route = routeRef.current;
+    const baton = batonRef.current;
+    const runnerNumber = runnerNumberRef.current;
+    const distance = distanceRef.current;
+    if (!section || !route || !baton || !runnerNumber || !distance) return;
 
-      if (pathRef.current) {
-        const pathLength = pathRef.current.getTotalLength();
-        const currentLength = progress * pathLength;
-        const point = pathRef.current.getPointAtLength(currentLength);
-        setBatonPos({ x: point.x, y: point.y });
-      }
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      // 4 runners, 600m each = 2400m
-      const currentMeters = Math.min(2400, Math.floor(progress * 2400));
-      const currentRunner = Math.min(4, Math.floor(progress * 4) + 1);
-
-      setDistance(currentMeters);
-      setRunnerNumber(String(currentRunner).padStart(2, '0'));
-
-      animationFrameId = requestAnimationFrame(animate);
+    const showStatic = () => {
+      metersRef.current = TOTAL_METERS;
+      distance.textContent = formatRelayDistance(TOTAL_METERS, langRef.current);
+      runnerNumber.textContent = String(RUNNERS).padStart(2, '0');
     };
 
-    animationFrameId = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationFrameId);
+    if (typeof gsap === 'undefined' || reducedMotion) {
+      showStatic();
+      return;
+    }
+
+    gsap.registerPlugin(MotionPathPlugin, ScrollTrigger, SplitText);
+
+    let headingSplit: SplitText | null = null;
+    let headingAnimated = false;
+    const progress = { distance: 0 };
+
+    const loop = gsap.timeline({ repeat: -1, paused: true });
+    loop
+      .to(
+        baton,
+        {
+          duration: 10,
+          repeat: RUNNERS - 1,
+          ease: 'none',
+          motionPath: {
+            path: route,
+            align: route,
+            alignOrigin: [0.5, 0.5],
+            autoRotate: false,
+          },
+        },
+        0
+      )
+      .to(
+        progress,
+        {
+          distance: TOTAL_METERS,
+          duration: 40,
+          ease: 'none',
+          onUpdate: () => {
+            const meters = Math.min(TOTAL_METERS, progress.distance);
+            const runner = meters >= TOTAL_METERS ? RUNNERS : Math.floor(meters / LEG_METERS) + 1;
+            metersRef.current = meters;
+            distance.textContent = formatRelayDistance(meters, langRef.current);
+            runnerNumber.textContent = String(runner).padStart(2, '0');
+          },
+        },
+        0
+      );
+
+    const trigger = ScrollTrigger.create({
+      trigger: section,
+      start: 'top 75%',
+      end: 'bottom top',
+      onEnter: () => {
+        const heading = section.querySelector<HTMLElement>('#relay-heading');
+        if (!headingAnimated && heading) {
+          headingAnimated = true;
+          headingSplit = SplitText.create(heading, {
+            type: 'words,chars',
+            wordsClass: 'relay-word',
+            charsClass: 'relay-char',
+            aria: 'auto',
+          });
+          gsap.from(headingSplit.chars, { autoAlpha: 0, duration: 0.001, stagger: 0.06, ease: 'none' });
+        }
+        loop.play();
+      },
+      onEnterBack: () => loop.play(),
+      onLeave: () => loop.pause(),
+      onLeaveBack: () => loop.pause(),
+    });
+
+    return () => {
+      trigger.kill();
+      loop.kill();
+      if (headingSplit) headingSplit.revert();
+    };
   }, []);
 
   return (
-    <section id="format" className="section bg-white">
+    <section ref={sectionRef} id="format" className="section">
       <div className="wrap grid items-center gap-12 lg:grid-cols-2">
         <div>
-          <p className="eyebrow mb-4 text-[var(--blue)]">Satu lintasan, empat peran</p>
+          <p className="eyebrow mb-4 text-[var(--blue)]">{t('Satu lintasan, empat peran', 'One track, four turns')}</p>
           <h2 className="mb-5 text-4xl font-black leading-tight tracking-tight md:text-5xl text-[var(--ink)]">
-            Bukan soal siapa paling cepat. Ini soal saling bawa sampai finis.
+            <span id="relay-heading">
+              {t('Bukan soal siapa paling cepat. Ini soal saling bawa sampai finis.', "It’s not about who’s fastest. It’s about carrying each other to the finish.")}
+            </span>
           </h2>
-          <p className="text-base text-[var(--muted)] leading-relaxed max-w-lg">
-            Format estafet 4 × 600 meter dirancang untuk membangun kerjasama tim. Setiap pelari memiliki peran yang sama pentingnya untuk menuntaskan total jarak 2.400 meter bersama.
-          </p>
         </div>
 
-        <div className="relay-visual relative w-full max-w-[620px] mx-auto">
+        <div className="relay-visual">
           <svg
-            className="relay-svg block w-full h-auto overflow-visible"
+            className="relay-svg"
             viewBox="0 0 560 440"
             role="img"
             aria-labelledby="relay-title relay-desc"
           >
-            <title id="relay-title">Lintasan estafet empat pelari</title>
+            <title id="relay-title">{t('Lintasan estafet empat pelari', 'Four-runner relay track')}</title>
             <desc id="relay-desc">
-              Empat pelari bergantian mengelilingi lintasan. Setiap putaran berjarak 600 meter dan total jarak tim 2.400 meter.
+              {t('Empat pelari bergantian mengelilingi lintasan. Setiap putaran berjarak 600 meter dan total jarak tim 2.400 meter.', 'Four runners take turns around the track. Each leg is 600 metres, for a team total of 2,400 metres.')}
             </desc>
 
             {/* Track surface */}
@@ -100,49 +184,43 @@ export default function FormatSection() {
 
             {/* Hidden motion path */}
             <path
-              ref={pathRef}
+              ref={routeRef}
               id="relay-route"
-              className="relay-motion-path fill-none stroke-transparent pointer-events-none"
+              className="relay-motion-path"
               d="M235 127A93 93 0 0 0 235 313H325A93 93 0 0 0 325 127H235"
               transform="rotate(-28 280 220)"
             />
 
             {/* Baton & Runner Badge */}
-            <g
-              id="relay-baton"
-              style={{
-                transform: `translate(${batonPos.x}px, ${batonPos.y}px)`,
-                transition: 'transform 0.05s linear',
-              }}
-            >
-              <circle
-                className="relay-runner-badge fill-[var(--lime)] stroke-[var(--ink)] stroke-[3] pointer-events-none"
-                r="24"
-              />
+            <g ref={batonRef} id="relay-baton" transform="translate(280 220)">
+              <circle className="relay-runner-badge" r="24" />
               <text
+                ref={runnerNumberRef}
                 id="relay-runner-number"
-                className="relay-runner-number fill-[var(--ink)] text-[17px] font-black pointer-events-none"
+                className="relay-runner-number"
                 textAnchor="middle"
                 dominantBaseline="central"
                 x="0"
                 y="1"
               >
-                {runnerNumber}
+                01
               </text>
             </g>
           </svg>
 
           {/* Center metric indicator */}
-          <div className="relay-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-            <span className="eyebrow text-[var(--blue)]">Jarak tim</span>
+          <div className="relay-center">
+            <span className="eyebrow text-[var(--blue)]">{t('Jarak tim', 'Team distance')}</span>
             <strong
+              ref={distanceRef}
               id="relay-distance"
-              className="mt-1 inline-block min-w-[9ch] bg-[var(--ink)] px-4 py-2 text-center text-3xl font-black text-white sm:text-4xl rounded-xl shadow-lg"
+              className="mt-1 inline-block max-w-full min-w-[6ch] bg-[var(--ink)] text-center font-black text-white"
+              aria-live="off"
             >
-              {distance.toLocaleString('id-ID')} M
+              0 M
             </strong>
             <span className="mt-1 block text-xs font-semibold text-[var(--muted)]">
-              4 pelari · 600 m per orang
+              {t('4 pelari · 600 m per orang', '4 runners · 600 m each')}
             </span>
           </div>
         </div>

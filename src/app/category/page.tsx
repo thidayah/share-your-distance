@@ -1,9 +1,18 @@
+import { redirect } from "next/navigation";
 import { categoryService } from "@/lib/supabase/service/categories/services";
 import Template from "@/components/layout/Template";
 import CategoryCard from "@/components/ui/CategoryCard";
 
+// Kategori bisa berubah dari admin, jadi keputusan redirect harus dicek per request.
+export const dynamic = "force-dynamic";
+
 export default async function CategoryPage() {
   const categories = await categoryService.getActive();
+
+  // Satu kategori aktif → langsung ke form registrasi tanpa halaman pemilihan.
+  if (categories.length === 1) {
+    redirect(`/register/${categories[0].id}`);
+  }
 
   return (
     <Template>
@@ -30,7 +39,7 @@ export default async function CategoryPage() {
           {/* Additional Info */}
           <div className="text-center max-w-2xl mx-auto">
             <p className="text-sm text-[var(--muted)]">
-              Seluruh peserta mendapatkan nomor BIB, refreshment, layanan medis, doorprize, dan sertifikat digital.
+              Informasi perlengkapan dan kebutuhan hari acara akan dibagikan mendekati tanggal lomba.
             </p>
           </div>
         </div>

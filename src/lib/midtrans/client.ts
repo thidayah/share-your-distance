@@ -1,13 +1,6 @@
 // src/lib/midtrans/client.ts
 import midtransClient from 'midtrans-client';
 
-// Initialize Snap client
-export const snap = new midtransClient.Snap({
-  isProduction: process.env.MIDTRANS_IS_PRODUCTION === 'true',
-  serverKey: process.env.MIDTRANS_SERVER_KEY!,
-  clientKey: process.env.MIDTRANS_CLIENT_KEY!,
-});
-
 // Types for transaction
 export interface MidtransTransaction {
   transaction_details: {
@@ -33,17 +26,31 @@ export interface MidtransTransaction {
   };
 }
 
-// Utility function to create transaction
 export async function createSnapTransaction(transaction: MidtransTransaction) {
   try {
+    const serverKey = process.env.MIDTRANS_SERVER_KEY;
+    const clientKey = process.env.MIDTRANS_CLIENT_KEY;
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+
+    if (!serverKey || !clientKey || !appUrl) {
+      throw new Error('Midtrans server/client keys and NEXT_PUBLIC_APP_URL must be configured');
+    }
+
+    const parsedAppUrl = new URL(appUrl);
+    const snap = new midtransClient.Snap({
+      isProduction: process.env.MIDTRANS_IS_PRODUCTION === 'true',
+      serverKey,
+      clientKey,
+    });
+
     const parameter = {
       transaction_details: transaction.transaction_details,
       customer_details: transaction.customer_details,
       item_details: transaction.item_details,
       callbacks: {
-        finish: `${process.env.NEXT_PUBLIC_APP_URL}/payment/success`,
-        error: `${process.env.NEXT_PUBLIC_APP_URL}/payment/failed`,
-        pending: `${process.env.NEXT_PUBLIC_APP_URL}/payment/pending`,
+        finish: new URL('/payment/success', parsedAppUrl).toString(),
+        error: new URL('/payment/failed', parsedAppUrl).toString(),
+        pending: new URL('/payment/pending', parsedAppUrl).toString(),
       },
     };
 

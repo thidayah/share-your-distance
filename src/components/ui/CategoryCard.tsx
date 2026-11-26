@@ -8,7 +8,9 @@ interface CategoryCardProps {
 }
 
 export default function CategoryCard({ item }: CategoryCardProps) {
-  const isClosed = item.max_participants ? item.current_participants >= item.max_participants : false;
+  const isClosed = item.max_participants
+    ? (item.current_participants ?? 0) >= item.max_participants
+    : false;
 
   return (
     <div
@@ -46,12 +48,12 @@ export default function CategoryCard({ item }: CategoryCardProps) {
 
       {/* Features List */}
       <ul className="mb-8 space-y-3 text-sm text-[var(--ink)]">
-        {item.category_features?.map((feat, fIndex) => (
+        {item.features?.map((feature, fIndex) => (
           <li key={fIndex} className="flex items-center">
             <span className="mr-3 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[var(--paper)] text-[var(--blue)] font-bold text-xs">
               ✓
             </span>
-            <span>{feat?.feature}</span>
+            <span>{feature}</span>
           </li>
         ))}
       </ul>

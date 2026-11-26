@@ -3,43 +3,6 @@
 import { Registration } from "@/lib/supabase/service/registrations/types";
 import { Icon } from '@iconify/react'
 
-// interface Registration {
-//   id: string;
-//   registration_number: string;
-//   category_id: string;
-//   full_name: string;
-//   email: string;
-//   phone: string;
-//   date_of_birth: string;
-//   gender: 'male' | 'female' | 'other';
-//   nationality: string;
-//   id_number?: string;
-//   tshirt_size?: 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL';
-//   running_experience?: string;
-//   emergency_contact_name: string;
-//   emergency_contact_phone: string;
-//   emergency_contact_relationship: string;
-//   medical_conditions?: string;
-//   total_amount: number;
-//   payment_status: 'pending' | 'paid' | 'failed' | 'refunded' | 'cancelled';
-//   payment_method?: string;
-//   payment_date?: string;
-//   external_payment_id?: string;
-//   bib_number?: string;
-//   bib_assigned_at?: string;
-//   finish_time?: string;
-//   agreed_to_terms: boolean;
-//   agreed_to_privacy_policy: boolean;
-//   agreed_at: string;
-//   created_at: string;
-//   updated_at: string;
-//   ip_address?: string;
-//   category?: {
-//     name: string;
-//     distance: string;
-//   };
-// }
-
 interface RegistrationDetailsModalProps {
   registration: Registration;
   onClose: () => void;
@@ -54,7 +17,7 @@ export default function RegistrationDetailsModal({ registration, onClose }: Regi
     }).format(amount)
   }
 
-  const formatDate = (dateString?: string) => {
+  const formatDate = (dateString?: string | null) => {
     if (!dateString) return 'N/A'
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', {
@@ -166,25 +129,23 @@ export default function RegistrationDetailsModal({ registration, onClose }: Regi
                 </div>
               </div>
 
-              {/* Race Preferences */}
+              {/* Social Profiles */}
               <div>
                 <h3 className="text-lg font-medium text-zinc-900 mb-4 flex items-center">
-                  <Icon icon="mdi:run" className="h-5 w-5 mr-2" />
-                  Race Preferences
+                  <Icon icon="mdi:account-link" className="h-5 w-5 mr-2" />
+                  Social Profiles
                 </h3>
                 <div className="bg-zinc-50 rounded-lg p-4 space-y-3">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <div>
-                      <div className="text-xs text-zinc-900 font-semibold">T-Shirt Size</div>
-                      <div className="text-sm text-zinc-500 font-medium">
-                        {registration.tshirt_size || 'Not specified'}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-zinc-900 font-semibold">Running Experience</div>
-                      <div className="text-sm text-zinc-500 font-medium">
-                        {registration.running_experience || 'Not specified'}
-                      </div>
+                      <div className="text-xs text-zinc-900 font-semibold">Strava</div>
+                      {registration.strava_url ? (
+                        <a className="break-all text-sm text-blue-700 underline" href={registration.strava_url} target="_blank" rel="noreferrer">
+                          {registration.strava_url}
+                        </a>
+                      ) : (
+                        <div className="text-sm text-zinc-500">Not provided</div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -288,73 +249,31 @@ export default function RegistrationDetailsModal({ registration, onClose }: Regi
                     </div>
                   </div>
 
-                  {registration.external_payment_id && (
+                  {registration.external_order_id && (
                     <div>
-                      <div className="text-xs text-zinc-900 font-semibold">Payment Gateway ID</div>
-                      <div className="text-sm text-zinc-500 font-medium font-mono">{registration.external_payment_id}</div>
+                      <div className="text-xs text-zinc-900 font-semibold">Midtrans Order ID</div>
+                      <div className="text-sm text-zinc-500 font-medium font-mono">{registration.external_order_id}</div>
+                    </div>
+                  )}
+                  {registration.external_transaction_id && (
+                    <div>
+                      <div className="text-xs text-zinc-900 font-semibold">Midtrans Transaction ID</div>
+                      <div className="text-sm text-zinc-500 font-medium font-mono">{registration.external_transaction_id}</div>
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Bib & Finish Information */}
-              <div>
-                <h3 className="text-lg font-medium text-zinc-900 mb-4 flex items-center">
-                  <Icon icon="mdi:racing-helmet" className="h-5 w-5 mr-2" />
-                  Race Information
-                </h3>
-                <div className="bg-zinc-50 rounded-lg p-4 space-y-3">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <div className="text-xs text-zinc-900 font-semibold">Bib Number</div>
-                      <div className="text-sm text-zinc-500 font-medium">
-                        {registration.bib_number ? (
-                          <span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-blue-800">
-                            <Icon icon="mdi:numeric" className="h-4 w-4 mr-1" />
-                            {registration.bib_number}
-                          </span>
-                        ) : 'Not assigned'}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs text-zinc-900 font-semibold">Assigned</div>
-                      <div className="text-sm text-zinc-500 font-medium">
-                        {formatDate(registration.bib_assigned_at) || '-'}
-                      </div>
-                    </div>
-                    {/* <div>
-                      <div className="text-xs text-zinc-900 font-semibold">Finish Time</div>
-                      <div className="text-sm font-medium">
-                        {registration.finish_time ? formatDate(registration.finish_time) : 'Not recorded'}
-                      </div>
-                    </div> */}
-                  </div>
-                </div>
-              </div>
-
-
             </div>
           </div>
 
-          {/* Terms Agreement */}
-          <div className="mt-8 pt-6 border-t border-zinc-200">
-            <h3 className="text-lg font-medium text-zinc-900 mb-4">Terms Agreement <span className="text-xs font-normal text-zinc-500 mt-2"> (Agreed at: {formatDate(registration.agreed_at)})</span></h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center">
-                <Icon
-                  icon={registration.agreed_to_terms ? "mdi:checkbox-marked-circle" : "mdi:checkbox-blank-circle-outline"}
-                  className={`h-5 w-5 mr-2 ${registration.agreed_to_terms ? 'text-green-600' : 'text-zinc-400'}`}
-                />
-                <span className="text-sm text-zinc-500">Agreed to Terms & Conditions</span>
-              </div>
-              <div className="flex items-center">
-                <Icon
-                  icon={registration.agreed_to_privacy_policy ? "mdi:checkbox-marked-circle" : "mdi:checkbox-blank-circle-outline"}
-                  className={`h-5 w-5 mr-2 ${registration.agreed_to_privacy_policy ? 'text-green-600' : 'text-zinc-400'}`}
-                />
-                <span className="text-sm text-zinc-500">Agreed to Privacy Policy</span>
-              </div>
-            </div>
+          <div className="mt-8 border-t border-zinc-200 pt-6">
+            <h3 className="text-lg font-medium text-zinc-900">Consent</h3>
+            <p className="mt-2 text-sm text-zinc-500">
+              {registration.consent_given_at
+                ? `Terms and privacy policy accepted on ${formatDate(registration.consent_given_at)}`
+                : 'No consent timestamp recorded'}
+            </p>
           </div>
         </div>
 

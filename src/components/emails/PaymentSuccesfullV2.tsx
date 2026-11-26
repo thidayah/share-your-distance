@@ -90,7 +90,7 @@ export const PaymentSuccessfulV2 = ({
               <div className="mb-4 px-6 py-2 mx-8 text-white bg-zinc-700">
                 <Text className="font-bold mb-1">Next Steps</Text>
                 <p className="text-sm">• Save this email as your payment proof</p>
-                <p className="text-sm">• Your BIB number will be used on race day</p>
+                <p className="text-sm">• Race-day information will be sent closer to the event</p>
                 <p className="text-sm">• Further instructions about race kit collection will be sent later</p>
                 <p className="text-sm">• Keep training and prepare for the race!</p>
                 <div>&nbsp;</div>

@@ -12,7 +12,6 @@ import RegistrationSummary from '@/components/RegistrationSummary';
 import Button from '@/components/ui/Button';
 import Template from "@/components/layout/Template";
 import Loading from "@/components/ui/Loading";
-import { categoryService } from "@/lib/supabase/service/categories/services";
 import { TypesCategory } from "@/types/database";
 import { supabase } from "@/lib/supabase/client";
 
@@ -53,18 +52,12 @@ export default function RegistrationPage() {
   useEffect(() => {
     (async () => {
       try {
-        // const data = await categoryService.getById(categoryId);
-        const { data } = await supabase
-          .from('categories')
-          .select(`
-                *,
-                category_features (
-                  feature,
-                  display_order
-                )
-              `)
+        const { data, error } = await supabase
+          .from('syd_categories')
+          .select('*')
           .eq('id', categoryId)
           .single();
+        if (error) throw error;
         setCategory(data)
         setTimeout(() => {
           setLoading(false)
@@ -73,9 +66,12 @@ export default function RegistrationPage() {
         console.error('Error fetching data:', error);
       }
     })();
-  }, []);
+  }, [categoryId]);
 
-  const updateFormData = (section: keyof typeof formData, data: any) => {
+  const updateFormData = (
+    section: keyof typeof formData,
+    data: Partial<typeof formData[typeof section]>,
+  ) => {
     setFormData(prev => ({
       ...prev,
       [section]: { ...prev[section], ...data }
@@ -261,7 +257,7 @@ export default function RegistrationPage() {
         {!isLoading && !category ? (
           <div className="text-center text-white min-h-screen flex justify-center items-center flex-col">
             <h1 className="text-2xl font-bold mb-4">Category Not Found</h1>
-            <p>The race category you're looking for doesn't exist.</p>
+            <p>The race category you&apos;re looking for doesn&apos;t exist.</p>
           </div>
         ) : null}
         {isLoading && <Loading />}

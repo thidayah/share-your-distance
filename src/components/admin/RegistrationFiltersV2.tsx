@@ -4,7 +4,6 @@ interface FilterState {
   category_id: string;
   start_date: string;
   end_date: string;
-  has_bib: string;
 }
 
 interface CategoriesState {

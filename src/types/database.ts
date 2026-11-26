@@ -5,25 +5,15 @@ export interface TypesCategory {
   description: string;
   price: number;
   distance: string;
-  image_url?: string;
-  recommended: boolean;
-  max_participants?: number;
-  current_participants: number;
-  min_age?: number;
-  max_age?: number;
-  health_warning?: string;
-  display_order: number;
-  created_at: string;
-  updated_at: string;
-  category_features?: TypesCategoryFeature[];
-}
-
-export interface TypesCategoryFeature {
-  id: string;
-  category_id: string;
-  feature: string;
-  display_order: number;
-  created_at: string;
+  image_url?: string | null;
+  recommended: boolean | null;
+  max_participants: number | null;
+  current_participants: number | null;
+  is_active: boolean | null;
+  features: string[];
+  display_order: number | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 // export interface RaceCategory {

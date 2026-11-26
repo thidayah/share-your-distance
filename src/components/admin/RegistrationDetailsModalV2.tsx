@@ -17,7 +17,7 @@ export default function RegistrationDetailsModalV2({ registration, onClose }: Re
     }).format(amount)
   }
 
-  const formatDate = (dateString?: string) => {
+  const formatDate = (dateString?: string | null) => {
     if (!dateString) return 'N/A'
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', {
@@ -117,8 +117,23 @@ export default function RegistrationDetailsModalV2({ registration, onClose }: Re
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <div className="text-xs text-zinc-900 font-semibold">Instagram</div>
-                      <div className="text-sm text-zinc-500 font-medium">{registration.instagram}</div>
+                      <div className="text-sm text-zinc-500 font-medium">{registration.instagram || 'Not provided'}</div>
                     </div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-zinc-900 font-semibold">Strava</div>
+                    {registration.strava_url ? (
+                      <a
+                        className="break-all text-sm text-blue-700 underline"
+                        href={registration.strava_url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {registration.strava_url}
+                      </a>
+                    ) : (
+                      <div className="text-sm text-zinc-500">Not provided</div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -183,6 +198,12 @@ export default function RegistrationDetailsModalV2({ registration, onClose }: Re
                       <div className="text-sm text-zinc-500 font-medium">{formatDate(registration.updated_at)}</div>
                     </div> */}
                   </div>
+                  <div>
+                    <div className="text-xs text-zinc-900 font-semibold">Consent</div>
+                    <div className="text-sm text-zinc-500 font-medium">
+                      {formatDate(registration.consent_given_at)}
+                    </div>
+                  </div>
 
                   {registration.ip_address && (
                     <div>
@@ -213,7 +234,7 @@ export default function RegistrationDetailsModalV2({ registration, onClose }: Re
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <div className="text-xs text-zinc-900 font-semibold">Payment Method</div>
-                      <div className="text-sm text-zinc-500 font-medium">QRIS</div>
+                      <div className="text-sm text-zinc-500 font-medium">{registration.payment_method || 'N/A'}</div>
                     </div>
                     <div>
                       <div className="text-xs text-zinc-900 font-semibold">Payment Date</div>
@@ -221,10 +242,16 @@ export default function RegistrationDetailsModalV2({ registration, onClose }: Re
                     </div>
                   </div>
 
-                  {registration.external_payment_id && (
+                  {registration.external_order_id && (
                     <div>
-                      <div className="text-xs text-zinc-900 font-semibold">Payment Gateway ID</div>
-                      <div className="text-sm text-zinc-500 font-medium font-mono">{registration.external_payment_id}</div>
+                      <div className="text-xs text-zinc-900 font-semibold">Midtrans Order ID</div>
+                      <div className="text-sm text-zinc-500 font-medium font-mono">{registration.external_order_id}</div>
+                    </div>
+                  )}
+                  {registration.external_transaction_id && (
+                    <div>
+                      <div className="text-xs text-zinc-900 font-semibold">Midtrans Transaction ID</div>
+                      <div className="text-sm text-zinc-500 font-medium font-mono">{registration.external_transaction_id}</div>
                     </div>
                   )}
                 </div>

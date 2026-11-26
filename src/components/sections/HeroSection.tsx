@@ -1,7 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import { gsap } from 'gsap';
+import { SplitText } from 'gsap/SplitText';
+import { useLanguage } from '@/lib/i18n';
 
 interface TimeLeft {
   days: string;
@@ -11,6 +14,8 @@ interface TimeLeft {
 }
 
 export default function HeroSection() {
+  const { t } = useLanguage();
+  const sectionRef = useRef<HTMLElement>(null);
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: '00',
     hours: '00',
@@ -44,16 +49,60 @@ export default function HeroSection() {
     return () => clearInterval(timer);
   }, []);
 
-  const handleScrollToDaftar = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    const el = document.getElementById('daftar');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+  // Hero intro animation (GSAP SplitText)
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (typeof gsap === 'undefined') return;
+
+    const root = sectionRef.current;
+    if (!root) return;
+
+    gsap.registerPlugin(SplitText);
+
+    const title = root.querySelector('.hero-title');
+    const meta = root.querySelector('.hero-grid .mb-8');
+    const cta = root.querySelector('.hero-grid a.btn');
+    const countdown = root.querySelector('.hero-grid .mt-10');
+    const frames = Array.from(root.querySelectorAll('.collage > *'));
+    const values = Array.from(root.querySelectorAll('.hero-values span'));
+
+    if (!title) return;
+
+    const split = SplitText.create(title as HTMLElement, {
+      type: 'words',
+      tag: 'span',
+      wordsClass: 'hero-word',
+      aria: 'auto',
+    });
+
+    const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+    tl.from(split.words, { yPercent: -220, autoAlpha: 0, duration: 0.95, ease: 'bounce.out', stagger: 0.14 }, 0);
+    if (meta) tl.from(meta, { y: 24, autoAlpha: 0, duration: 0.55 }, 1);
+    if (cta) tl.from(cta, { y: 24, autoAlpha: 0, duration: 0.55 }, 1.18);
+    if (countdown) tl.from(countdown, { y: 24, autoAlpha: 0, duration: 0.55 }, 1.34);
+
+    const frameVars = [
+      { x: 70, y: -42, autoAlpha: 0, duration: 0.8 },
+      { x: -64, y: 48, autoAlpha: 0, duration: 0.8 },
+      { x: 72, y: 54, autoAlpha: 0, duration: 0.7 },
+    ];
+    const frameOffsets = [0.28, 0.42, 0.58];
+    frames.forEach((frame, i) => {
+      if (frameVars[i]) tl.from(frame, frameVars[i], frameOffsets[i]);
+    });
+
+    if (values.length) {
+      tl.from(values, { x: -88, y: -8, autoAlpha: 0, duration: 0.9, stagger: 0.22, ease: 'bounce.out' }, 1.45);
     }
-  };
+
+    return () => {
+      tl.kill();
+      split.revert();
+    };
+  }, []);
 
   return (
-    <section id="top" className="relative overflow-hidden bg-[var(--ink)] text-white">
+    <section ref={sectionRef} id="top" className="relative overflow-hidden bg-[var(--ink)] text-white">
       <div className="track dots pointer-events-none absolute inset-0 opacity-40"></div>
 
       <div className="wrap hero-grid relative grid min-h-[740px] grid-cols-1 items-center gap-12 pb-16 pt-32 lg:grid-cols-[1.04fr_.96fr]">
@@ -70,7 +119,7 @@ export default function HeroSection() {
 
           <div className="mb-8 flex flex-wrap items-center gap-4 text-sm font-semibold text-white/85">
             <span className="flex items-center gap-2">
-              <span className="text-[var(--lime)] text-xs">●</span> Sabtu, 19 Desember 2026
+              <span className="text-[var(--lime)] text-xs">●</span> {t('Sabtu, 19 Desember 2026', 'Saturday, 19 December 2026')}
             </span>
             <span className="flex items-center gap-2">
               <span className="text-[var(--sky)] text-xs">●</span> Departmen Sports Lab, Bandung
@@ -79,40 +128,39 @@ export default function HeroSection() {
 
           <div>
             <a
-              href="#daftar"
-              onClick={handleScrollToDaftar}
+              href="/category"
               className="btn lime !px-7 !py-4 text-base font-extrabold shadow-lg shadow-black/20"
             >
-              Daftar sekarang ↗
+              {t('Daftar sekarang ↗', 'Register now ↗')}
             </a>
           </div>
 
           <div className="mt-10 max-w-[470px] border-t border-white/25 pt-5">
-            <p className="eyebrow mb-4 text-white/60">Hitung mundur ke garis start</p>
+            <p className="eyebrow mb-4 text-white/60">{t('Hitung mundur ke garis start', 'Countdown to the starting line')}</p>
             <div className="grid grid-cols-4 gap-2">
               <div className="countcell text-center">
                 <strong key={`days-${timeLeft.days}`} className="countval block text-4xl sm:text-6xl font-black tabular-nums tick-up">
                   {timeLeft.days}
                 </strong>
-                <span className="text-[10px] uppercase tracking-widest text-white/65">Hari</span>
+                <span className="text-[10px] uppercase tracking-widest text-white/65">{t('Hari', 'Days')}</span>
               </div>
               <div className="countcell text-center">
                 <strong key={`hours-${timeLeft.hours}`} className="countval block text-4xl sm:text-6xl font-black tabular-nums tick-up">
                   {timeLeft.hours}
                 </strong>
-                <span className="text-[10px] uppercase tracking-widest text-white/65">Jam</span>
+                <span className="text-[10px] uppercase tracking-widest text-white/65">{t('Jam', 'Hours')}</span>
               </div>
               <div className="countcell text-center">
                 <strong key={`minutes-${timeLeft.minutes}`} className="countval block text-4xl sm:text-6xl font-black tabular-nums tick-up">
                   {timeLeft.minutes}
                 </strong>
-                <span className="text-[10px] uppercase tracking-widest text-white/65">Menit</span>
+                <span className="text-[10px] uppercase tracking-widest text-white/65">{t('Menit', 'Minutes')}</span>
               </div>
               <div className="countcell text-center">
                 <strong key={`seconds-${timeLeft.seconds}`} className="countval block text-4xl sm:text-6xl font-black tabular-nums tick-up">
                   {timeLeft.seconds}
                 </strong>
-                <span className="text-[10px] uppercase tracking-widest text-white/65">Detik</span>
+                <span className="text-[10px] uppercase tracking-widest text-white/65">{t('Detik', 'Seconds')}</span>
               </div>
             </div>
           </div>
@@ -136,19 +184,19 @@ export default function HeroSection() {
           {/* Secondary Photo */}
           <div className="absolute bottom-4 left-0 h-[47%] w-[55%] -rotate-3 border-[7px] border-[var(--ink)] bg-[var(--ink)] p-2 shadow-2xl">
             <div className="photo relative h-full w-full rounded">
-              {/* Fallback image */}
-              <img
+              <Image
                 src="https://images.pexels.com/photos/12585936/pexels-photo-12585936.jpeg?auto=compress&cs=tinysrgb&w=700"
                 alt="Dua pelari menyerahkan tongkat estafet"
-                className="h-full w-full object-cover"
-                loading="lazy"
+                fill
+                unoptimized
+                className="object-cover"
               />
             </div>
           </div>
 
           {/* Format Badge */}
           <div className="absolute bottom-0 right-0 rotate-3 bg-[var(--lime)] px-5 py-4 text-[var(--ink)] shadow-xl">
-            <span className="eyebrow block">Format lomba</span>
+            <span className="eyebrow block">{t('Format lomba', 'Race format')}</span>
             <strong className="text-2xl font-black">4 × 600 M</strong>
           </div>
         </div>
