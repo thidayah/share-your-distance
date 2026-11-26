@@ -1,112 +1,225 @@
-import * as React from "react";
 import {
-  Html,
-  Head,
-  Preview,
-  Tailwind,
   Body,
   Container,
+  Head,
+  Heading,
+  Html,
+  Preview,
   Section,
   Text,
-  Heading,
-  Link,
-} from "@react-email/components";
+} from '@react-email/components';
 
 interface PaymentSuccessfulProps {
   name: string;
   category: string;
   registration_number: string;
-  amount: number,
-  payment_method: string,
-  payment_date: string,
+  amount: number;
+  payment_method: string;
+  payment_date: string;
 }
+
+const colors = {
+  ink: '#101b35',
+  blue: '#2754ed',
+  sky: '#88e8f3',
+  lime: '#d8fa65',
+  paper: '#f5f7fb',
+  muted: '#65718a',
+  line: '#dfe5ef',
+};
 
 export const PaymentSuccessfulV2 = ({
   name,
   category,
-  registration_number,  
+  registration_number,
   amount,
   payment_method,
   payment_date,
 }: PaymentSuccessfulProps) => {
-  const paymentDate = new Date(payment_date).toLocaleDateString('en-US', {
+  const formattedAmount = new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0,
+  }).format(amount);
+  const formattedPaymentDate = new Date(payment_date).toLocaleString('en-US', {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZone: 'Asia/Jakarta',
   });
+
   return (
     <Html>
       <Head />
-      {/* <Preview>Payment Successful</Preview> */}
-      <Tailwind>
-        <Body className="font-ubuntu text-gray-800 leading-relaxed bg-gray-50 p-5">
-          <Container className="max-w-xl mx-auto bg-gray-100 rounded-xl overflow-hidden">
-            {/* Header */}
-            <Section className=" bg-zinc-900 text-white text-left">
-              <Heading className="text-4xl font-bold mt-12 ml-10 tracking-[-3px]">
-                Payment&nbsp;&nbsp;Confirmed
-              </Heading>
-              <Text className="text-sm opacity-80 pb-8 pl-10">
-                Your payment has been successfully processed!
-              </Text>
-            </Section>
+      <Preview>Payment confirmed. Your Share Your Distance registration is complete.</Preview>
+      <Body
+        style={{
+          margin: 0,
+          padding: '32px 16px',
+          backgroundColor: colors.paper,
+          color: colors.ink,
+          fontFamily: 'Arial, Helvetica, sans-serif',
+        }}
+      >
+        <Container
+          style={{
+            maxWidth: '600px',
+            margin: '0 auto',
+            overflow: 'hidden',
+            border: `1px solid ${colors.line}`,
+            borderRadius: '20px',
+            backgroundColor: '#ffffff',
+          }}
+        >
+          <Section
+            style={{
+              padding: '32px 36px',
+              backgroundColor: colors.ink,
+              backgroundImage: 'radial-gradient(rgba(255, 255, 255, 0.17) 1px, transparent 1px)',
+              backgroundSize: '12px 12px',
+            }}
+          >
+            <Text
+              style={{
+                margin: '0 0 22px',
+                color: colors.sky,
+                fontSize: '13px',
+                fontWeight: 700,
+                letterSpacing: '2px',
+                textTransform: 'uppercase',
+              }}
+            >
+              Share Your Distance
+            </Text>
+            <Text
+              style={{
+                margin: 0,
+                color: 'rgba(216, 250, 101, 0.16)',
+                WebkitTextStroke: '1px rgba(216, 250, 101, 0.55)',
+                fontSize: '34px',
+                fontWeight: 900,
+                lineHeight: 0.9,
+                letterSpacing: '-1.5px',
+                textTransform: 'uppercase',
+              }}
+            >
+              PAYMENT
+              <br />
+              CONFIRMED
+            </Text>
+            <Heading
+              as="h1"
+              style={{
+                margin: '18px 0 0',
+                color: '#ffffff',
+                fontSize: '30px',
+                lineHeight: '1.2',
+                letterSpacing: '-1px',
+              }}
+            >
+              You&apos;re in.
+            </Heading>
+          </Section>
 
-            {/* Content */}
-            <Section className="mt-2">
-              <div className=" px-4 py-2 mx-4 ">
-                <Text className="font-bold text-blue-700 text-2xl">Hi {name},</Text>
-                <Text className="text-sm">
-                  Thank you for completing your payment. Your registration is now confirmed and you're officially part of <strong>Share Your Distance!</strong>
-                </Text>
-              </div>
+          <Section style={{ padding: '28px 36px 12px' }}>
+            <Heading
+              as="h2"
+              style={{ margin: '0 0 12px', color: colors.ink, fontSize: '22px' }}
+            >
+              Congratulations, {name}!
+            </Heading>
+            <Text style={{ margin: 0, color: colors.muted, fontSize: '15px', lineHeight: '1.7' }}>
+              Your payment has been received and your registration for Share Your Distance is
+              confirmed. We look forward to seeing you at the starting line.
+            </Text>
+          </Section>
 
-              {/* Message Summary */}
-              <div className="mb-4 px-4 py-2 mx-8 bg-white" style={{ borderLeft: '4px solid #1147e6' }}>
-                <Text className="font-bold text-blue-700 text-lg">Payment Details</Text>
-                <Text className="text-sm">
-                  <b>Registration Number:</b> {registration_number}
-                </Text>
-                <Text className="text-sm">
-                  <b>Category:</b> {category}
-                </Text>
-                <Text className="text-sm">
-                  <b>Amount Paid:</b> IDR {amount.toLocaleString()}
-                </Text>
-                <Text className="text-sm">
-                  <b>Payment Method:</b> {payment_method}
-                </Text>
-                <Text className="text-sm">
-                  <b>Payment Date:</b> {paymentDate}
-                </Text>
-                <Text className="text-sm">
-                  <b>Status:</b> <span className=" text-green-600 font-bold">CONFIRMED</span>
-                </Text>
-              </div>
+          <Section
+            style={{
+              margin: '20px 36px',
+              padding: '20px 22px',
+              border: `1px solid ${colors.line}`,
+              borderRadius: '14px',
+              backgroundColor: colors.paper,
+            }}
+          >
+            <Text
+              style={{
+                margin: '0 0 16px',
+                color: colors.blue,
+                fontSize: '12px',
+                fontWeight: 800,
+                letterSpacing: '1px',
+                textTransform: 'uppercase',
+              }}
+            >
+              Payment details
+            </Text>
+            <Text style={{ margin: '0 0 12px', color: colors.muted, fontSize: '12px' }}>
+              Registration number
+              <br />
+              <strong style={{ color: colors.ink, fontSize: '15px' }}>{registration_number}</strong>
+            </Text>
+            <Text style={{ margin: '0 0 12px', color: colors.muted, fontSize: '12px' }}>
+              Category
+              <br />
+              <strong style={{ color: colors.ink, fontSize: '15px' }}>{category}</strong>
+            </Text>
+            <Text style={{ margin: '0 0 12px', color: colors.muted, fontSize: '12px' }}>
+              Amount paid
+              <br />
+              <strong style={{ color: colors.ink, fontSize: '17px' }}>{formattedAmount}</strong>
+            </Text>
+            <Text style={{ margin: '0 0 12px', color: colors.muted, fontSize: '12px' }}>
+              Payment method
+              <br />
+              <strong style={{ color: colors.ink, fontSize: '15px' }}>{payment_method}</strong>
+            </Text>
+            <Text style={{ margin: 0, color: colors.muted, fontSize: '12px' }}>
+              Payment date
+              <br />
+              <strong style={{ color: colors.ink, fontSize: '14px' }}>{formattedPaymentDate}</strong>
+            </Text>
+          </Section>
 
-              {/* Next steps */}
-              <div className="mb-4 px-6 py-2 mx-8 text-white bg-zinc-700">
-                <Text className="font-bold mb-1">Next Steps</Text>
-                <p className="text-sm">• Save this email as your payment proof</p>
-                <p className="text-sm">• Race-day information will be sent closer to the event</p>
-                <p className="text-sm">• Further instructions about race kit collection will be sent later</p>
-                <p className="text-sm">• Keep training and prepare for the race!</p>
-                <div>&nbsp;</div>
-              </div>
+          <Section
+            style={{
+              margin: '20px 36px 28px',
+              padding: '18px 22px',
+              borderRadius: '14px',
+              backgroundColor: colors.ink,
+            }}
+          >
+            <Heading as="h3" style={{ margin: '0 0 10px', color: '#ffffff', fontSize: '16px' }}>
+              What&apos;s next
+            </Heading>
+            <Text style={{ margin: '0 0 8px', color: '#e6ebf5', fontSize: '13px', lineHeight: '1.6' }}>
+              1. Keep this email as your payment confirmation.
+            </Text>
+            <Text style={{ margin: '0 0 8px', color: '#e6ebf5', fontSize: '13px', lineHeight: '1.6' }}>
+              2. Watch your inbox for race-day and race-kit updates.
+            </Text>
+            <Text style={{ margin: 0, color: '#e6ebf5', fontSize: '13px', lineHeight: '1.6' }}>
+              3. Keep training. We&apos;ll see you at the start!
+            </Text>
+          </Section>
 
-              {/* Footer */}
-              <div className="mt-8 py-2 px-8 text-zinc-500" style={{ borderTop: '1px solid #d1d5dd' }}>
-                <Text className="text-sm">If you have any questions, please contact our support team <Link href="mailto:hello@shareyourdistance.online">hello@shareyourdistance.online</Link></Text>
-              </div>
-              <div className=" px-8 text-zinc-500" >
-                <Text className=" text-sm ">See you at the starting line!</Text>
-              </div>
-            </Section>
-          </Container>
-        </Body>
-      </Tailwind>
+          <Section
+            style={{
+              padding: '20px 36px 24px',
+              borderTop: `1px solid ${colors.line}`,
+              backgroundColor: '#ffffff',
+            }}
+          >
+            <Text style={{ margin: 0, color: colors.muted, fontSize: '11px', lineHeight: '1.6' }}>
+              This is an automated message. Please do not reply to this email.
+            </Text>
+          </Section>
+        </Container>
+      </Body>
     </Html>
   );
 };
