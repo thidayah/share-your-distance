@@ -6,7 +6,7 @@ import { RegistrationConfirmationV2 } from "@/components/emails/RegistrationConf
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const emailFrom = `${process.env.RESEND_FROM_NAME || 'Share Your Distance Contact'} <${process.env.RESEND_FROM}>`;
+const emailFrom = `${process.env.RESEND_FROM_NAME || 'Share Your Distance Contact'} <${process.env.RESEND_FROM_EMAIL}>`;
 
 export interface RegistrationConfirmationProps {
   email: string;
