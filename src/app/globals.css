@@ -288,6 +288,25 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   font-weight: 750;
 }
 
+.field label .strava-privacy-note {
+  font-weight: 800;
+}
+
+.field-error {
+  color: #dc2626;
+  font-size: 0.7rem;
+  font-weight: 650;
+  line-height: 1.4;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.field-error.is-hiding {
+  opacity: 0;
+  transform: translateY(-3px);
+}
+
 .field input, .field select, .field textarea {
   min-height: 50px;
   width: 100%;
@@ -1706,4 +1725,3 @@ html.story-enabled .story-panel.is-active {
     padding-inline: 1.4rem;
   }
 }
-

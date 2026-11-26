@@ -22,6 +22,49 @@ interface OrderData {
   category: { name: string };
 }
 
+type PersonalField = 'fullName' | 'email' | 'phone' | 'dateOfBirth' | 'gender' | 'instagram' | 'strava';
+type EmergencyField = 'contactName' | 'contactPhone' | 'contactRelationship' | 'medicalConditions';
+type FieldErrorKey = PersonalField | EmergencyField | 'consent';
+type FieldErrors = Partial<Record<FieldErrorKey, string>>;
+
+function InlineFieldError({ id, message }: { id: string; message?: string }) {
+  const [isHiding, setIsHiding] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
+
+  useEffect(() => {
+    if (!message) return;
+    const hideTimeout = window.setTimeout(() => setIsHiding(true), 10000);
+    const dismissTimeout = window.setTimeout(() => setIsDismissed(true), 10300);
+    return () => {
+      window.clearTimeout(hideTimeout);
+      window.clearTimeout(dismissTimeout);
+    };
+  }, [message]);
+
+  if (!message || isDismissed) return null;
+  return (
+    <p id={id} className={`field-error${isHiding ? ' is-hiding' : ''}`} role="alert">
+      {message}
+    </p>
+  );
+}
+
+const personalFields: PersonalField[] = [
+  'fullName',
+  'email',
+  'phone',
+  'dateOfBirth',
+  'gender',
+  'instagram',
+  'strava',
+];
+const emergencyFields: EmergencyField[] = [
+  'contactName',
+  'contactPhone',
+  'contactRelationship',
+  'medicalConditions',
+];
+
 export default function RegistrationPage() {
   const params = useParams();
   const categoryId = params.id as string;
@@ -33,6 +76,10 @@ export default function RegistrationPage() {
   const [currentStep, setCurrentStep] = useState<FormStep>('personal');
   const [isAgreed, setAgreed] = useState(false);
   const [isSummaryExpanded, setSummaryExpanded] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [validationRevision, setValidationRevision] = useState(0);
+  const [personalValidationAttempted, setPersonalValidationAttempted] = useState(false);
+  const [emergencyValidationAttempted, setEmergencyValidationAttempted] = useState(false);
 
   // Modals state
   const [isTermsOpen, setTermsOpen] = useState(false);
@@ -80,18 +127,34 @@ export default function RegistrationPage() {
     })();
   }, [categoryId]);
 
-  const updatePersonal = (field: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      personal: { ...prev.personal, [field]: value },
-    }));
+  const replaceFieldErrors = (fields: FieldErrorKey[], errors: FieldErrors) => {
+    setFieldErrors((previous) => {
+      const next = { ...previous };
+      fields.forEach((field) => delete next[field]);
+      return { ...next, ...errors };
+    });
   };
 
-  const updateEmergency = (field: string, value: string) => {
+  const updatePersonal = (field: PersonalField, value: string) => {
+    const updatedPersonal = { ...formData.personal, [field]: value };
     setFormData((prev) => ({
       ...prev,
-      emergency: { ...prev.emergency, [field]: value },
+      personal: updatedPersonal,
     }));
+    if (personalValidationAttempted) {
+      replaceFieldErrors(personalFields, getPersonalErrors(updatedPersonal));
+    }
+  };
+
+  const updateEmergency = (field: EmergencyField, value: string) => {
+    const updatedEmergency = { ...formData.emergency, [field]: value };
+    setFormData((prev) => ({
+      ...prev,
+      emergency: updatedEmergency,
+    }));
+    if (emergencyValidationAttempted) {
+      replaceFieldErrors(emergencyFields, getEmergencyErrors(updatedEmergency));
+    }
   };
 
   const calculateAge = (birthDate: string) => {
@@ -117,66 +180,81 @@ export default function RegistrationPage() {
     }
   }, [formData.personal.dateOfBirth, lang]);
 
-  const validatePersonal = () => {
-    const { fullName, email, phone, dateOfBirth, gender } = formData.personal;
-    if (!fullName.trim()) {
-      toast.warning(t('Nama lengkap wajib diisi!', 'Full name is required!'));
-      return false;
-    }
-    if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) {
-      toast.warning(t('Email valid wajib diisi!', 'A valid email is required!'));
-      return false;
-    }
-    if (!phone.trim()) {
-      toast.warning(t('Nomor WhatsApp wajib diisi!', 'WhatsApp number is required!'));
-      return false;
-    }
-    if (!dateOfBirth) {
-      toast.warning(t('Tanggal lahir wajib diisi!', 'Date of birth is required!'));
-      return false;
-    }
-    const age = calculateAge(dateOfBirth);
-    if (age < 17) {
-      toast.warning(t('Peserta harus berusia minimal 17 tahun pada tanggal acara!', 'Participants must be at least 17 years old on the event date!'));
-      return false;
-    }
-    if (!gender) {
-      toast.warning(t('Silakan pilih gender!', 'Please select a gender!'));
-      return false;
-    }
-    if (!isValidStravaUrl(formData.personal.strava)) {
-      toast.warning(t('URL profil Strava yang valid wajib diisi!', 'A valid Strava profile URL is required!'));
-      return false;
-    }
-    return true;
-  };
-
   const isValidStravaUrl = (value: string) => {
     try {
       const url = new URL(value.trim());
       return url.protocol === 'https:'
         && ['strava.com', 'www.strava.com'].includes(url.hostname.toLowerCase())
-        && /^\/athletes\/\d+\/?$/.test(url.pathname);
+        && /^\/athletes\/[a-z\d_-]+\/?$/i.test(url.pathname);
     } catch {
       return false;
     }
   };
 
+  const getPersonalErrors = (personal: typeof formData.personal): FieldErrors => {
+    const errors: FieldErrors = {};
+    const { fullName, email, phone, dateOfBirth, gender, strava } = personal;
+
+    if (!fullName.trim()) {
+      errors.fullName = t('Nama lengkap wajib diisi.', 'Full name is required.');
+    }
+    if (!email.trim()) {
+      errors.email = t('Email wajib diisi.', 'Email is required.');
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = t('Masukkan alamat email yang valid.', 'Enter a valid email address.');
+    }
+    if (!phone.trim()) {
+      errors.phone = t('Nomor WhatsApp wajib diisi.', 'WhatsApp number is required.');
+    }
+    if (!dateOfBirth) {
+      errors.dateOfBirth = t('Tanggal lahir wajib diisi.', 'Date of birth is required.');
+    } else if (calculateAge(dateOfBirth) < 17) {
+      errors.dateOfBirth = t(
+        'Peserta harus berusia minimal 17 tahun pada tanggal acara.',
+        'Participants must be at least 17 years old on the event date.',
+      );
+    }
+    if (!gender) {
+      errors.gender = t('Silakan pilih gender.', 'Please select a gender.');
+    }
+    if (!strava.trim()) {
+      errors.strava = t('URL profil Strava wajib diisi.', 'Strava profile URL is required.');
+    } else if (!isValidStravaUrl(strava)) {
+      errors.strava = t('Masukkan URL profil atlet Strava yang valid.', 'Enter a valid Strava athlete profile URL.');
+    }
+
+    return errors;
+  };
+
+  const getEmergencyErrors = (emergency: typeof formData.emergency): FieldErrors => {
+    const errors: FieldErrors = {};
+    if (!emergency.contactName.trim()) {
+      errors.contactName = t('Nama kontak darurat wajib diisi.', 'Emergency contact name is required.');
+    }
+    if (!emergency.contactPhone.trim()) {
+      errors.contactPhone = t('Nomor telepon darurat wajib diisi.', 'Emergency phone number is required.');
+    }
+    if (!emergency.contactRelationship) {
+      errors.contactRelationship = t('Silakan pilih hubungan kontak darurat.', 'Select the emergency contact relationship.');
+    }
+
+    return errors;
+  };
+
+  const validatePersonal = () => {
+    setValidationRevision((revision) => revision + 1);
+    setPersonalValidationAttempted(true);
+    const errors = getPersonalErrors(formData.personal);
+    replaceFieldErrors(personalFields, errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const validateEmergency = () => {
-    const { contactName, contactPhone, contactRelationship } = formData.emergency;
-    if (!contactName.trim()) {
-      toast.warning(t('Nama kontak darurat wajib diisi!', 'Emergency contact name is required!'));
-      return false;
-    }
-    if (!contactPhone.trim()) {
-      toast.warning(t('Nomor telepon darurat wajib diisi!', 'Emergency phone number is required!'));
-      return false;
-    }
-    if (!contactRelationship) {
-      toast.warning(t('Silakan pilih hubungan kontak darurat!', 'Please select the emergency contact relationship!'));
-      return false;
-    }
-    return true;
+    setValidationRevision((revision) => revision + 1);
+    setEmergencyValidationAttempted(true);
+    const errors = getEmergencyErrors(formData.emergency);
+    replaceFieldErrors(emergencyFields, errors);
+    return Object.keys(errors).length === 0;
   };
 
   const goToStep = (step: FormStep) => {
@@ -199,7 +277,14 @@ export default function RegistrationPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isAgreed) {
-      toast.warning(t('Silakan setujui Syarat & Ketentuan dan Kebijakan Privasi terlebih dahulu!', 'Please agree to the Terms & Conditions and Privacy Policy first!'));
+      setValidationRevision((revision) => revision + 1);
+      setFieldErrors((previous) => ({
+        ...previous,
+        consent: t(
+          'Persetujuan wajib diberikan sebelum melanjutkan.',
+          'You must agree before continuing.',
+        ),
+      }));
       return;
     }
 
@@ -248,6 +333,14 @@ export default function RegistrationPage() {
   };
 
   const stepIndex = ['personal', 'emergency', 'summary', 'payment'].indexOf(currentStep);
+  const relationshipLabels: Record<string, string> = {
+    parent: t('Orang tua / wali', 'Parent / guardian'),
+    partner: t('Pasangan', 'Spouse / partner'),
+    sibling: t('Saudara kandung', 'Sibling'),
+    relative: t('Keluarga', 'Relative'),
+    friend: t('Teman', 'Friend'),
+    other: t('Lainnya', 'Other'),
+  };
 
   return (
     <Template>
@@ -327,8 +420,11 @@ export default function RegistrationPage() {
                             value={formData.personal.fullName}
                             onChange={(e) => updatePersonal('fullName', e.target.value)}
                             placeholder={t('Nama sesuai identitas', 'Name as shown on your ID')}
+                            aria-invalid={Boolean(fieldErrors.fullName)}
+                            aria-describedby={fieldErrors.fullName ? 'full-name-error' : undefined}
                             required
                           />
+                          <InlineFieldError key={validationRevision} id="full-name-error" message={fieldErrors.fullName} />
                         </div>
 
                         <div className="field">
@@ -340,8 +436,11 @@ export default function RegistrationPage() {
                             value={formData.personal.email}
                             onChange={(e) => updatePersonal('email', e.target.value)}
                             placeholder="nama@email.com"
+                            aria-invalid={Boolean(fieldErrors.email)}
+                            aria-describedby={fieldErrors.email ? 'email-error' : undefined}
                             required
                           />
+                          <InlineFieldError key={validationRevision} id="email-error" message={fieldErrors.email} />
                         </div>
 
                         <div className="field">
@@ -353,8 +452,11 @@ export default function RegistrationPage() {
                             value={formData.personal.phone}
                             onChange={(e) => updatePersonal('phone', e.target.value)}
                             placeholder="08xx xxxx xxxx"
+                            aria-invalid={Boolean(fieldErrors.phone)}
+                            aria-describedby={fieldErrors.phone ? 'phone-error' : undefined}
                             required
                           />
+                          <InlineFieldError key={validationRevision} id="phone-error" message={fieldErrors.phone} />
                         </div>
 
                         <div className="field">
@@ -365,8 +467,11 @@ export default function RegistrationPage() {
                             type="date"
                             value={formData.personal.dateOfBirth}
                             onChange={(e) => updatePersonal('dateOfBirth', e.target.value)}
+                            aria-invalid={Boolean(fieldErrors.dateOfBirth)}
+                            aria-describedby={fieldErrors.dateOfBirth ? 'birth-date-error' : undefined}
                             required
                           />
+                          <InlineFieldError key={validationRevision} id="birth-date-error" message={fieldErrors.dateOfBirth} />
                         </div>
 
                         <div className="field">
@@ -376,12 +481,15 @@ export default function RegistrationPage() {
                             name="gender"
                             value={formData.personal.gender}
                             onChange={(e) => updatePersonal('gender', e.target.value)}
+                            aria-invalid={Boolean(fieldErrors.gender)}
+                            aria-describedby={fieldErrors.gender ? 'gender-error' : undefined}
                             required
                           >
                             <option value="">{t('Pilih gender', 'Select gender')}</option>
                             <option value="male">{t('Laki-laki', 'Male')}</option>
                             <option value="female">{t('Perempuan', 'Female')}</option>
                           </select>
+                          <InlineFieldError key={validationRevision} id="gender-error" message={fieldErrors.gender} />
                         </div>
 
                         <div className="field">
@@ -396,7 +504,7 @@ export default function RegistrationPage() {
                         </div>
 
                         <div className="field">
-                          <label htmlFor="strava">{t('Profil Strava', 'Strava profile')} * <span className="font-normal text-[var(--muted)]">{t('(tidak privat)', '(not private)')}</span></label>
+                          <label htmlFor="strava">{t('Profil Strava', 'Strava profile')} * <span className="strava-privacy-note">{t('(tidak privat)', '(not private)')}</span></label>
                           <input
                             id="strava"
                             name="strava"
@@ -405,7 +513,10 @@ export default function RegistrationPage() {
                             value={formData.personal.strava}
                             onChange={(e) => updatePersonal('strava', e.target.value)}
                             placeholder="https://www.strava.com/athletes/..."
+                            aria-invalid={Boolean(fieldErrors.strava)}
+                            aria-describedby={fieldErrors.strava ? 'strava-error' : undefined}
                           />
+                          <InlineFieldError key={validationRevision} id="strava-error" message={fieldErrors.strava} />
                         </div>
                       </div>
 
@@ -439,8 +550,11 @@ export default function RegistrationPage() {
                             value={formData.emergency.contactName}
                             onChange={(e) => updateEmergency('contactName', e.target.value)}
                             placeholder={t('Nama kontak darurat', 'Emergency contact name')}
+                            aria-invalid={Boolean(fieldErrors.contactName)}
+                            aria-describedby={fieldErrors.contactName ? 'emergency-name-error' : undefined}
                             required
                           />
+                          <InlineFieldError key={validationRevision} id="emergency-name-error" message={fieldErrors.contactName} />
                         </div>
 
                         <div className="field">
@@ -452,8 +566,11 @@ export default function RegistrationPage() {
                             value={formData.emergency.contactPhone}
                             onChange={(e) => updateEmergency('contactPhone', e.target.value)}
                             placeholder="08xx xxxx xxxx"
+                            aria-invalid={Boolean(fieldErrors.contactPhone)}
+                            aria-describedby={fieldErrors.contactPhone ? 'emergency-phone-error' : undefined}
                             required
                           />
+                          <InlineFieldError key={validationRevision} id="emergency-phone-error" message={fieldErrors.contactPhone} />
                         </div>
 
                         <div className="field">
@@ -463,6 +580,8 @@ export default function RegistrationPage() {
                             name="relationship"
                             value={formData.emergency.contactRelationship}
                             onChange={(e) => updateEmergency('contactRelationship', e.target.value)}
+                            aria-invalid={Boolean(fieldErrors.contactRelationship)}
+                            aria-describedby={fieldErrors.contactRelationship ? 'relationship-error' : undefined}
                             required
                           >
                             <option value="">{t('Pilih hubungan', 'Select relationship')}</option>
@@ -473,6 +592,7 @@ export default function RegistrationPage() {
                             <option value="friend">{t('Teman', 'Friend')}</option>
                             <option value="other">{t('Lainnya', 'Other')}</option>
                           </select>
+                          <InlineFieldError key={validationRevision} id="relationship-error" message={fieldErrors.contactRelationship} />
                         </div>
 
                         <div className="field sm:col-span-2">
@@ -562,7 +682,9 @@ export default function RegistrationPage() {
                         </div>
                         <div className="grid gap-1 py-3 sm:grid-cols-[180px_1fr]">
                           <dt className="text-xs font-bold text-[var(--muted)]">{t('Hubungan', 'Relationship')}</dt>
-                          <dd className="text-sm font-semibold text-[var(--ink)]">{formData.emergency.contactRelationship || '—'}</dd>
+                          <dd className="text-sm font-semibold text-[var(--ink)]">
+                            {relationshipLabels[formData.emergency.contactRelationship] || '—'}
+                          </dd>
                         </div>
                         <div className="grid gap-1 py-3 sm:grid-cols-[180px_1fr]">
                           <dt className="text-xs font-bold text-[var(--muted)]">{t('Kondisi medis', 'Known medical conditions')}</dt>
@@ -583,11 +705,26 @@ export default function RegistrationPage() {
                             id="terms-consent"
                             type="checkbox"
                             checked={isAgreed}
-                            onChange={(e) => setAgreed(e.target.checked)}
+                            onChange={(e) => {
+                              const checked = e.target.checked;
+                              setAgreed(checked);
+                              if (checked) {
+                                setFieldErrors((previous) => {
+                                  const next = { ...previous };
+                                  delete next.consent;
+                                  return next;
+                                });
+                              }
+                            }}
+                            aria-invalid={Boolean(fieldErrors.consent)}
+                            aria-describedby={fieldErrors.consent ? 'consent-error' : undefined}
                             className="mt-1 h-4 w-4 shrink-0 accent-[var(--blue)] cursor-pointer"
                           />
                           <span>{t('Saya menyetujui Syarat & Ketentuan dan telah membaca Kebijakan Privasi.', 'I agree to the Terms & Conditions and have read the Privacy Policy.')}</span>
                         </label>
+                        <div className="pl-7">
+                          <InlineFieldError key={validationRevision} id="consent-error" message={fieldErrors.consent} />
+                        </div>
                         <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 pl-7 text-sm font-bold text-[var(--blue)]">
                           <button
                             type="button"
@@ -628,7 +765,7 @@ export default function RegistrationPage() {
               )}
 
               {/* Sticky Summary Card */}
-              <aside id="registration-summary" className="registration-summary space-y-4 lg:sticky lg:top-24">
+              <aside id="registration-summary" className="registration-summary space-y-4 lg:sticky lg:top-32">
                 <div className="panel overflow-hidden">
                   <div className="summary-desktop-heading bg-[var(--blue)] p-5 text-white">
                     <p className="eyebrow text-white/70">{t('Ringkasan pendaftaran', 'Registration summary')}</p>
