@@ -3,11 +3,6 @@
 import { useState, useEffect } from 'react'
 import { CategoryCreate } from '@/lib/supabase/service/categories/types'
 
-interface CategoryFeature {
-  feature: string
-  display_order: number
-}
-
 interface Category {
   id: string
   name: string
@@ -18,11 +13,8 @@ interface Category {
   recommended?: boolean
   is_active?: boolean
   max_participants?: number
-  min_age?: number
-  max_age?: number
-  health_warning?: string
   display_order?: number
-  category_features: CategoryFeature[]
+  features: string[]
 }
 
 interface CategoryModalProps {
@@ -47,9 +39,6 @@ export default function CategoryModal({
     recommended: false,
     is_active: false,
     max_participants: 0,
-    min_age: 0,
-    max_age: 0,
-    health_warning: '',
   })
 
   const [features, setFeatures] = useState<string[]>([''])
@@ -65,13 +54,10 @@ export default function CategoryModal({
         recommended: category.recommended || false,
         is_active: category.is_active || false,
         max_participants: category.max_participants || 0,
-        min_age: category.min_age || 0,
-        max_age: category.max_age || 0,
-        health_warning: category.health_warning || '',
       })
       setFeatures(
-        category.category_features.length > 0
-          ? category.category_features.map(f => f.feature)
+        category.features.length > 0
+          ? category.features
           : ['']
       )
     }
@@ -130,7 +116,7 @@ export default function CategoryModal({
                 type="number"
                 required
                 min="0"
-                step="0.01"
+                step="1"
                 value={formData.price}
                 onChange={(e) => setFormData(prev => ({ ...prev, price: parseFloat(e.target.value) }))}
                 className="w-full px-3 py-2 text-zinc-700  border border-zinc-300 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:border-transparent"
@@ -164,31 +150,6 @@ export default function CategoryModal({
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-1">
-                Min Age
-              </label>
-              <input
-                type="number"
-                min="0"
-                value={formData.min_age}
-                onChange={(e) => setFormData(prev => ({ ...prev, min_age: parseInt(e.target.value) || 0 }))}
-                className="w-full px-3 py-2 text-zinc-700  border border-zinc-300 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-1">
-                Max Age
-              </label>
-              <input
-                type="number"
-                min="0"
-                value={formData.max_age}
-                onChange={(e) => setFormData(prev => ({ ...prev, max_age: parseInt(e.target.value) || 0 }))}
-                className="w-full px-3 py-2 text-zinc-700  border border-zinc-300 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:border-transparent"
-              />
-            </div>
           </div>
 
           <div>
@@ -212,18 +173,6 @@ export default function CategoryModal({
               type="url"
               value={formData.image_url}
               onChange={(e) => setFormData(prev => ({ ...prev, image_url: e.target.value }))}
-              className="w-full px-3 py-2 text-zinc-700  border border-zinc-300 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-zinc-700 mb-1">
-              Health Warning
-            </label>
-            <textarea
-              rows={2}
-              value={formData.health_warning}
-              onChange={(e) => setFormData(prev => ({ ...prev, health_warning: e.target.value }))}
               className="w-full px-3 py-2 text-zinc-700  border border-zinc-300 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:border-transparent"
             />
           </div>

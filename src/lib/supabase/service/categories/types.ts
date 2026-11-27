@@ -6,11 +6,9 @@ export interface CategoryCreate {
   distance: string;
   image_url?: string;
   recommended?: boolean;
-  min_age?: number;
-  max_age?: number;
-  health_warning?: string;
+  is_active?: boolean;
+  max_participants?: number | null;
+  display_order?: number;
 }
 
-export interface CategoryUpdate extends Partial<CategoryCreate> {
-  id: string;
-}
+export type CategoryUpdate = Partial<CategoryCreate>;

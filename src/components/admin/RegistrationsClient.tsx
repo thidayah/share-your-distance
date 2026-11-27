@@ -12,7 +12,6 @@ interface FilterState {
   category_id: string;
   start_date: string;
   end_date: string;
-  has_bib: string;
   page: number;
   limit: number;
 }
@@ -47,7 +46,6 @@ export default function RegistrationsClient() {
     category_id: '',
     start_date: '',
     end_date: '',
-    has_bib: '',
     page: 1,
     limit: 10
   })
@@ -136,7 +134,6 @@ export default function RegistrationsClient() {
       category_id: '',
       start_date: '',
       end_date: '',
-      has_bib: '',
       page: 1,
       limit: 20,
     })

@@ -1,20 +1,20 @@
-import HeroSection from '@/components/sections/HeroSection';
-import AboutSection from '@/components/sections/AboutSection';
-import CategorySection from '@/components/sections/CategorySection';
-// import BenefitsSection from '@/components/sections/BenefitsSection';
-import PartnersSection from '@/components/sections/PartnersSection';
-import CountDownSection from "@/components/sections/CountDownSection";
 import Template from "@/components/layout/Template";
+import HeroSection from "@/components/sections/HeroSection";
+import FormatSection from "@/components/sections/FormatSection";
+import AlurSection from "@/components/sections/AlurSection";
+import FaqSection from "@/components/sections/FaqSection";
+import PartnersSection from "@/components/sections/PartnersSection";
+import CtaSection from "@/components/sections/CtaSection";
 
 export default function Home() {
   return (
     <Template>
       <HeroSection />
-      <CountDownSection />
-      <AboutSection />
-      <CategorySection />
-      {/* <BenefitsSection /> */}
+      <FormatSection />
+      <AlurSection />
+      <FaqSection />
       <PartnersSection />
+      <CtaSection />
     </Template>
   );
 }

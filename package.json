@@ -6,16 +6,21 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "gen:types": "supabase gen types typescript --linked > src/types/supabase.ts",
+    "db:backup": "mkdir -p ../syd-db-backups/$(date +%F) && pg_dump -d \"$SUPABASE_DB_URL\" --schema-only --no-owner --no-privileges -f ../syd-db-backups/$(date +%F)/schema.sql",
+    "db:apply": "psql \"$SUPABASE_DB_URL\" -v ON_ERROR_STOP=1 -f"
   },
   "dependencies": {
     "@iconify/react": "^6.0.2",
     "@react-email/components": "0.0.23",
+    "@react-email/render": "1.0.0",
     "@react-email/tailwind": "0.0.12",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.84.0",
     "bcryptjs": "^3.0.3",
     "crypto": "^1.0.1",
+    "gsap": "^3.15.1",
     "midtrans-client": "^1.4.3",
     "next": "^16.0.7",
     "react": "19.2.0",

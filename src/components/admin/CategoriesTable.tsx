@@ -1,10 +1,5 @@
 import { Icon } from "@iconify/react"
 
-interface CategoryFeature {
-  feature: string
-  display_order: number
-}
-
 interface Category {
   id: string
   name: string
@@ -16,11 +11,8 @@ interface Category {
   is_active?: boolean
   max_participants?: number
   current_participants?: number
-  min_age?: number
-  max_age?: number
-  health_warning?: string
   display_order?: number
-  category_features: CategoryFeature[]
+  features: string[]
 }
 
 interface CategoriesTableProps {
@@ -135,13 +127,7 @@ export default function CategoriesTable({
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-900">
                   {category.current_participants || 0} / {category.max_participants || '∞'}
                 </td>
-                {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-zinc-900">
-                  {category.min_age && category.max_age 
-                    ? `${category.min_age}-${category.max_age} yrs`
-                    : 'Any'
-                  }
-                </td> */}
-                <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                     (category.current_participants || 0) < (category.max_participants || Infinity)
                       ? 'bg-green-100 text-green-800'

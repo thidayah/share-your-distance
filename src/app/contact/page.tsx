@@ -5,6 +5,7 @@ import { Icon } from '@iconify/react';
 import Button from '@/components/ui/Button';
 import Template from "@/components/layout/Template";
 import { toast } from "react-toastify";
+import { EMAIL_ADDRESS, EMAIL_URL, INSTAGRAM_URL, WHATSAPP_URL } from '@/data/siteLinks';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -76,8 +77,8 @@ export default function ContactPage() {
       icon: 'mdi:email',
       title: 'Email Us',
       description: 'Send us an email anytime',
-      details: 'hello@shareyourdistance.online',
-      link: 'mailto:hello@shareyourdistance.online',
+      details: EMAIL_ADDRESS,
+      link: EMAIL_URL,
       color: 'text-zinc-400'
     },
     {
@@ -115,8 +116,8 @@ export default function ContactPage() {
   ];
 
   const socialMedia = [
-    { icon: 'mdi:whatsapp', label: 'Instagram', url: 'https://wa.me/6285183081136?text=Halo%20*Share%20Your%20Distance*,%20saya%20mau%20bertanya' },
-    { icon: 'mdi:instagram', label: 'Instagram', url: 'https://www.instagram.com/sobatsabtu' },
+    { icon: 'mdi:whatsapp', label: 'WhatsApp', url: WHATSAPP_URL },
+    { icon: 'mdi:instagram', label: 'Instagram', url: INSTAGRAM_URL },
     { icon: 'mdi:twitter', label: 'Twitter', url: 'https://www.x.com/sobatsabtu' },
     // { icon: 'mdi:facebook', label: 'Facebook', url: '#' },
     // { icon: 'mdi:youtube', label: 'YouTube', url: '#' }
@@ -220,7 +221,7 @@ export default function ContactPage() {
                         <div>
                           <h4 className="text-red-300 font-semibold">Failed to Send Message</h4>
                           <p className="text-red-200 text-sm">
-                            { errorMessage || 'Please try again later or contact us directly at hello@shareyourdistance.online'}
+                            { errorMessage || `Please try again later or contact us directly at ${EMAIL_ADDRESS}`}
                           </p>
                         </div>
                       </div>

@@ -120,9 +120,6 @@ export default function RegistrationsTable({
                 <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
                   Payment
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
-                  Bib Number
-                </th>
                 {/* <th className="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">
                   Registered
                 </th> */}
@@ -135,7 +132,7 @@ export default function RegistrationsTable({
             <tbody className="bg-white divide-y divide-zinc-200">
               {loading && (
                 <tr>
-                  <td colSpan={6} className="bg-white rounded-lg border border-zinc-00 shadow-sm p-8 text-center">
+                  <td colSpan={5} className="bg-white rounded-lg border border-zinc-00 shadow-sm p-8 text-center">
                     <div className="flex justify-center">
                       <Icon icon="svg-spinners:ring-resize" className=" size-8 text-zinc-600" />
                     </div>
@@ -145,7 +142,7 @@ export default function RegistrationsTable({
               )}
               {registrations.length === 0 && (
                 <tr>
-                  <td colSpan={6} className=" text-center py-4 text-sm text-zinc-600">No Data</td>
+                  <td colSpan={5} className=" text-center py-4 text-sm text-zinc-600">No Data</td>
                 </tr>
               )}
               {!loading && registrations.map((registration) => (
@@ -221,18 +218,6 @@ export default function RegistrationsTable({
                     <div className="text-sm text-zinc-900 mt-1">
                       {formatCurrency(registration.total_amount)}
                     </div>
-                  </td>
-
-                  {/* Bib Number */}
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {registration.bib_number ? (
-                      <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                        <Icon icon="mdi:numeric" className="h-4 w-4 mr-1" />
-                        {registration.bib_number}
-                      </div>
-                    ) : (
-                      <span className="text-sm text-zinc-400">Not assigned</span>
-                    )}
                   </td>
 
                   {/* Registration Date */}

@@ -1,106 +1,84 @@
-// src/components/layout/Footer.tsx
-import Link from 'next/link';
-import { Icon } from '@iconify/react';
+'use client';
+
+import Image from 'next/image';
+import { useLanguage } from '@/lib/i18n';
+import { DEVELOPER_URL, EMAIL_ADDRESS, EMAIL_URL, INSTAGRAM_URL, WHATSAPP_URL } from '@/data/siteLinks';
 
 export default function Footer() {
+  const { t } = useLanguage();
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-zinc-950 text-white">
-      {/* Main Footer */}
-      <div className="container mx-auto px-6 py-12">
-        <div className="grid md:grid-cols-4 gap-8">
-          {/* Brand Column */}
-          <div className="md:col-span-2">
-            <div className=" text-3xl text-white font-bold mb-4 tracking-[-3px]">Share&nbsp;&nbsp;&nbsp;Your&nbsp;&nbsp;Distance</div>
-            <p className="text-sm md:text-base text-zinc-300 mb-4 max-w-md">
-              Join us on December 20, 2025 for an unforgettable running experience.
-              Share your distance, create memories, and celebrate achievements together.
-            </p>
-            <div className="flex items-center space-x-4">
-              <a href={`https://wa.me/6285183081136?text=Halo%20*Share%20Your%20Distance*,%20saya%20mau%20bertanya`} target="_blank" className="text-zinc-300 hover:text-white transition-colors">
-                <Icon icon="mdi:whatsapp" className="w-6 h-6" />
-              </a>
-              <a href="https://www.instagram.com/sobatsabtu" target="_blank" className="text-zinc-300 hover:text-white transition-colors">
-                <Icon icon="mdi:instagram" className="w-6 h-6" />
-              </a>
-              {/* <a href="#" className="text-zinc-300 hover:text-white transition-colors">
-                <Icon icon="mdi:facebook" className="w-6 h-6" />
-              </a> */}
-              <a href="https://www.x.com/sobatsabtu" target="_blank" className="text-zinc-300 hover:text-white transition-colors">
-                <Icon icon="mdi:twitter" className="w-6 h-6" />
-              </a>
-              {/* <a href="#" className="text-zinc-300 hover:text-white transition-colors">
-                <Icon icon="mdi:youtube" className="w-6 h-6" />
-              </a> */}
-            </div>
-          </div>
-
-          {/* Quick Links */}
+    <footer className="relative overflow-hidden border-t-4 border-[var(--lime)] bg-[var(--ink)] py-12 text-white">
+      <div className="track dots pointer-events-none absolute inset-0 opacity-40"></div>
+      <div className="wrap relative">
+        <div className="grid gap-10 pb-10 sm:grid-cols-2 sm:items-center">
           <div>
-            <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/about" className="text-zinc-300 hover:text-white transition-colors text-sm md:text-base">
-                  About Event
-                </Link>
-              </li>
-              <li>
-                <Link href="/category" className="text-zinc-300 hover:text-white transition-colors text-sm md:text-base">
-                  Race Categories
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact" className="text-zinc-300 hover:text-white transition-colors text-sm md:text-base">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
-                <Link href="/faq" className="text-zinc-300 hover:text-white transition-colors text-sm md:text-base">
-                  FAQ
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Contact Info */}
-          <div>
-            <h3 className="font-semibold text-lg mb-4">Contact</h3>
-            <ul className="space-y-3 text-zinc-300">
-              <li className="flex items-center">
-                <Icon icon="mdi:email-outline" className="w-5 h-5 mr-3" />
-                <span className="text-sm md:text-base">hello@shareyourdistance.online</span>
-              </li>
-              <li className="flex items-center">
-                <Icon icon="mdi:phone-outline" className="w-5 h-5 mr-3" />
-                <span className="text-sm md:text-base">+62 851 8308 1136</span>
-              </li>
-              {/* <li className="flex items-center">
-               <Icon icon="mdi:map-marker-outline" className="w-5 h-5 mr-3" />
-                <span>Gedung Sate, Bandung</span>
-              </li> */}
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Bar */}
-      <div className="border-t border-zinc-800">
-        <div className="container mx-auto px-6 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-zinc-300 text-xs md:text-sm">
-              © {currentYear} Share Your Distance. All rights reserved.
+            <Image
+              src="/assets/SYD.png"
+              alt="Share Your Distance"
+              width={164}
+              height={52}
+              className="w-[164px] h-auto"
+            />
+            <p className="mt-4 text-base leading-relaxed text-white/80 max-w-md">
+              Share Your Distance is more than just a race. It is about sharing the effort, trusting your teammates, and pushing the distance together.
             </p>
-            <div className="flex space-x-6 mt-4 md:mt-0">
-              <Link href="/privacy-policy" className="text-zinc-300 hover:text-white text-sm transition-colors">
-                Privacy Policy
-              </Link>
-              <Link href="/terms-of-service" className="text-zinc-300 hover:text-white text-sm transition-colors">
-                Terms of Service
-              </Link>
+          </div>
+          <div className="sm:justify-self-end">
+            <p className="eyebrow mb-4 text-white/55 sm:text-right">{t('Kontak', 'Contact')}</p>
+            <div className="flex flex-row gap-3 sm:justify-end">
+              <a
+                className="grid h-12 w-12 place-items-center rounded-full border border-white/20 text-white transition-colors hover:border-[var(--lime)] hover:bg-white/10 hover:text-[var(--lime)]"
+                href={WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="WhatsApp"
+              >
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-current">
+                  <path d="M12 2a9.8 9.8 0 0 0-8.4 14.8L2.4 22l5.3-1.4A10 10 0 1 0 12 2Zm0 18a8 8 0 0 1-4.1-1.1l-.3-.2-3.1.8.8-3-.2-.3A8 8 0 1 1 12 20Zm4.4-5.9c-.2-.1-1.4-.7-1.6-.8-.2-.1-.4-.1-.5.1-.2.2-.6.8-.8.9-.1.2-.3.2-.5.1-.2-.1-1-.4-1.9-1.2-.7-.6-1.2-1.4-1.3-1.6-.1-.2 0-.3.1-.5l.4-.4.2-.4c.1-.1 0-.3 0-.4l-.7-1.7c-.2-.5-.4-.4-.5-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 1.9s.8 2.2.9 2.3c.1.2 1.6 2.5 3.9 3.5.5.2.9.4 1.2.4.5.2 1 .1 1.4.1.4-.1 1.4-.6 1.6-1.1.2-.5.2-1 .1-1.1 0-.1-.2-.2-.4-.3Z" />
+                </svg>
+              </a>
+              <a
+                className="grid h-12 w-12 place-items-center rounded-full border border-white/20 text-white transition-colors hover:border-[var(--lime)] hover:bg-white/10 hover:text-[var(--lime)]"
+                href={INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram @sobatsabtu"
+              >
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.8">
+                  <rect x="3" y="3" width="18" height="18" rx="5" />
+                  <circle cx="12" cy="12" r="4" />
+                  <circle cx="17.5" cy="6.5" r=".8" className="fill-current stroke-none" />
+                </svg>
+              </a>
+              <a
+                className="grid h-12 w-12 place-items-center rounded-full border border-white/20 text-white transition-colors hover:border-[var(--lime)] hover:bg-white/10 hover:text-[var(--lime)]"
+                href={EMAIL_URL}
+                aria-label={`Email ${EMAIL_ADDRESS}`}
+              >
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.8">
+                  <rect x="3" y="5" width="18" height="14" rx="2" />
+                  <path d="m4 7 8 6 8-6" />
+                </svg>
+              </a>
+              <a
+                className="grid h-12 w-12 place-items-center rounded-full border border-white/20 text-white transition-colors hover:border-[var(--lime)] hover:bg-white/10 hover:text-[var(--lime)]"
+                href={DEVELOPER_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={t('Situs pengembang', 'Developer site')}
+              >
+                <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m8 8-4 4 4 4m8-8 4 4-4 4m-3-11-2 14" />
+                </svg>
+              </a>
             </div>
           </div>
         </div>
+        <p className="border-t border-white/15 pt-5 text-center text-xs tracking-wide text-white/50">
+          Copyright © {currentYear} Sobat Sabtu · All Rights Reserved
+        </p>
       </div>
     </footer>
   );

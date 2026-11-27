@@ -1,4 +1,5 @@
 import { categoryService } from "@/lib/supabase/service/categories/services"
+import { getCurrentAdmin } from '@/lib/admin-session'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface Context {
@@ -7,6 +8,13 @@ interface Context {
 
 export async function GET(_request: NextRequest, context: Context) {
   try {
+    if (!await getCurrentAdmin()) {
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
     const { id } = await context.params    
 
     // // Validasi ID
@@ -30,10 +38,13 @@ export async function GET(_request: NextRequest, context: Context) {
       { success: true, message: 'Category detail successfully', data: category }
     )
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Get category error:', error)
     return NextResponse.json(
-      { success: false, message: error.message || 'Failed to fetch category' },
+      {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to fetch category',
+      },
       { status: 500 }
     )
   }
@@ -42,6 +53,13 @@ export async function GET(_request: NextRequest, context: Context) {
 
 export async function PUT(request: NextRequest, context: Context) {
   try {
+    if (!await getCurrentAdmin()) {
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
     const { id } = await context.params
     const { category_data, features } = await request.json()
 
@@ -56,13 +74,6 @@ export async function PUT(request: NextRequest, context: Context) {
       }
     }
 
-    if (category_data.max_age && (category_data.max_age < category_data.min_age)) {
-      return NextResponse.json(
-        { success: false, message: `Age range no valid` },
-        { status: 400 }
-      );
-    }
-
     const updatedCategory = await categoryService.update(id, category_data, features)
 
     return NextResponse.json({
@@ -71,10 +82,13 @@ export async function PUT(request: NextRequest, context: Context) {
       data: updatedCategory
     })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Update category error:', error)
     return NextResponse.json(
-      { success: false, message: error.message || 'Failed to update category' },
+      {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to update category',
+      },
       { status: 500 }
     )
   }
@@ -82,6 +96,13 @@ export async function PUT(request: NextRequest, context: Context) {
 
 export async function DELETE(_request: NextRequest, context: Context) {
   try {
+    if (!await getCurrentAdmin()) {
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
     const { id } = await context.params
 
     await categoryService.delete(id);
@@ -91,9 +112,13 @@ export async function DELETE(_request: NextRequest, context: Context) {
       message: 'Category deleted successfully'
     })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
+    console.error('Delete category error:', error)
     return NextResponse.json(
-      { success: false, message: error.message || 'Failed to delete category' },
+      {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to delete category',
+      },
       { status: 500 }
     )
   }

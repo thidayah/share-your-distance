@@ -1,4 +1,5 @@
 import { contactMessagesService } from "@/lib/supabase/service/contact-messages/services";
+import { getCurrentAdmin } from "@/lib/admin-session";
 import { NextRequest, NextResponse } from "next/server";
 
 interface Context {
@@ -7,6 +8,13 @@ interface Context {
 
 export async function PUT(request: NextRequest, context: Context) {
   try {
+    if (!await getCurrentAdmin()) {
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
     const { id } = await context.params
     const { is_read } = await request.json()
 
@@ -25,10 +33,13 @@ export async function PUT(request: NextRequest, context: Context) {
       data: result
     })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Update contact message error:', error)
     return NextResponse.json(
-      { success: false, message: error.message || 'Failed to update contact message' },
+      {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to update contact message',
+      },
       { status: 500 }
     )
   }
@@ -36,6 +47,13 @@ export async function PUT(request: NextRequest, context: Context) {
 
 export async function DELETE(_request: NextRequest, context: Context) {
   try {
+    if (!await getCurrentAdmin()) {
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
     const { id } = await context.params
 
     await contactMessagesService.delete(id);
@@ -45,9 +63,12 @@ export async function DELETE(_request: NextRequest, context: Context) {
       message: 'Contact message deleted successfully'
     })
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { success: false, message: error.message || 'Failed to delete contact message' },
+      {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to delete contact message',
+      },
       { status: 500 }
     )
   }

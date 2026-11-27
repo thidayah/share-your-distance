@@ -1,5 +1,19 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Environment Variables
+
+Create a `.env.local` file in the project root. Public variables must be prefixed with `NEXT_PUBLIC_`:
+
+| Variable | Description |
+| --- | --- |
+| `NEXT_PUBLIC_APP_URL` | Base URL of the site |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server only) |
+| `RESEND_API_KEY` / `RESEND_FROM` | Resend email credentials and sender |
+| `MIDTRANS_SERVER_KEY` / `MIDTRANS_CLIENT_KEY` / `MIDTRANS_IS_PRODUCTION` / `MIDTRANS_WEBHOOK_SECRET` | Midtrans payment gateway credentials |
+| `NEXT_PUBLIC_DEVELOPER_URL` | Target link of the footer "code" icon, e.g. `https://thidayah.github.io/` |
+
 ## Getting Started
 
 First, run the development server:

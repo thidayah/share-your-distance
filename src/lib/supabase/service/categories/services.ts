@@ -1,5 +1,4 @@
 // src/lib/supabase/services/categories/service.ts
-import { supabase } from "../../client";
 import { supabaseServer } from "../../server-client";
 import { categoryQueries } from './queries';
 import { CategoryCreate, CategoryUpdate } from './types';
@@ -7,7 +6,10 @@ import { CategoryCreate, CategoryUpdate } from './types';
 export const categoryService = {
   // READ operations
   async getAll() {
-    const { data, error } = await categoryQueries.getAll();
+    const { data, error } = await supabaseServer
+      .from('syd_categories')
+      .select('*')
+      .order('display_order');
     if (error) throw error;
     return data;
   },
@@ -19,75 +21,58 @@ export const categoryService = {
   },
 
   async getById(id: string) {
-    const { data, error } = await categoryQueries.getById(id);
+    const { data, error } = await supabaseServer
+      .from('syd_categories')
+      .select('*')
+      .eq('id', id)
+      .single();
     if (error) throw error;
     return data;
   },
 
   // CREATE operation
   async create(category: CategoryCreate, features: string[]) {
-    const { data: categoryData, error: categoryError } = await supabase
-      .from('categories')
-      .insert(category)
+    const { data: categoryData, error: categoryError } = await supabaseServer
+      .from('syd_categories')
+      .insert({
+        ...category,
+        max_participants: category.max_participants || null,
+        features,
+      })
       .select()
       .single();
 
     if (categoryError) throw categoryError;
-
-    // Insert features
-    const featureInserts = features.map((feature, index) => ({
-      category_id: categoryData.id,
-      feature,
-      display_order: index + 1,
-    }));
-
-    const { error: featuresError } = await supabase
-      .from('category_features')
-      .insert(featureInserts);
-
-    if (featuresError) throw featuresError;
 
     return this.getById(categoryData.id);
   },
 
   // UPDATE operation with features
   async update(id: string, updates: Partial<CategoryUpdate>, features: string[]) {
-    const { data, error } = await supabaseServer
-      .from('categories')
-      .update(updates)
+    const updateData = {
+      ...updates,
+      ...(updates.max_participants !== undefined
+        ? { max_participants: updates.max_participants || null }
+        : {}),
+      features,
+      updated_at: new Date().toISOString(),
+    };
+    const { error } = await supabaseServer
+      .from('syd_categories')
+      .update(updateData)
       .eq('id', id)
       .select('*')
       .single();
 
     if (error) throw error;
 
-    // Delete existing features
-    await supabaseServer
-      .from('category_features')
-      .delete()
-      .eq('category_id', id);
-
-    // Insert new features
-    const featureInserts = features.map((feature, index) => ({
-      category_id: id,
-      feature,
-      display_order: index + 1,
-    }));
-
-    const { error: featuresError } = await supabaseServer
-      .from('category_features')
-      .insert(featureInserts);
-
-    if (featuresError) throw featuresError;
-
     return this.getById(id);
-    // return data;
   },
 
   // DELETE operation
   async delete(id: string) {
     const { error } = await supabaseServer
-      .from('categories')
+      .from('syd_categories')
       .delete()
       .eq('id', id);
 

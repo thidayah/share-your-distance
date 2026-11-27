@@ -14,13 +14,13 @@ export const contactMessagesService = {
       const { page = 1, limit = 10 } = filters;
   
       // Query untuk count
-      let countQuery = supabaseServer
-        .from('contact_messages')
+      const countQuery = supabaseServer
+        .from('syd_contact_messages')
         .select('*', { count: 'exact', head: true });
   
       // Query untuk data dengan join
-      let dataQuery = supabaseServer
-        .from('contact_messages')
+      const dataQuery = supabaseServer
+        .from('syd_contact_messages')
         .select(`*`)
         .order('created_at', { ascending: false });
   
@@ -53,7 +53,7 @@ export const contactMessagesService = {
   // CREATE operation
   async create(data: ContactMessagesCreate) {
     const { data: resData, error: resError } = await supabaseServer
-      .from('contact_messages')
+      .from('syd_contact_messages')
       .insert(data)
       .select()
       .single();
@@ -67,7 +67,7 @@ export const contactMessagesService = {
   // UPDATE operation
   async update(id: string, updates: Partial<ContactMessagesUpdate>) {
     const { data, error } = await supabaseServer
-      .from('contact_messages')
+      .from('syd_contact_messages')
       .update(updates)
       .eq('id', id)
       .select()
@@ -80,7 +80,7 @@ export const contactMessagesService = {
   // DELETE operation
   async delete(id: string) {
     const { error } = await supabaseServer
-      .from('contact_messages')
+      .from('syd_contact_messages')
       .delete()
       .eq('id', id);
 

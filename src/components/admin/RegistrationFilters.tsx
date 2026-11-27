@@ -4,7 +4,6 @@ interface FilterState {
   category_id: string;
   start_date: string;
   end_date: string;
-  has_bib: string;
 }
 
 interface CategoriesState {
@@ -34,12 +33,6 @@ export default function RegistrationFilters({
     { value: 'failed', label: 'Failed' },
     { value: 'refunded', label: 'Refunded' },
     { value: 'cancelled', label: 'Cancelled' }
-  ]
-
-  const bibOptions = [
-    { value: '', label: 'All' },
-    { value: 'true', label: 'Has Bib' },
-    { value: 'false', label: 'No Bib' }
   ]
 
   return (
@@ -82,24 +75,6 @@ export default function RegistrationFilters({
           {paymentStatuses.map(status => (
             <option key={status.value} value={status.value}>
               {status.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Bib Status */}
-      <div>
-        <label className="block text-sm font-medium text-zinc-700 mb-1">
-          Bib Status
-        </label>
-        <select
-          value={filters.has_bib}
-          onChange={(e) => onChange({ has_bib: e.target.value })}
-          className="w-full px-3 py-2 text-zinc-600 border border-zinc-300 rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:border-transparent"
-        >
-          {bibOptions.map(option => (
-            <option key={option.value} value={option.value}>
-              {option.label}
             </option>
           ))}
         </select>

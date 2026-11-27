@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { faqData, faqCategories, FAQItem } from '@/data/faqData';
 import Template from "@/components/layout/Template";
+import { EMAIL_URL } from '@/data/siteLinks';
 
 export default function FAQPage() {
   const [activeCategory, setActiveCategory] = useState('All Questions');
@@ -106,7 +107,7 @@ export default function FAQPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
-                  href="mailto:hello@shareyourdistance.online"
+                  href={EMAIL_URL}
                   // className="bg-zinc-700 text-white px-6 py-3 rounded-full hover:bg-zinc-600 transition-colors font-semibold inline-flex items-center justify-center"
                   className="bg-zinc-500 text-white px-8 py-3 rounded-full hover:bg-zinc-600 transition-colors font-semibold inline-flex items-center justify-center"
                 >
