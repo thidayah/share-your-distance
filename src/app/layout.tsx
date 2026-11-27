@@ -20,8 +20,11 @@ import { LanguageProvider } from "@/lib/i18n";
 //   variable: "--font-ubuntu",
 // });
 
+const siteUrl = new URL(process.env.SITE_URL || "https://syd.runminders.vercel.app");
+const siteOrigin = siteUrl.origin;
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://syd.runminders.com/"),
+  metadataBase: siteUrl,
   title: "Share Your Distance Vol 4.0 — Sobat Sabtu",
   description:
     "Satu Tim. Empat Pelari. Satu Jarak. Share Your Distance Vol 4.0 bersama Sobat Sabtu di Bandung.",
@@ -37,13 +40,13 @@ export const metadata: Metadata = {
     "community running"
   ],
   alternates: {
-    canonical: "https://syd.runminders.com/",
+    canonical: siteOrigin,
   },
   openGraph: {
     title: "Share Your Distance Vol 4.0 — Sobat Sabtu",
     description:
       "Satu Tim. Empat Pelari. Satu Jarak. Share Your Distance Vol 4.0 bersama Sobat Sabtu di Bandung.",
-    url: "https://syd.runminders.com/",
+    url: siteOrigin,
     siteName: "Share Your Distance",
     images: [
       {
