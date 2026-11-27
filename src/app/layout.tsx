@@ -21,7 +21,7 @@ import { LanguageProvider } from "@/lib/i18n";
 // });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.shareyourdistance.online/"),
+  metadataBase: new URL("https://syd.runminders.com/"),
   title: "Share Your Distance Vol 4.0 — Sobat Sabtu",
   description:
     "Satu Tim. Empat Pelari. Satu Jarak. Share Your Distance Vol 4.0 bersama Sobat Sabtu di Bandung.",
@@ -37,19 +37,19 @@ export const metadata: Metadata = {
     "community running"
   ],
   alternates: {
-    canonical: "https://www.shareyourdistance.online/",
+    canonical: "https://syd.runminders.com/",
   },
   openGraph: {
     title: "Share Your Distance Vol 4.0 — Sobat Sabtu",
     description:
       "Satu Tim. Empat Pelari. Satu Jarak. Share Your Distance Vol 4.0 bersama Sobat Sabtu di Bandung.",
-    url: "https://www.shareyourdistance.online/",
+    url: "https://syd.runminders.com/",
     siteName: "Share Your Distance",
     images: [
       {
-        url: "/images/share-your-distance.jpeg",
-        width: 1200,
-        height: 630,
+        url: "/images/syd-vol-4.png",
+        width: 512,
+        height: 327,
         alt: "Share Your Distance Vol 4.0",
       },
     ],
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    images: ["/images/share-your-distance.jpeg"],
+    images: ["/images/syd-vol-4.png"],
   },
 };
 
