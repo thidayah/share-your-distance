@@ -20,7 +20,9 @@ import { LanguageProvider } from "@/lib/i18n";
 //   variable: "--font-ubuntu",
 // });
 
-const siteUrl = new URL(process.env.SITE_URL || "https://syd.runminders.vercel.app");
+const siteUrl = new URL(
+  process.env.NEXT_PUBLIC_APP_URL || "https://syd.runminders.vercel.app"
+);
 const siteOrigin = siteUrl.origin;
 
 export const metadata: Metadata = {

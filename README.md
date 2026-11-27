@@ -6,7 +6,7 @@ Create a `.env.local` file in the project root. Public variables must be prefixe
 
 | Variable | Description |
 | --- | --- |
-| `NEXT_PUBLIC_APP_URL` | Base URL of the site |
+| `NEXT_PUBLIC_APP_URL` | Base URL for site metadata and Midtrans return URLs |
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (server only) |
