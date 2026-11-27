@@ -21,7 +21,7 @@ import { LanguageProvider } from "@/lib/i18n";
 // });
 
 const siteUrl = new URL(
-  process.env.NEXT_PUBLIC_APP_URL || "https://syd.runminders.vercel.app"
+  process.env.NEXT_PUBLIC_APP_URL || "https://syd.runminders.com"
 );
 const siteOrigin = siteUrl.origin;
 
