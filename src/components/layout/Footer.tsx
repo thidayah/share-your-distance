@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useLanguage } from '@/lib/i18n';
-import { DEVELOPER_URL, EMAIL_URL, INSTAGRAM_URL, WHATSAPP_URL } from '@/data/siteLinks';
+import { DEVELOPER_URL, EMAIL_ADDRESS, EMAIL_URL, INSTAGRAM_URL, WHATSAPP_URL } from '@/data/siteLinks';
 
 export default function Footer() {
   const { t } = useLanguage();
@@ -55,7 +55,7 @@ export default function Footer() {
               <a
                 className="grid h-12 w-12 place-items-center rounded-full border border-white/20 text-white transition-colors hover:border-[var(--lime)] hover:bg-white/10 hover:text-[var(--lime)]"
                 href={EMAIL_URL}
-                aria-label="Email hello@shareyourdistance.online"
+                aria-label={`Email ${EMAIL_ADDRESS}`}
               >
                 <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.8">
                   <rect x="3" y="5" width="18" height="14" rx="2" />

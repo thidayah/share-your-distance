@@ -1,6 +1,7 @@
 // src/lib/email/contact-service.ts
 import { ContactFormAdmin } from "@/components/emails/ContactFormAdmin";
 import { ContactFormUser } from "@/components/emails/ContactFormUser";
+import { EMAIL_ADDRESS } from '@/data/siteLinks';
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -20,7 +21,7 @@ export const contactService = {
     try {
       const { data, error } = await resend.emails.send({
         from: emailFrom,
-        to: ['hello@shareyourdistance.online'], // Default jika belum punya domain, hanya bisa email akun Resend ['muhamadt84@gmail.com']
+        to: [EMAIL_ADDRESS],
         subject: `New Contact: ${subject}`,
         react: ContactFormAdmin({ name, email, category, subject, message }),
       });

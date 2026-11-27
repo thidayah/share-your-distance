@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { contactMessagesService } from '@/lib/supabase/service/contact-messages/services';
 import { contactService } from "@/lib/email/contact-service";
+import { EMAIL_ADDRESS } from '@/data/siteLinks';
 
 export async function POST(request: Request) {
   try {
@@ -73,7 +74,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         success: false,
-        message: 'Failed to submit contact form, please try again later or contact us directly at hello@shareyourdistance.online',
+        message: `Failed to submit contact form, please try again later or contact us directly at ${EMAIL_ADDRESS}`,
         error
       },
       { status: 500 }
