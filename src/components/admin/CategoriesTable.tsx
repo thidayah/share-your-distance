@@ -79,7 +79,7 @@ export default function CategoriesTable({
           <tbody className="bg-white divide-y divide-zinc-200">
             {loading && (
                 <tr>
-                  <td colSpan={7} className="bg-white rounded-lg border border-zinc-00 shadow-sm p-8 text-center">
+                  <td colSpan={7} className="p-8 text-center">
                     <div className="flex justify-center">
                       <Icon icon="svg-spinners:ring-resize" className=" size-8 text-zinc-600" />
                     </div>
