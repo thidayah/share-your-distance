@@ -9,6 +9,8 @@ import CompletePayment from '@/components/CompletePayment';
 import { supabase } from '@/lib/supabase/client';
 import { TypesCategory } from '@/types/database';
 import { useLanguage } from '@/lib/i18n';
+import { isValidStravaUrl } from '@/lib/strava';
+import { normalizeIndonesianPhone } from '@/lib/phone';
 
 type FormStep = 'personal' | 'emergency' | 'summary' | 'payment';
 
@@ -180,17 +182,6 @@ export default function RegistrationPage() {
     }
   }, [formData.personal.dateOfBirth, lang]);
 
-  const isValidStravaUrl = (value: string) => {
-    try {
-      const url = new URL(value.trim());
-      return url.protocol === 'https:'
-        && ['strava.com', 'www.strava.com'].includes(url.hostname.toLowerCase())
-        && /^\/athletes\/[a-z\d_-]+\/?$/i.test(url.pathname);
-    } catch {
-      return false;
-    }
-  };
-
   const getPersonalErrors = (personal: typeof formData.personal): FieldErrors => {
     const errors: FieldErrors = {};
     const { fullName, email, phone, dateOfBirth, gender, strava } = personal;
@@ -205,6 +196,11 @@ export default function RegistrationPage() {
     }
     if (!phone.trim()) {
       errors.phone = t('Nomor WhatsApp wajib diisi.', 'WhatsApp number is required.');
+    } else if (!normalizeIndonesianPhone(phone)) {
+      errors.phone = t(
+        'Gunakan nomor Indonesia dengan awalan 0 atau 62.',
+        'Use an Indonesian number starting with 0 or 62.',
+      );
     }
     if (!dateOfBirth) {
       errors.dateOfBirth = t('Tanggal lahir wajib diisi.', 'Date of birth is required.');
@@ -233,6 +229,11 @@ export default function RegistrationPage() {
     }
     if (!emergency.contactPhone.trim()) {
       errors.contactPhone = t('Nomor telepon darurat wajib diisi.', 'Emergency phone number is required.');
+    } else if (!normalizeIndonesianPhone(emergency.contactPhone)) {
+      errors.contactPhone = t(
+        'Gunakan nomor Indonesia dengan awalan 0 atau 62.',
+        'Use an Indonesian number starting with 0 or 62.',
+      );
     }
     if (!emergency.contactRelationship) {
       errors.contactRelationship = t('Silakan pilih hubungan kontak darurat.', 'Select the emergency contact relationship.');
@@ -451,6 +452,10 @@ export default function RegistrationPage() {
                             type="tel"
                             value={formData.personal.phone}
                             onChange={(e) => updatePersonal('phone', e.target.value)}
+                            onBlur={(e) => {
+                              const normalized = normalizeIndonesianPhone(e.currentTarget.value);
+                              if (normalized) updatePersonal('phone', normalized);
+                            }}
                             placeholder="08xx xxxx xxxx"
                             aria-invalid={Boolean(fieldErrors.phone)}
                             aria-describedby={fieldErrors.phone ? 'phone-error' : undefined}
@@ -565,6 +570,10 @@ export default function RegistrationPage() {
                             type="tel"
                             value={formData.emergency.contactPhone}
                             onChange={(e) => updateEmergency('contactPhone', e.target.value)}
+                            onBlur={(e) => {
+                              const normalized = normalizeIndonesianPhone(e.currentTarget.value);
+                              if (normalized) updateEmergency('contactPhone', normalized);
+                            }}
                             placeholder="08xx xxxx xxxx"
                             aria-invalid={Boolean(fieldErrors.contactPhone)}
                             aria-describedby={fieldErrors.contactPhone ? 'emergency-phone-error' : undefined}
