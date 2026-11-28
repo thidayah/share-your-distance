@@ -10,9 +10,9 @@ export default function CtaSection() {
     <section id="daftar" className="bg-[var(--lime)] py-16">
       <div className="wrap flex flex-col justify-between gap-6 md:flex-row md:items-center">
         <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-[var(--ink)] leading-tight tracking-tight">
-          {t('Ayo berbagi', 'Let’s share the')}
+          Let’s share the
           <br />
-          {t('jarak.', 'distance.')}
+          distance.
         </h2>
         <div>
           <Link

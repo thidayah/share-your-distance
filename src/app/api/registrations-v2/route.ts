@@ -6,6 +6,8 @@ import { registrationService } from '@/lib/supabase/service/registrations/servic
 import { supabaseServer } from '@/lib/supabase/server-client';
 import { RegistrationCreateInput } from '@/lib/supabase/service/registrations/types';
 import { registrationService as emailService } from '@/lib/email/registration-service';
+import { isValidStravaUrl } from '@/lib/strava';
+import { normalizeIndonesianPhone } from '@/lib/phone';
 
 const REGISTRATION_TABLE = 'syd_registrations';
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -23,17 +25,6 @@ function readString(body: Record<string, unknown>, key: string, maxLength: numbe
 
 function isGender(value: string | null): value is RegistrationCreateInput['gender'] {
   return value === 'male' || value === 'female' || value === 'other';
-}
-
-function isValidStravaUrl(value: string): boolean {
-  try {
-    const url = new URL(value);
-    return url.protocol === 'https:'
-      && ['strava.com', 'www.strava.com'].includes(url.hostname.toLowerCase())
-      && /^\/athletes\/[a-z\d_-]+\/?$/i.test(url.pathname);
-  } catch {
-    return false;
-  }
 }
 
 function isAtLeast17OnEventDate(dateOfBirth: string): boolean {
@@ -92,12 +83,16 @@ export async function POST(request: NextRequest) {
   const categoryId = readString(payload, 'category_id', 64);
   const fullName = readString(payload, 'full_name', 255);
   const email = readString(payload, 'email', 255)?.toLowerCase();
-  const phone = readString(payload, 'phone', 20);
+  const phoneInput = readString(payload, 'phone', 20);
+  const phone = phoneInput ? normalizeIndonesianPhone(phoneInput) : null;
   const dateOfBirth = readString(payload, 'date_of_birth', 10);
   const gender = readString(payload, 'gender', 10);
   const stravaUrl = readString(payload, 'strava_url', 2048);
   const emergencyContactName = readString(payload, 'emergency_contact_name', 255);
-  const emergencyContactPhone = readString(payload, 'emergency_contact_phone', 20);
+  const emergencyContactPhoneInput = readString(payload, 'emergency_contact_phone', 20);
+  const emergencyContactPhone = emergencyContactPhoneInput
+    ? normalizeIndonesianPhone(emergencyContactPhoneInput)
+    : null;
   const emergencyContactRelationship = readString(payload, 'emergency_contact_relationship', 255);
   const instagram = typeof payload.instagram === 'string' ? payload.instagram.trim() : '';
   const medicalConditions = typeof payload.medical_conditions === 'string'
@@ -107,12 +102,19 @@ export async function POST(request: NextRequest) {
   if (
     !categoryId || !UUID_PATTERN.test(categoryId) || !fullName
     || !email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-    || !phone || !dateOfBirth || !isGender(gender) || !stravaUrl
-    || !emergencyContactName || !emergencyContactPhone || !emergencyContactRelationship
+    || !phoneInput || !dateOfBirth || !isGender(gender) || !stravaUrl
+    || !emergencyContactName || !emergencyContactPhoneInput || !emergencyContactRelationship
     || payload.consent_given !== true
   ) {
     return NextResponse.json(
       { status: false, message: 'Please provide all required registration details and consent' },
+      { status: 400 },
+    );
+  }
+
+  if (!phone || !emergencyContactPhone) {
+    return NextResponse.json(
+      { status: false, message: 'Please provide valid Indonesian phone numbers starting with 0 or 62' },
       { status: 400 },
     );
   }
