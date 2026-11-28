@@ -86,6 +86,7 @@ export default function RegistrationPage() {
   // Modals state
   const [isTermsOpen, setTermsOpen] = useState(false);
   const [isPrivacyOpen, setPrivacyOpen] = useState(false);
+  const [closingPolicyModal, setClosingPolicyModal] = useState<'terms' | 'privacy' | null>(null);
 
   const [formData, setFormData] = useState({
     personal: {
@@ -158,6 +159,40 @@ export default function RegistrationPage() {
       replaceFieldErrors(emergencyFields, getEmergencyErrors(updatedEmergency));
     }
   };
+
+  const openPolicyModal = (modal: 'terms' | 'privacy') => {
+    setClosingPolicyModal(null);
+    if (modal === 'terms') setTermsOpen(true);
+    else setPrivacyOpen(true);
+  };
+
+  const closePolicyModal = (modal: 'terms' | 'privacy') => {
+    if (closingPolicyModal !== modal) setClosingPolicyModal(modal);
+  };
+
+  useEffect(() => {
+    if (!closingPolicyModal) return;
+
+    const closeTimeout = window.setTimeout(() => {
+      if (closingPolicyModal === 'terms') setTermsOpen(false);
+      else setPrivacyOpen(false);
+      setClosingPolicyModal(null);
+    }, 200);
+
+    return () => window.clearTimeout(closeTimeout);
+  }, [closingPolicyModal]);
+
+  useEffect(() => {
+    const openModal = isTermsOpen ? 'terms' : isPrivacyOpen ? 'privacy' : null;
+    if (!openModal || closingPolicyModal) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setClosingPolicyModal(openModal);
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isTermsOpen, isPrivacyOpen, closingPolicyModal]);
 
   const calculateAge = (birthDate: string) => {
     if (!birthDate) return 0;
@@ -737,14 +772,14 @@ export default function RegistrationPage() {
                         <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 pl-7 text-sm font-bold text-[var(--blue)]">
                           <button
                             type="button"
-                            onClick={() => setTermsOpen(true)}
+                            onClick={() => openPolicyModal('terms')}
                             className="underline underline-offset-4 cursor-pointer hover:text-[var(--ink)]"
                           >
                             {t('Baca Syarat & Ketentuan', 'Read Terms & Conditions')}
                           </button>
                           <button
                             type="button"
-                            onClick={() => setPrivacyOpen(true)}
+                            onClick={() => openPolicyModal('privacy')}
                             className="underline underline-offset-4 cursor-pointer hover:text-[var(--ink)]"
                           >
                             {t('Baca Kebijakan Privasi', 'Read Privacy Policy')}
@@ -853,7 +888,10 @@ export default function RegistrationPage() {
 
           {/* Terms Modal Dialog */}
           {isTermsOpen && (
-            <div className="policy-modal-backdrop" onClick={() => setTermsOpen(false)}>
+            <div
+              className={`policy-modal-backdrop${closingPolicyModal === 'terms' ? ' is-closing' : ''}`}
+              onClick={() => closePolicyModal('terms')}
+            >
               <div className="policy-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="flex max-h-[82vh] flex-col">
                   <header className="flex items-start justify-between gap-4 border-b border-[var(--line)] p-5 sm:p-7">
@@ -863,7 +901,7 @@ export default function RegistrationPage() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => setTermsOpen(false)}
+                      onClick={() => closePolicyModal('terms')}
                       className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[var(--line)] text-xl cursor-pointer hover:bg-neutral-100"
                     >
                       ×
@@ -897,7 +935,7 @@ export default function RegistrationPage() {
                   <footer className="border-t border-[var(--line)] p-5 text-right sm:px-7">
                     <button
                       type="button"
-                      onClick={() => setTermsOpen(false)}
+                      onClick={() => closePolicyModal('terms')}
                       className="btn lime !min-h-11 !px-5 !py-2 cursor-pointer font-extrabold"
                     >
                       {t('Tutup', 'Close')}
@@ -910,7 +948,10 @@ export default function RegistrationPage() {
 
           {/* Privacy Modal Dialog */}
           {isPrivacyOpen && (
-            <div className="policy-modal-backdrop" onClick={() => setPrivacyOpen(false)}>
+            <div
+              className={`policy-modal-backdrop${closingPolicyModal === 'privacy' ? ' is-closing' : ''}`}
+              onClick={() => closePolicyModal('privacy')}
+            >
               <div className="policy-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="flex max-h-[82vh] flex-col">
                   <header className="flex items-start justify-between gap-4 border-b border-[var(--line)] p-5 sm:p-7">
@@ -920,7 +961,7 @@ export default function RegistrationPage() {
                     </div>
                     <button
                       type="button"
-                      onClick={() => setPrivacyOpen(false)}
+                      onClick={() => closePolicyModal('privacy')}
                       className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[var(--line)] text-xl cursor-pointer hover:bg-neutral-100"
                     >
                       ×
@@ -934,7 +975,7 @@ export default function RegistrationPage() {
                       <li>
                         <strong>{t('Informasi yang dikumpulkan', 'Information collected')}</strong>
                         <p className="mt-1 text-[var(--muted)]">
-                          {t('Formulir meminta nama, email, nomor telepon, tanggal lahir, gender, kontak darurat dan hubungannya dengan Anda, serta informasi kondisi medis. Profil Instagram dan Strava bersifat opsional.', 'The form requests your name, email, phone number, date of birth, gender, emergency contact and their relationship to you, and medical information. Instagram and Strava profiles are optional.')}
+                          {t('Formulir meminta nama, email, nomor telepon, tanggal lahir, gender, kontak darurat dan hubungannya dengan Anda, serta informasi kondisi medis. Profil Instagram bersifat opsional, sedangkan URL profil Strava wajib diisi dan profilnya harus publik.', 'The form requests your name, email, phone number, date of birth, gender, emergency contact and their relationship to you, and medical information. Instagram is optional; a public Strava profile URL is required.')}
                         </p>
                       </li>
                       <li>
@@ -954,7 +995,7 @@ export default function RegistrationPage() {
                   <footer className="border-t border-[var(--line)] p-5 text-right sm:px-7">
                     <button
                       type="button"
-                      onClick={() => setPrivacyOpen(false)}
+                      onClick={() => closePolicyModal('privacy')}
                       className="btn lime !min-h-11 !px-5 !py-2 cursor-pointer font-extrabold"
                     >
                       {t('Tutup', 'Close')}

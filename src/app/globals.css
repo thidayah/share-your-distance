@@ -1351,6 +1351,10 @@ html.story-enabled .story-panel.is-active {
   align-items: center;
   justify-content: center;
   padding: 16px;
+  animation: modal-backdrop-enter 0.22s ease-out both;
+}
+.policy-modal-backdrop.is-closing {
+  animation: modal-backdrop-exit 0.2s ease-in both;
 }
 .policy-modal {
   width: min(640px, calc(100% - 32px));
@@ -1362,8 +1366,24 @@ html.story-enabled .story-panel.is-active {
   background: white;
   color: var(--ink);
   box-shadow: 0 24px 80px rgba(4, 10, 25, 0.3);
-  animation: modal-enter 0.18s ease-out both;
+  animation: modal-enter 0.22s cubic-bezier(0.2, 0.72, 0.2, 1) both;
   overflow: hidden;
+}
+.policy-modal-backdrop.is-closing .policy-modal {
+  animation: modal-exit 0.2s ease-in both;
+}
+@keyframes modal-backdrop-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes modal-backdrop-exit {
+  to {
+    opacity: 0;
+  }
 }
 @keyframes modal-enter {
   from {
@@ -1373,6 +1393,12 @@ html.story-enabled .story-panel.is-active {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+@keyframes modal-exit {
+  to {
+    opacity: 0;
+    transform: translateY(8px) scale(0.99);
   }
 }
 
