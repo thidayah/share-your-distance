@@ -14,11 +14,11 @@ const faqs = [
   },
   {
     question: { id: 'Apa yang perlu saya bawa saat hari lomba?', en: 'What should I bring on race day?' },
-    answer: { id: 'Bawa BIB Number, pakaian olahraga yang nyaman, sepatu lari, air minum, dan kartu identitas. Sunscreen, topi, pakaian ganti, dan obat pribadi juga disarankan.', en: 'Bring your race bib, comfortable running attire, proper running shoes, water, and ID. Sunscreen, a hat, a change of clothes, and personal medication are also recommended.' },
+    answer: { id: 'Bawa BIB Number, pakaian olahraga yang nyaman, sepatu lari, dan air minum. Sunscreen, topi, pakaian ganti, dan obat pribadi juga disarankan.', en: 'Bring your race bib, comfortable running attire, proper running shoes, and water. Sunscreen, a hat, a change of clothes, and personal medication are also recommended.' },
   },
   {
     question: { id: 'Dukungan medis apa yang tersedia selama acara?', en: 'What medical support is available during the event?' },
-    answer: { id: 'Tim medis tersedia selama acara. Mohon cantumkan kondisi medis yang perlu diketahui pada formulir pendaftaran.', en: 'A medical team will be available during the event. Please include any relevant medical conditions in your registration form.' },
+    answer: { id: 'Medical kit tersedia selama acara. Mohon cantumkan kondisi medis yang perlu diketahui pada formulir pendaftaran.', en: 'Medical kits will be available during the event. Please include any relevant medical conditions in your registration form.' },
   },
   {
     question: { id: 'Bagaimana cara mendapatkan sertifikat digital?', en: 'How do I get my digital certificate?' },
